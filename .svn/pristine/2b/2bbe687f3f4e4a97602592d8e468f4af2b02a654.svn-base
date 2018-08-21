@@ -1,0 +1,29 @@
+package com.quickdone.znwh.dao;
+
+import com.quickdone.znwh.entity.CallContentSubject;
+import org.springframework.stereotype.Repository;
+
+/**
+ * 内容主题管理
+ *
+ * @Author: zhuLong
+ * @Date: 2018/7/10 15:17
+ */
+@Repository
+public interface CallContentSubjectRepository extends BaseRepository<CallContentSubject, Long> {
+    /**
+     * @Description: 根据主题名称查询
+     * @Auther: zhuLong
+     * @Date: 2018/7/10 17:20
+     * @Param: [name, isDelete]
+     * @return: com.quickdone.znwh.entity.CallContentSubject
+     */
+    CallContentSubject findByNameAndIsDelete(String name, int isDelete);
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 15:48
+     * @Description: 根据主题id查询
+     */
+    CallContentSubject findById(Long id);
+}

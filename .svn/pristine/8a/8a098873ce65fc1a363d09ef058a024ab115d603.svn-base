@@ -1,0 +1,148 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.dao.CustomerCallFlowRepository;
+import com.quickdone.znwh.entity.*;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.*;
+import com.quickdone.znwh.utils.DateSearchUtils;
+import com.quickdone.znwh.utils.StringUtils;
+import com.quickdone.znwh.utils.ToClass;
+import com.quickdone.znwh.vo.CustomerCallFlowVo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @Author: ly
+ * @Date: 2018/7/13
+ * @Description: 外呼记录
+ */
+@Service
+@Transactional
+public class CustomerCallFlowServiceImpl implements CustomerCallFlowService<CustomerCallFlow,Long> {
+    @Resource
+    private CustomerCallFlowRepository CustomerCallFlowRepository;
+    @Resource
+    private CallTaskService callTaskService;
+    @Resource
+    private CustomerService customerService;
+    @Resource
+    private CallCategoryService callCategoryService;
+    @Resource
+    private CallContentSubjectService callContentSubjectService;
+
+    @Override
+    public CustomerCallFlow addCustomerCallFlow(CustomerCallFlow CustomerCallFlow) {
+        CustomerCallFlow.setExecutetime(new Date());
+        return CustomerCallFlowRepository.save(CustomerCallFlow);
+    }
+
+    @Override
+    public ResponseData delCustomerCallFlow(String CustomerCallFlowIds) {
+        String[] ids = CustomerCallFlowIds.split(",");
+        for (String CustomerCallFlowId : ids) {
+            CustomerCallFlowRepository.delete(Long.valueOf(CustomerCallFlowId));
+        }
+        return ResponseData.getSuccessResponse("删除成功！");
+    }
+
+    @Override
+    public void findAll(final Map<String, Object> searchParams, PaginationMapLayui pagination) {
+        Pageable pageable = new PageRequest(pagination.getStart(), pagination.getLength(), new Sort(Sort.Direction.DESC, "executetime"));//根据时间倒叙
+        Page<CustomerCallFlow> page = CustomerCallFlowRepository.findAll(new Specification<CustomerCallFlow>() {
+            @Override
+            public Predicate toPredicate(Root<CustomerCallFlow> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<Predicate>();
+                if(searchParams.containsKey("name")){//名称
+                    Predicate p1 = criteriaBuilder.like(root.<String>get("name"),"%"+searchParams.get("name").toString()+"%");
+                    predicateList.add(p1);
+                }
+                if(searchParams.containsKey("planType")){//计划类型
+                    Predicate p2 = criteriaBuilder.equal(root.<Integer>get("planType"),Integer.parseInt(searchParams.get("planType").toString()));
+                    predicateList.add(p2);
+                }
+                //执行时间
+                if(searchParams.containsKey("executeBeginDate") && searchParams.containsKey("executeEndDate")){
+                    //时间区间 开始
+                    Predicate p2 = criteriaBuilder.greaterThanOrEqualTo(root.<Date>get("executeBeginDate"),new Timestamp(DateSearchUtils.getDate(searchParams.get("startTime").toString(), 0).getTime()));
+                    //时间区间 截止
+                    Predicate p3 = criteriaBuilder.lessThanOrEqualTo(root.<Date>get("executeEndDate"),new Timestamp(DateSearchUtils.getDate(searchParams.get("startTime").toString(), 1).getTime()));
+                    predicateList.add(p2);
+                    predicateList.add(p3);
+                }
+                if(searchParams.containsKey("callContentSubject")){//主题
+                    Predicate p4 = criteriaBuilder.equal(root.join("callContentSubject").<Long>get("id"),Long.valueOf(searchParams.get("callContentSubject").toString()));
+                    predicateList.add(p4);
+                }
+
+                if(searchParams.containsKey("parentId")){//任务分类
+                    Predicate p4 = criteriaBuilder.equal(root.join("callCategory").<Long>get("id"),Long.valueOf(searchParams.get("parentId").toString()));
+                    predicateList.add(p4);
+                }
+
+                if(searchParams.containsKey("status")){//计划类型
+                    Predicate p5 = criteriaBuilder.equal(root.<Integer>get("status"),Integer.parseInt(searchParams.get("status").toString()));
+                    predicateList.add(p5);
+                }
+                    Predicate p5 = criteriaBuilder.isNotNull(root.<String>get("telephone"));
+                predicateList.add(p5);
+                Predicate[] p = new Predicate[predicateList.size()];
+                return criteriaBuilder.and(predicateList.toArray(p));
+            }
+        },pageable);
+        List<CustomerCallFlow> list = page.getContent();
+        List<CustomerCallFlowVo> customerCallFlowVoList=new ArrayList<CustomerCallFlowVo>();
+        if(list.size()>0){
+            //循环list值，赋值给vo
+            for(int i=0;i<list.size();i++){
+                CustomerCallFlowVo customerCallFlowVo=new CustomerCallFlowVo();
+                customerCallFlowVo.setId(list.get(i).getId());
+                customerCallFlowVo.setTelephone(list.get(i).getTelephone());
+                customerCallFlowVo.setStatus(list.get(i).getStatus());
+                customerCallFlowVo.setCallTime(list.get(i).getCallTime());
+                customerCallFlowVo.setResult(list.get(i).getResult());
+                //外键查询任务分类名称客户姓名插入
+                CallTask callTask=(CallTask) callTaskService.findById(list.get(i).getId());
+                if( null != callTask && null != callTask.getCallCategoryId()){
+                    CallCategory callCategory=(CallCategory) callCategoryService.findById(callTask.getCallCategoryId());
+                    customerCallFlowVo.setCategory(callCategory.getName());               //分类
+                    customerCallFlowVo.setTaskName(callTask.getName());                                 //任务名称
+                }
+                if( null != callTask && null != callTask.getCallContentSubjectId()){
+                    CallContentSubject callContentSubject=(CallContentSubject)callContentSubjectService.findById(callTask.getCallContentSubjectId());
+                    customerCallFlowVo.setTheme(callContentSubject.getName());                              //主题
+                }
+                customerCallFlowVo.setExecutetime(list.get(i).getExecutetime());
+                //根据电话查询用户获取姓名名
+                Customer customer=(Customer)customerService.findByTelephone(list.get(i).getTelephone());
+                if(null != customer){
+                    customerCallFlowVo.setName(customer.getName()+"("+customer.getTelephone()+")");                      //客户姓名
+                }
+                customerCallFlowVoList.add(customerCallFlowVo);
+            }
+        }
+        List<Map> resuList = new ArrayList<Map>();
+        for (CustomerCallFlowVo customerCallFlowVo : customerCallFlowVoList) {
+                Map map = ToClass.beanToMap(customerCallFlowVo);
+                resuList.add(map);
+        }
+        pagination.setData(resuList);
+        pagination.setRecordsTotal(page.getTotalElements());
+    }
+}

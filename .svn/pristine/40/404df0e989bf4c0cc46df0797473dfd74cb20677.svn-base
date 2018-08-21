@@ -1,0 +1,58 @@
+spring.mvc.view.prefix=/WEB-INF/pages/
+spring.mvc.view.suffix=.jsp
+
+spring.application.name=znwh
+jasypt.encryptor.password=defgersweq
+
+#DB properties:
+#10.0.151.6:3306  36.7.87.44:3406
+spring.datasource.url=jdbc:mysql://192.168.1.15:3306/cc-center?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&zeroDateTimeBehavior=convertToNull
+spring.datasource.username=root
+spring.datasource.password=123456
+#spring.datasource.password=ENC(xH8ICuCOiVX3WSrlBCDbBQ==)
+spring.datasource.driverClassName=com.mysql.jdbc.Driver
+spring.jpa.show-sql=true
+spring.jpa.generate-ddl=true
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.database-platform=org.hibernate.dialect.MySQL5Dialect
+
+spring.http.encoding.charset=UTF-8
+spring.http.encoding.enabled=true
+spring.http.encoding.force=true
+
+spring.http.multipart.maxFileSize=1000Mb
+spring.http.multipart.maxRequestSize=1000Mb
+
+server.session.timeout=600
+spring.profiles.active=dev
+
+#����������Ҫ������
+
+
+#���ϵͳ������������
+nlp.path=192.168.1.163:1028
+#�������淵�ؽ����ֵ���ƣ��ݶ�0.7
+out.threshold=0.7
+#���ϵͳ����webapi��ַ
+out.ismwebapi=http://192.168.1.163:8081/ismwebapi/USPRestEasyService/queryKonwledgePointAnswer?konwledgePointId=
+#appid
+out.appid=pc20onli
+#orgCode
+out.orgCode=1001
+flow.file.path=E:\\cure-recall.xml
+#xml�ļ�·�� ���ؿ������ñ����̷�·��
+#XML_PATH = D:\\xml\\
+XML_PATH = znwh/src/main/resources/cure-recall.xml
+
+
+#生成的音频wav文件路径
+#wav.path=/home/cc_wav_fiel/testD.wav
+#本地测试音频wav文件路径
+wav.path=E://testD.wav
+
+
+#生成音频pcm文件路径
+#pcm.path=/home/cc_wav_fiel/test1.pcm
+#本地测试音频pcm文件路径
+pcm.path=E://test1.pcm
+

@@ -1,0 +1,23 @@
+package com.quickdone.znwh.controller;
+
+import com.quickdone.znwh.service.CustomerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.annotation.Resource;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Controller
+@RequestMapping(value = "/customer")
+public class CustomerController {
+    private static Logger logger = LoggerFactory.getLogger(CustomerController.class);
+
+    @Resource
+    private CustomerService customerService;
+}

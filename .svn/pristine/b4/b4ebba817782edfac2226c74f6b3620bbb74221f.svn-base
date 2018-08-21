@@ -1,0 +1,29 @@
+package com.quickdone.znwh.dao;
+
+
+import com.quickdone.znwh.entity.Customer;
+import com.quickdone.znwh.entity.CustomerBetweenGroup;
+
+import java.util.List;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/11
+ * @Description:
+ */
+public interface CustomerBetweenGroupRepository extends BaseRepository<CustomerBetweenGroup,Long>{
+
+    /**
+     * 根据客户查询多个CustomerBetweenGroup
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    public List<CustomerBetweenGroup> findByCustomer(Customer customer);
+
+    /**
+     * 删除用户组和用户的关联
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    public int deleteByCustomer(Customer customer);
+}

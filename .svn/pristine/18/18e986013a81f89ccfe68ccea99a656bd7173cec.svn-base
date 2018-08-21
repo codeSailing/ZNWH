@@ -1,0 +1,40 @@
+package com.quickdone.znwh.common;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+public class Constants {
+
+    /**
+     * 删除状态
+     */
+    public interface isDelete {
+        public static final int NOT = 0;    //未删除
+        public static final int YES = 1;    //已删除
+    }
+
+    /**
+     * 性别
+     */
+    public interface sex {
+        public static final int nan = 0;    //男
+        public static final int nv = 1;    //女
+    }
+
+
+    /**
+     * 语义返回结果状态
+     */
+    public interface IntelligentCallStatus {
+        public static final String NORESULT = "NULL"; //语义返回无结果(没有匹配到)
+        public static final String CHAT = "CHAT";    //闲聊
+        public static final String NORMAL = "NORMAL";//正常
+        public static final String ERRORRESULT = "ERROR";//error
+        public static final String NOTHEARING = "NOT_HEARING";//没听清
+        public static final String USERBUSY = "USER_BUSY";//用户忙
+
+    }
+
+}

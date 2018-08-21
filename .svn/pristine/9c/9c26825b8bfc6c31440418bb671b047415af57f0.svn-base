@@ -1,0 +1,165 @@
+package com.quickdone.znwh.service.impl;
+
+import com.mysql.jdbc.StringUtils;
+import com.quickdone.znwh.dao.CustomerBetweenGroupRepository;
+import com.quickdone.znwh.dao.CustomerGroupRepository;
+import com.quickdone.znwh.dao.CustomerRepository;
+import com.quickdone.znwh.entity.CallContent;
+import com.quickdone.znwh.entity.Customer;
+import com.quickdone.znwh.entity.CustomerBetweenGroup;
+import com.quickdone.znwh.entity.CustomerGroup;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CustomerService;
+import com.quickdone.znwh.utils.ToClass;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Service
+@Transactional
+public class CustomerServiceImpl implements CustomerService<Customer, Long> {
+
+    @Resource
+    private CustomerRepository customerRepository;
+    @Resource
+    private CustomerBetweenGroupRepository customerBetweenGroupRepository;
+    @Resource
+    private CustomerGroupRepository customerGroupRepository;
+
+    @Override
+    public void pageCustomer(final Map<String, Object> searchParams, PaginationMapLayui pagination) {
+        Pageable pageable = new PageRequest(pagination.getStart(), pagination.getLength(), new Sort(Sort.Direction.DESC, "addTime"));
+        Page<Customer> page = customerRepository.findAll(new Specification<Customer>() {
+            @Override
+            public Predicate toPredicate(Root<Customer> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
+                List<Predicate> predicates = new ArrayList<Predicate>();
+                Path<String> name = root.get("name");
+                Path<String> telephone = root.get("telephone");
+                if (searchParams.containsKey("searchParam")) {
+                    Predicate p1 = cb.like(name, "%" + searchParams.get("searchParam") + "%");
+                    Predicate p2 = cb.like(telephone, "%" + searchParams.get("searchParam") + "%");
+                    Predicate p = cb.or(p1, p2);
+                    predicates.add(p);
+                }
+                Path<Integer> age = root.get("age");
+                if (searchParams.containsKey("ageSmall")) {
+                    Predicate p = cb.greaterThanOrEqualTo(age, (Integer) searchParams.get("ageSmall"));
+                    predicates.add(p);
+                }
+                if (searchParams.containsKey("ageBig")) {
+                    Predicate p = cb.lessThanOrEqualTo(age, (Integer) searchParams.get("ageBig"));
+                    predicates.add(p);
+                }
+                Path<Integer> sex = root.get("sex");
+                if (searchParams.containsKey("sex")) {
+                    Predicate p = cb.equal(sex, searchParams.get("sex"));
+                    predicates.add(p);
+                }
+                Path<String> areaCode = root.get("areaCode");
+                if (searchParams.containsKey("areaCode")) {
+                    Predicate p = cb.equal(areaCode, searchParams.get("areaCode"));
+                    predicates.add(p);
+                }
+                Path<String> descri = root.get("descri");
+                if (searchParams.containsKey("descri")) {
+                    Predicate p = cb.equal(descri, searchParams.get("descri"));
+                    predicates.add(p);
+                }
+                Predicate[] p = new Predicate[predicates.size()];
+                return cb.and(predicates.toArray(p));
+            }
+        }, pageable);
+        List<Customer> contentList = page.getContent();
+        List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
+        for (Customer customer : contentList) {
+            String groupName = "";
+            List<CustomerBetweenGroup> customerBetweenGroupList = customerBetweenGroupRepository.findByCustomer(customer);
+            if (customerBetweenGroupList.size()!=0) {
+                for (CustomerBetweenGroup cbg : customerBetweenGroupList) {
+                    if (customerBetweenGroupList.size()>1) {
+                        if(groupName==""){
+                            groupName = cbg.getCustomerGroup().getName()+",";
+                        }else {
+                            groupName = groupName+cbg.getCustomerGroup().getName()+",";
+                        }
+                    }
+                }
+            } else {
+                groupName = "-";
+            }
+            groupName= groupName.substring(0,groupName.length());
+            customer.setGroupName(groupName);
+            Map<String, Object> map = ToClass.beanToMap(customer);
+            mapList.add(map);
+        }
+        pagination.setData(mapList);
+        pagination.setRecordsTotal(page.getTotalElements());
+    }
+
+    @Override
+    public Customer addCustomer(Customer customer) {
+        customer.setAddTime(new Date());
+        return customerRepository.save(customer);
+    }
+
+    @Override
+    public Customer findByTelephone(String telephone) {
+        return customerRepository.findByTelephone(telephone);
+    }
+
+    @Override
+    public Customer findById(Long id) {
+        return customerRepository.findById(id);
+    }
+
+    @Override
+    public ResponseData updateCustomer(Customer customer, String customerGroupId) {
+        List<CustomerBetweenGroup> customerBetweenGroupList = customerBetweenGroupRepository.findByCustomer(customer);
+        for (CustomerBetweenGroup customerBetweenGroupDetail : customerBetweenGroupList) {
+            //先删除原有的所有的用户与用户组的关联
+            customerBetweenGroupRepository.deleteByCustomer(customerBetweenGroupDetail.getCustomer());
+        }
+        if (!StringUtils.isNullOrEmpty(customerGroupId)) {
+            //添加为现选择的分组
+            String[] ids = customerGroupId.split(",");
+            for (String contentSubjectId : ids) {
+                CustomerBetweenGroup customerBetweenGroup = new CustomerBetweenGroup();
+                CustomerGroup customerGroup = customerGroupRepository.findById(Long.valueOf(contentSubjectId));
+                customerBetweenGroup.setCustomer(customer);
+                customerBetweenGroup.setCustomerGroup(customerGroup);
+                customerBetweenGroupRepository.save(customerBetweenGroup);
+            }
+        }
+        customerRepository.save(customer);
+        return ResponseData.getSuccessResponse("修改成功");
+    }
+
+    @Override
+    public ResponseData delCustomer(Customer customer) {
+        List<CustomerBetweenGroup> customerBetweenGroupList = customerBetweenGroupRepository.findByCustomer(customer);
+        if (customerBetweenGroupList != null) {
+            for (CustomerBetweenGroup customerBetweenGroupDetail : customerBetweenGroupList) {
+                customerBetweenGroupRepository.deleteByCustomer(customerBetweenGroupDetail.getCustomer());
+            }
+        }
+        customerRepository.delete(customer);
+        return ResponseData.getSuccessResponse("删除成功!");
+    }
+}

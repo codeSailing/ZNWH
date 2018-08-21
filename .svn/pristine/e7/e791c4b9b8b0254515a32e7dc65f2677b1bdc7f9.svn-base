@@ -1,0 +1,114 @@
+var taskconfiguration = function ($,layui) {
+    function init() {
+        // 新增确认
+        layui.use(['table','form','element','laypage','laydate','layer'], function(){
+            var table = layui.table
+                ,form = layui.form
+                ,element = layui.element
+                ,laypage = layui.laypage
+                ,laydate = layui.laydate
+                ,layer = layui.layer;
+
+            //展示已知数据
+            table.render({
+                elem: '#content-configuration'
+                ,url:context +'/callTask/data.do'  //数据请求路径
+                , cols: [[ //标题栏
+                    {type: 'checkbox'}
+                    , {field: 'callCategory', title: '任务分类', width: 100, templet: '#category'}
+                    , {field: 'name', title: '任务名称', width: 140,}
+                    , {field: 'planType', title: '任务类型', width: 140,templet: '#planType'}
+                    , {field: 'executeBeginDate', title: '执行时间', width: 300,templet: '#period'}
+                    , {field: 'callContentSubject', title: '外呼主题', width: 140, templet: '#contentSubject'}
+                    , {field: 'callFlow', title: '外呼会话流程', width: 140, templet: '#callFlow'}
+                    , {field: 'status', title: '状态', width: 100,templet: '#status'}
+                    , {field: 'right', title: '操作', width: 220, align: 'center', toolbar: '#bar-configuration'}
+                ]]
+                ,skin: 'row' //表格风格
+                ,even: true
+                ,page: true //是否显示分页
+                // ,limits: [5, 7, 10]
+                //,limit: 5 //每页默认显示的数量
+                ,jump: function(obj) {
+                    console.log(obj)
+                }
+            });
+            var $ = layui.$, active = {
+                reload: function(){
+                    var name = $('#keyword');
+                    table.reload('category', {
+                        where: {
+                            key: {
+                                name: $.trim(name.val()),
+                            }
+                        }
+                    });
+                }
+            };
+            $('#search').on('click', function(){
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            laydate.render({
+                elem: '#time-horizon'
+                ,range: true
+            });
+
+            // 新建任务
+            laydate.render({
+                elem: '#Exectime'
+                ,type: 'time'
+                ,format: 'H点m分'
+            });
+            laydate.render({
+                elem: '#Execdate'
+                ,format: 'yyyy年MM月dd日'
+            });
+            laydate.render({
+                elem: '#validity'
+                ,range: true
+            });
+            //弹出变计划
+            $('#plan').on('click', function(){
+                layer.open({
+                    type: 1,
+                    area: ['600px', '360px'],
+                    shadeClose: true, //点击遮罩关闭
+                    content: $("#planchange")
+                });
+            });
+
+            //弹出选流程
+            $('#flow').on('click', function(){
+                layer.open({
+                    type: 1,
+                    area: ['600px', '360px'],
+                    shadeClose: true, //点击遮罩关闭
+                    content: $("#fiowoption")
+                });
+            });
+            //监听工具条
+            table.on('tool(demo)', function(obj){
+                var data = obj.data //获得当前行数据
+                    ,layEvent = obj.event; //获得 lay-event 对应的值
+                if(layEvent === 'del'){
+                    layer.confirm('真的删除行么', function(index){
+                    });
+                }else if(layEvent === 'edit'){
+                    console.log("修改");
+                }else if(layEvent === 'detail'){
+                    console.log("详情");
+                }else if(layEvent === 'drop'){
+                    console.log("废弃");
+                }
+            });
+        });
+    };
+    return {
+        init: function () {
+            init();
+        }
+
+    }
+}(jQuery, layui, document)
+

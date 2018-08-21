@@ -1,0 +1,12 @@
+package com.quickdone.znwh.controller;
+
+import org.springframework.stereotype.Controller;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Controller
+public class CustomerGroupController {
+}

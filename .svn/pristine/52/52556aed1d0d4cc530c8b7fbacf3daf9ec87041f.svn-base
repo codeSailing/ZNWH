@@ -1,0 +1,18 @@
+package com.quickdone.znwh.service;
+
+import com.quickdone.znwh.controller.vo.CallTaskVo;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/10 14:42
+ * @Description:
+ */
+public interface CallTaskService<CallTask,Long> {
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 15:48
+     * @Description: 保存/修改任务
+     */
+    void save(CallTaskVo callTaskVo);
+}

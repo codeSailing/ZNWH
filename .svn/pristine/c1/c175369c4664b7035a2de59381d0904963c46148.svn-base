@@ -1,0 +1,250 @@
+package com.quickdone.znwh.controller;
+
+import com.quickdone.znwh.entity.CallFlow;
+import com.quickdone.znwh.pojo.LayuiRequest;
+import com.quickdone.znwh.pojo.LayuiResponseMap;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallFlowService;
+import com.quickdone.znwh.utils.GetFilePath;
+import com.quickdone.znwh.utils.StringUtils;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.jdom.Comment;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/11 10:09
+ * @Description:
+ */
+@Controller
+@RequestMapping(value = "/callFlow")
+public class CallFlowController {
+
+    private static Logger logger = LoggerFactory.getLogger(CallFlowController.class);
+    @Resource
+    private CallFlowService callFlowService;
+
+    @Value("${XML_PATH}")
+    private String XMLPATH;
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/11 10:12
+     * @Description: 流程列表页面
+     */
+    @RequestMapping(value = "/list.do", method = RequestMethod.GET)
+    public ModelAndView list() {
+        logger.info("调用CallFlowController==== list.do");
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("/callFlow/callFlow");
+        return mv;
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/11 9:39
+     * @Description: 查询流程列表
+     */
+    @RequestMapping(value = "/data.do", method = RequestMethod.GET)
+    @ResponseBody
+    public LayuiResponseMap data(HttpServletRequest request) {
+        logger.info("调用CallFlowController==== data.do");
+        LayuiRequest layuiRequest = LayuiRequest.fromHttpRequest(request);
+        Map<String, Object> searchParams = layuiRequest.getSearchParams();
+        PaginationMapLayui pagination = PaginationMapLayui.formJQueryLayuiTableRequest(layuiRequest);
+        callFlowService.findAll(searchParams,pagination);
+        LayuiResponseMap dtResp = LayuiResponseMap.fromPagination(pagination);
+        return dtResp;
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/11 10:46
+     * @Description: 新增
+     */
+    @RequestMapping(value = "/add.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData add(HttpServletRequest request, @RequestParam Map<String,Object> params){
+        logger.info("调用CallFlowController==== add.do,  params:=" + params);
+        return callFlowService.add(params);
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/11 10:24
+     * @Description: 删除
+     */
+    @RequestMapping(value = "/delete.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData delete(String ids) {
+        logger.info("调用CallFlowController==== delete.do,  params: id=" + ids);
+        ResponseData responseData;
+        if (!StringUtils.isNullOrEmpry(ids)) {
+            String[] flowIds = ids.split(",");
+            List<CallFlow> contentList = new ArrayList<CallFlow>();
+            for (String id : flowIds) {
+                CallFlow callFlow = (CallFlow) callFlowService.findById(Long.valueOf(id));
+                if (callFlow != null) {
+                    contentList.add(callFlow);
+                }
+            }
+            responseData = callFlowService.delete(contentList);
+        } else {
+            responseData = ResponseData.getErrorResponse("请选择需要删除的内容");
+        }
+        return responseData;
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 16:10
+     * @Description: 修改
+     */
+    @RequestMapping(value = "/update.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData update(HttpServletRequest request,@RequestParam Map<String,Object> params) {
+        logger.info("调用CallFlowController==== update.do,  params: id=" + "id,updateParms:" + params);
+        if (params != null) {
+            //TODO 修改
+            return callFlowService.update(params);
+        } else {
+            return ResponseData.getErrorResponse("操作失败");
+        }
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 16:10
+     * @Description: 复制
+     */
+    @RequestMapping(value = "/copy.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData copy(HttpServletRequest request, Long id) {
+        logger.info("调用CallFlowController==== copy.do,  params: id=" + "id");
+        //TODO 复制
+        return callFlowService.copy(id);
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/12 17:32
+     * @Description: 获取xml资源文件路径
+     */
+    @RequestMapping(value = "/getXmlPath.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getXmlPath(HttpServletRequest request) {
+        logger.info("调用CallFlowController==== getXmlPath.do");
+        List<String> list = GetFilePath.getAllFile(XMLPATH);
+        return ResponseData.getSuccessResponse(list);
+    }
+
+    @RequestMapping(value = "/tree.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData findTree(){
+        ResponseData responseData;
+        List<CallFlow> list = callFlowService.findAll();
+        if(!list.isEmpty()){
+            responseData = ResponseData.getSuccessResponse(list);
+        }else{
+            responseData = ResponseData.getErrorResponse("暂无主题");
+        }
+        return responseData;
+    }
+
+    @RequestMapping(value = "/createXml.do", method = RequestMethod.POST)
+    @ResponseBody
+    public String createXml(String callFlowInfo) throws IOException {
+        //构建文件路径
+        String filePath = "";
+        //格式化数据
+        JSONArray jsonArray = JSONArray.fromObject(callFlowInfo);
+        String processId = "";
+        String title = "";
+        for(int i=0;i<jsonArray.size();i++){
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            processId = jsonObject.getString("@id");
+            title = jsonObject.getString("@name");
+            //创建文档
+            Document document = new Document();
+            //创建根元素
+            Element root = new Element("definitions");
+            //把根元素加入到document中
+            document.addContent(root);
+            //创建注释
+            Comment rootComment = new Comment("将数据从程序输出到XML中！");
+            root.addContent(rootComment);
+            //父元素proccess
+            Element proccess =  new Element("proccess");
+            //获取id
+            proccess.setAttribute("id",processId);
+            //获取title
+            proccess.setAttribute("name",title);
+            //把父元素加到根元素中
+            root.addContent(proccess);
+            JSONArray nodeAry = jsonObject.getJSONArray("node");
+            for (int j=0;j<nodeAry.size();j++){
+                JSONObject nodeObject = nodeAry.getJSONObject(j);
+                //遍历获取所有node 创建节点
+                Element node = new Element("node");
+                //获取当前节点id
+                node.setAttribute("id",nodeObject.getString("@id"));
+                //获取当前节点sourceRef
+                node.setAttribute("sourceRef",nodeObject.getString("@sourceRef"));
+                //获取当前节点targetRef
+                node.setAttribute("targetRef",nodeObject.getString("@targetRef"));
+                //获取当前节点defaultRef
+                node.setAttribute("defaultRef",nodeObject.getString("@defaultRef"));
+                //获取当前节点exceptionRef
+                node.setAttribute("exceptionRef",nodeObject.getString("@exceptionRef"));
+//                if(nodeObject.getString("@answer")!=null && !"".equals(nodeObject.getString("@answer"))){
+                    //获取当前节点answer
+                node.setAttribute("answer",nodeObject.getString("@answer"));
+//                }
+//                Attribute nodeAttribute = new Attribute("name","vale");
+                //把当前节点添加到父节点中
+                proccess.addContent(node);
+                Element node_context = new Element("content");
+                //获取当前节点context内容并添加到子节点中
+                node_context.setText(nodeObject.getString("content"));
+                node_context.setAttribute("type","text");
+                node.addContent(node_context);
+            }
+            //设置xml输出格式
+            Format format = Format.getPrettyFormat();
+            format.setEncoding("utf-8");//设置编码
+            format.setIndent("    ");//设置缩进
+            //得到xml输出流
+            XMLOutputter out = new XMLOutputter(format);
+            //如果文件目录不存在，则创建
+            File descriptionPath = new File(XMLPATH);
+            if (!descriptionPath.exists() && !descriptionPath.isDirectory()) {
+                descriptionPath.mkdir();
+            }
+            //把数据输出到xml中
+            filePath = XMLPATH+title+".xml";
+            out.output(document, new FileOutputStream(filePath));//或者FileWriter
+        }
+        return filePath;
+    }
+}

@@ -1,0 +1,73 @@
+package com.quickdone.znwh.pojo;
+
+import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+
+public class ResponseData implements Serializable{
+    private static final long serialVersionUID = 1143287635399905813L;
+    private int status;//0 成功   -1 失败
+    private String message;
+    private Object data;
+
+
+
+    public static ResponseData getSucessResponse(Object data){
+        ResponseData responseData=new ResponseData();
+        responseData.setMessage("操作成功");
+        responseData.setStatus(0);
+        responseData.setData(data);
+        return responseData;
+    }
+
+
+
+    public static ResponseData getSucessResponse(String message){
+        ResponseData responseData=new ResponseData();
+        if(!StringUtils.isEmpty(message)){
+            responseData.setMessage(message);
+        }else{
+            responseData.setMessage("操作成功");
+        }
+        responseData.setStatus(0);
+        return responseData;
+
+    }
+    public static ResponseData getErrorResponse(String message){
+        ResponseData responseData=new ResponseData();
+        if(!StringUtils.isEmpty(message)){
+            responseData.setMessage(message);
+        }else{
+            responseData.setMessage("操作失败");
+        }
+        responseData.setStatus(-1);
+        return responseData;
+
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+
+}

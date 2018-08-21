@@ -1,0 +1,187 @@
+package com.quickdone.znwh.entity;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/9 16:37
+ * @Description:外呼任务
+ */
+
+@Entity
+@Table(name = "t_call_task")
+public class CallTask implements Serializable {
+    private static final long serialVersionUID = 2713957236372055729L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false,columnDefinition="bigint(20) COMMENT '主键'")
+    private Long id;//主键
+
+    @Column(name="name",columnDefinition="varchar(200) DEFAULT NULL COMMENT '任务名称'")
+    private String name;
+
+    @Column(name="status",nullable = false,columnDefinition="tinyint(5)  COMMENT '启用/禁用 0启用 1禁用'")
+    private Integer status = 0;//0启用 1禁用
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "callCategory_id",nullable = false)
+    private CallCategory callCategory;//任务类型id
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "callContentSubject_id",nullable = false)
+    private CallContentSubject callContentSubject;//外呼主题外键
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="customerGroup_id",nullable = false)
+    private CustomerGroup customerGroup;//客户组外键
+
+    @Column(name = "plan_type",nullable = false,columnDefinition = "tinyint(5)  COMMENT '计划类型： 一次性/周期性 0一次性 1周期性'")
+    private Integer planType = 0;//计划类型
+
+    @Column(name="execute_date",columnDefinition="datetime COMMENT '执行日期'")
+    private Date executeDate;
+
+    @Column(name="execute_time",columnDefinition="datetime COMMENT '执行时间'")
+    private Date executeTime;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="callFlow_id",nullable = false)
+    private CallFlow callFlow;//外呼流程外键
+
+    @Column(name="callcj_number",columnDefinition="varchar(200) DEFAULT NULL COMMENT '拨号出局码'")
+    private String callcjNumber;
+
+    @Column(name = "try_count",nullable = false,columnDefinition = "tinyint(5)  COMMENT '失败尝试次数'")
+    private Integer tryCount = 3;
+
+    @Column(name="callNum_show",columnDefinition="varchar(200) DEFAULT NULL COMMENT '外呼显示号码'")
+    private String callNumShow;
+
+    @Column(name = "callNum_show_type",nullable = false,columnDefinition = "tinyint(5)  COMMENT '外呼显示号码类型 0：随机 1：统一号码'")
+    private Integer callNumShowType = 0;
+
+    @Column(name="descri",columnDefinition="varchar(200) DEFAULT NULL COMMENT '描述'")
+    private String descri;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public CallCategory getCallCategory() {
+        return callCategory;
+    }
+
+    public void setCallCategory(CallCategory callCategory) {
+        this.callCategory = callCategory;
+    }
+
+    public CallContentSubject getCallContentSubject() {
+        return callContentSubject;
+    }
+
+    public void setCallContentSubject(CallContentSubject callContentSubject) {
+        this.callContentSubject = callContentSubject;
+    }
+
+    public CustomerGroup getCustomerGroup() {
+        return customerGroup;
+    }
+
+    public void setCustomerGroup(CustomerGroup customerGroup) {
+        this.customerGroup = customerGroup;
+    }
+
+    public Integer getPlanType() {
+        return planType;
+    }
+
+    public void setPlanType(Integer planType) {
+        this.planType = planType;
+    }
+
+    public Date getExecuteDate() {
+        return executeDate;
+    }
+
+    public void setExecuteDate(Date executeDate) {
+        this.executeDate = executeDate;
+    }
+
+    public Date getExecuteTime() {
+        return executeTime;
+    }
+
+    public void setExecuteTime(Date executeTime) {
+        this.executeTime = executeTime;
+    }
+
+    public CallFlow getCallFlow() {
+        return callFlow;
+    }
+
+    public void setCallFlow(CallFlow callFlow) {
+        this.callFlow = callFlow;
+    }
+
+    public String getCallcjNumber() {
+        return callcjNumber;
+    }
+
+    public void setCallcjNumber(String callcjNumber) {
+        this.callcjNumber = callcjNumber;
+    }
+
+    public Integer getTryCount() {
+        return tryCount;
+    }
+
+    public void setTryCount(Integer tryCount) {
+        this.tryCount = tryCount;
+    }
+
+    public String getCallNumShow() {
+        return callNumShow;
+    }
+
+    public void setCallNumShow(String callNumShow) {
+        this.callNumShow = callNumShow;
+    }
+
+    public Integer getCallNumShowType() {
+        return callNumShowType;
+    }
+
+    public void setCallNumShowType(Integer callNumShowType) {
+        this.callNumShowType = callNumShowType;
+    }
+
+    public String getDescri() {
+        return descri;
+    }
+
+    public void setDescri(String descri) {
+        this.descri = descri;
+    }
+}

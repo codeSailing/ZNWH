@@ -1,0 +1,156 @@
+package com.quickdone.znwh.controller;
+
+import com.mysql.jdbc.StringUtils;
+import com.quickdone.znwh.entity.CallContentSubject;
+import com.quickdone.znwh.pojo.LayuiRequest;
+import com.quickdone.znwh.pojo.LayuiResponseMap;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallContentSubjectService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+/**
+ * 内容主题相关接口
+ *
+ * @Author: zhuLong
+ * @Date: 2018/7/10 14:26
+ */
+@Controller
+@RequestMapping(value = "/callContentSubject")
+public class CallContentSubjectController {
+    private Logger logger = LoggerFactory.getLogger(CallContentSubjectController.class);
+
+    @Resource
+    private CallContentSubjectService callContentSubjectService;
+
+    /**
+     * @Description: 主题管理页面
+     * @Auther: zhuLong
+     * @Date: 2018/7/12 16:50
+     * @Param: []
+     * @return: org.springframework.web.servlet.ModelAndView
+     */
+    @RequestMapping(value = "/page.do", method = RequestMethod.GET)
+    public ModelAndView page() {
+        ModelAndView model = new ModelAndView("/callContentSubject/callContentSubjectMana");
+        return model;
+    }
+
+    @RequestMapping(value = "/tree.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData findTree(){
+        ResponseData responseData;
+        List<CallContentSubject> list = callContentSubjectService.findAll();
+        if(!list.isEmpty()){
+            responseData = ResponseData.getSuccessResponse(list);
+        }else{
+            responseData = ResponseData.getErrorResponse("暂无主题");
+        }
+        return responseData;
+    }
+
+    /**
+     * @Description: 分页查询内容主题
+     * @Auther: zhuLong
+     * @Date: 2018/7/12 17:20
+     * @Param: [request]
+     * @return: com.quickdone.znwh.pojo.LayuiResponseMap
+     */
+    @RequestMapping(value = "/data.do", method = RequestMethod.GET)
+    @ResponseBody
+    public LayuiResponseMap contentSubjectData(HttpServletRequest request) {
+        LayuiRequest layuiRequest = LayuiRequest.fromHttpRequest(request);
+        PaginationMapLayui pagination = PaginationMapLayui.formJQueryLayuiTableRequest(layuiRequest);
+        callContentSubjectService.findData(layuiRequest.getSearchParams(), pagination);
+        LayuiResponseMap dtResp = LayuiResponseMap.fromPagination(pagination);
+        return dtResp;
+    }
+
+    /**
+     * @Description: 新增内容主题
+     * @Auther: zhuLong
+     * @Date: 2018/7/10 15:09
+     * @Param: [callContentSubject]
+     * @return: com.quickdone.znwh.pojo.ResponseData
+     */
+    @RequestMapping(value = "/add.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData addContentSubject(CallContentSubject callContentSubject) {
+        logger.debug("--------------------- 请求 /callContentSubject/add.do ---------------------");
+        ResponseData responseData;
+        String name = callContentSubject.getName();
+        logger.debug("--------------------- /callContentSubject/add.do ---------------------name=" + name);
+        if (!StringUtils.isNullOrEmpty(name)) {
+            //查询该主题父节点下是否存在该名称，不存在时再执行保存操作
+            CallContentSubject findCallContentSubject = (CallContentSubject) callContentSubjectService.findByNameAndParentId(name, callContentSubject.getParentId());
+            if (findCallContentSubject == null) {
+                callContentSubjectService.save(callContentSubject);
+                responseData = ResponseData.getSuccessResponse("保存成功");
+            } else {
+                responseData = ResponseData.getErrorResponse("该主题名称已存在");
+            }
+        } else {
+            responseData = ResponseData.getErrorResponse("主题名称不能为空");
+        }
+        return responseData;
+    }
+
+    /**
+     * @Description: 删除内容主题
+     * @Auther: zhuLong
+     * @Date: 2018/7/10 15:36
+     * @Param: [contentSubjectIds]
+     * @return: com.quickdone.znwh.pojo.ResponseData
+     */
+    @RequestMapping(value = "/delete.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData deleteContentSubject(String contentSubjectIds) {
+        logger.debug("--------------------- 请求 /callContentSubject/delete.do ----------- contentSubjectIds=" + contentSubjectIds);
+        ResponseData responseData;
+        if (!StringUtils.isNullOrEmpty(contentSubjectIds)) {
+            responseData = callContentSubjectService.delete(contentSubjectIds);
+        } else {
+            responseData = ResponseData.getErrorResponse("请选择需要删除的内容主题");
+        }
+        return responseData;
+    }
+
+    /**
+     * @Description: 修改内容主题
+     * @Auther: zhuLong
+     * @Date: 2018/7/11 8:47
+     * @Param: [callContentSubject]
+     * @return: com.quickdone.znwh.pojo.ResponseData
+     */
+    @RequestMapping(value = "/update.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData updateContentSubject(CallContentSubject callContentSubject) {
+        logger.debug("--------------------- 请求 /callContentSubject/update.do ---------------------");
+        ResponseData responseData;
+        String name = callContentSubject.getName();
+        logger.debug("--------------------- /callContentSubject/update.do ---------------------name=" + name);
+        if (!StringUtils.isNullOrEmpty(name)) {
+            CallContentSubject findCallContentSubject = (CallContentSubject) callContentSubjectService.findByNameAndParentId(name, callContentSubject.getParentId());
+            //若不存在该名称的主题或者修改的主题名称是其本身，则可修改
+            if (findCallContentSubject == null || findCallContentSubject.getId().longValue() == callContentSubject.getId().longValue()) {
+                callContentSubjectService.save(callContentSubject);
+                responseData = ResponseData.getSuccessResponse("修改成功");
+            } else {
+                responseData = ResponseData.getErrorResponse("该主题名称已存在");
+            }
+        } else {
+            responseData = ResponseData.getErrorResponse("主题名称不能为空");
+        }
+        return responseData;
+    }
+}

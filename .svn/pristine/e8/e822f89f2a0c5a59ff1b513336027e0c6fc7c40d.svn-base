@@ -1,0 +1,15 @@
+package com.quickdone.znwh.service;
+
+import com.quickdone.znwh.pojo.ResponseData;
+
+import java.util.Map;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/9 21:42
+ * @Description:
+ */
+public interface CustomerService {
+
+    public ResponseData addCustomer(Map<String,Object> searchMap);
+}

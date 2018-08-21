@@ -1,0 +1,20 @@
+package com.quickdone.znwh.entity;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/9 16:37
+ * @Description:
+ */
+
+@Entity
+@Table(name = "t_call_task")
+public class CallTask implements Serializable {
+    private static final long serialVersionUID = 2713957236372055729L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false,columnDefinition="bigint(20) COMMENT '主键'")
+    private Long id;//主键
+}

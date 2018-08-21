@@ -1,0 +1,18 @@
+package com.quickdone.znwh.service;
+
+/**
+ * 内容主题管理
+ *
+ * @Author: zhuLong
+ * @Date: 2018/7/10 15:12
+ */
+public interface CallContentSubjectService<CallContentSubject, Long> {
+    //新增主题
+    public CallContentSubject save(CallContentSubject callContentSubject);
+
+    //根据主题名称查询
+    public CallContentSubject findByName(String name);
+
+    //根据主题id查询
+//    public CallContentSubject findById();
+}

@@ -1,0 +1,82 @@
+package com.quickdone.znwh.service.impl;
+
+import com.mysql.jdbc.StringUtils;
+import com.quickdone.znwh.dao.CustomerBetweenGroupRepository;
+import com.quickdone.znwh.dao.CustomerGroupRepository;
+import com.quickdone.znwh.dao.CustomerRepository;
+import com.quickdone.znwh.entity.Customer;
+import com.quickdone.znwh.entity.CustomerBetweenGroup;
+import com.quickdone.znwh.entity.CustomerGroup;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CustomerService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Service
+@Transactional
+public class CustomerServiceImpl implements CustomerService<Customer, Long> {
+
+    @Resource
+    private CustomerRepository customerRepository;
+    @Resource
+    private CustomerBetweenGroupRepository customerBetweenGroupRepository;
+    @Resource
+    private CustomerGroupRepository customerGroupRepository;
+
+    @Override
+    public Customer addCustomer(Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    @Override
+    public Customer findByTelephone(String telephone) {
+        return customerRepository.findByTelephone(telephone);
+    }
+
+    @Override
+    public Customer findById(Long id) {
+        return customerRepository.findById(id);
+    }
+
+    @Override
+    public ResponseData updateCustomer(Customer customer, String customerGroupId) {
+        List<CustomerBetweenGroup> customerBetweenGroupList = customerBetweenGroupRepository.findByCustomer(customer);
+        for (CustomerBetweenGroup customerBetweenGroupDetail : customerBetweenGroupList) {
+            //先删除原有的所有的用户与用户组的关联
+            customerBetweenGroupRepository.deleteByCustomer(customerBetweenGroupDetail.getCustomer());
+        }
+        if (!StringUtils.isNullOrEmpty(customerGroupId)) {
+            //添加为现选择的分组
+            String[] ids = customerGroupId.split(",");
+            for (String contentSubjectId : ids) {
+                CustomerBetweenGroup customerBetweenGroup = new CustomerBetweenGroup();
+                CustomerGroup customerGroup = customerGroupRepository.findById(Long.valueOf(contentSubjectId));
+                customerBetweenGroup.setCustomer(customer);
+                customerBetweenGroup.setCustomerGroup(customerGroup);
+                customerBetweenGroupRepository.save(customerBetweenGroup);
+            }
+        }
+        customerRepository.save(customer);
+        return ResponseData.getSuccessResponse("修改成功");
+    }
+
+    @Override
+    public ResponseData delCustomer(Customer customer) {
+        List<CustomerBetweenGroup> customerBetweenGroupList= customerBetweenGroupRepository.findByCustomer(customer);
+        if (customerBetweenGroupList!=null) {
+            for (CustomerBetweenGroup customerBetweenGroupDetail : customerBetweenGroupList) {
+                customerBetweenGroupRepository.deleteByCustomer(customerBetweenGroupDetail.getCustomer());
+            }
+        }
+        customerRepository.delete(customer);
+        return ResponseData.getSuccessResponse("删除成功!");
+    }
+}

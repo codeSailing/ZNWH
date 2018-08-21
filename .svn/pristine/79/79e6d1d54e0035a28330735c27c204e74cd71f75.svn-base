@@ -1,0 +1,9 @@
+package com.quickdone.znwh.service;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+public interface CustomerGroupService {
+}

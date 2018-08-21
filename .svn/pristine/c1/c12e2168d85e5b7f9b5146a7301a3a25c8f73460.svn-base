@@ -1,0 +1,13 @@
+package com.quickdone.znwh.dao;
+
+import com.quickdone.znwh.entity.Customer;
+import org.springframework.stereotype.Repository;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Repository
+public interface CustomerRepository extends BaseRepository<Customer,Long> {
+}

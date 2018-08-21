@@ -1,0 +1,16 @@
+package com.quickdone.znwh.dao;
+
+import com.quickdone.znwh.entity.CallContentSubject;
+import org.springframework.stereotype.Repository;
+
+/**
+ * 内容主题管理
+ *
+ * @Author: zhuLong
+ * @Date: 2018/7/10 15:17
+ */
+@Repository
+public interface CallContentSubjectRepository extends BaseRepository<CallContentSubject, Long> {
+    //根据主题名称查询
+    CallContentSubject findByName(String name);
+}

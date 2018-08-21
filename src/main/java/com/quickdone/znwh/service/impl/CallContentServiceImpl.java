@@ -1,0 +1,171 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.dao.CallContentRepository;
+import com.quickdone.znwh.dao.CallContentSubjectRepository;
+import com.quickdone.znwh.entity.CallContent;
+import com.quickdone.znwh.entity.CallContentSubject;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.service.CallContentService;
+import com.quickdone.znwh.utils.ToClass;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import javax.persistence.criteria.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 内容管理
+ *
+ * @Author: zhuLong
+ * @Date: 2018/7/10 16:06
+ */
+@Service
+@Transactional
+public class CallContentServiceImpl implements CallContentService<CallContent, Long> {
+    @Resource
+    private CallContentRepository callContentRepository;
+    @Resource
+    private CallContentSubjectRepository callContentSubjectRepository;
+
+    /**
+     * @Description: 根据主题id查询内容
+     * @Auther: zhuLong
+     * @Date: 2018/7/10 16:16
+     * @Param: [contentSubjectId]
+     * @return: java.util.List<com.quickdone.znwh.entity.CallContent>
+     */
+    @Override
+    public List<CallContent> findByContentSubjectId(Long contentSubjectId) {
+        return callContentRepository.findByContentSubjectId(contentSubjectId);
+    }
+
+    /**
+     * @Description: 保存内容
+     * @Auther: zhuLong
+     * @Date: 2018/7/11 9:52
+     * @Param: [callContent]
+     * @return: com.quickdone.znwh.entity.CallContent
+     */
+    @Override
+    public CallContent save(CallContent callContent) {
+        return callContentRepository.save(callContent);
+    }
+
+    /**
+     * @Description: 保存多个内容
+     * @Auther: zhuLong
+     * @Date: 2018/7/13 11:34
+     * @Param: [callContents]
+     * @return: java.util.List<com.quickdone.znwh.entity.CallContent>
+     */
+    @Override
+    public List<CallContent> save(List<CallContent> callContents) {
+        return callContentRepository.save(callContents);
+    }
+
+    /**
+     * @Description: 删除多个内容
+     * @Auther: zhuLong
+     * @Date: 2018/7/11 15:15
+     * @Param: [callContents]
+     * @return: void
+     */
+    @Override
+    public void delete(List<CallContent> callContents) {
+        callContentRepository.delete(callContents);
+        //删除音频内容对应的音频文件
+        for(CallContent callContent : callContents){
+            if(callContent.getContentType().intValue() == 1){
+                String fileUrl = callContent.getDetail();
+                File file = new File(fileUrl);
+                if(file.exists() && file.isFile()){
+                    file.delete();
+                }
+            }
+        }
+    }
+
+    /**
+     * @Description: 根据内容id查询
+     * @Auther: zhuLong
+     * @Date: 2018/7/11 9:52
+     * @Param: [contentId]
+     * @return: com.quickdone.znwh.entity.CallContent
+     */
+    @Override
+    public CallContent findById(Long contentId) {
+        return callContentRepository.findOne(contentId);
+    }
+
+    /**
+     * @Description: 分页查询内容数据
+     * @Auther: zhuLong
+     * @Date: 2018/7/11 15:44
+     * @Param: [searchParams, pagination]
+     * @return: void
+     */
+    @Override
+    public void findData(final Map<String, Object> searchParams, PaginationMapLayui pagination) {
+        Pageable pageable = new PageRequest(pagination.getStart(), pagination.getLength(), new Sort(Sort.Direction.DESC, "updateTime"));
+        Page<CallContent> page = callContentRepository.findAll(new Specification<CallContent>() {
+            @Override
+            public Predicate toPredicate(Root<CallContent> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
+                List<Predicate> predicates = new ArrayList<Predicate>();
+                Path<String> title = root.get("title");
+                Path<String> content = root.get("content");
+                Path<Long> contentSubjectId = root.get("contentSubjectId");
+                if (searchParams.containsKey("searchParam")) {
+                    Predicate p1 = cb.like(title, "%" + searchParams.get("searchParam") + "%");
+                    Predicate p2 = cb.like(content, "%" + searchParams.get("searchParam") + "%");
+                    Predicate p = cb.or(p1, p2);
+                    predicates.add(p);
+                }
+                if (searchParams.containsKey("contentSubjectId")) { //根据主题筛选
+                    Long id = Long.valueOf(searchParams.get("contentSubjectId").toString());
+                    List<Long> returnList = new ArrayList<Long>();
+                    List<Long> subjectIds = findChildSubjectIds(returnList, id);
+                    CriteriaBuilder.In<Long> in = cb.in(contentSubjectId);
+                    for(Long subjectId: subjectIds){
+                        in.value(subjectId);
+                    }
+                    predicates.add(in);
+                }
+                Predicate[] p = new Predicate[predicates.size()];
+                return cb.and(predicates.toArray(p));
+            }
+        }, pageable);
+        List<CallContent> contentList = page.getContent();
+        List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
+        for (CallContent callContent : contentList) {
+            Map<String, Object> map = ToClass.beanToMap(callContent);
+            mapList.add(map);
+        }
+        pagination.setData(mapList);
+        pagination.setRecordsTotal(page.getTotalElements());
+    }
+
+    /**
+     * @Description: 递归查询
+     * @Auther: zhuLong
+     * @Date: 2018/7/13 17:22
+     * @Param: [list, subjectId]
+     * @return: java.util.List<java.lang.Long>
+     */
+    public List<Long> findChildSubjectIds(List<Long> list, Long subjectId) {
+        list.add(subjectId);
+        List<CallContentSubject> contentSubjectList = callContentSubjectRepository.findByParentId(subjectId);
+        for(CallContentSubject callContentSubject : contentSubjectList){
+            findChildSubjectIds(list, callContentSubject.getId());
+        }
+        return list;
+    }
+}

@@ -1,0 +1,28 @@
+package com.quickdone.znwh.dao;
+
+import com.quickdone.znwh.entity.Customer;
+import org.springframework.stereotype.Repository;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Repository
+public interface CustomerRepository extends BaseRepository<Customer,Long> {
+
+    /**
+     * 根据手机号查询(排除删除)
+     * @param telephone
+     * @param isDelete
+     * @return
+     */
+    public Customer findByTelephoneAndIsDelete(String telephone,int isDelete);
+
+    /**
+     * 根据客户id查询(排除删除)
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    public Customer findByIdAndIsDelete(Long id,int isDelete);
+}

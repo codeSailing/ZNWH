@@ -1,0 +1,97 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.dao.CallContentRepository;
+import com.quickdone.znwh.dao.CallContentSubjectRepository;
+import com.quickdone.znwh.entity.CallContent;
+import com.quickdone.znwh.entity.CallContentSubject;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallContentSubjectService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+ * 内容主题管理
+ *
+ * @Author: zhuLong
+ * @Date: 2018/7/10 15:14
+ */
+@Service
+@Transactional
+public class CallContentSubjectServiceImpl implements CallContentSubjectService<CallContentSubject, Long> {
+    @Resource
+    private CallContentSubjectRepository callContentSubjectRepository;
+    @Resource
+    private CallContentRepository callContentRepository;
+
+    /**
+     * @Description: 新增内容主题
+     * @Auther: zhuLong
+     * @Date: 2018/7/10 15:20
+     * @Param: [callContentSubject]
+     * @return: com.quickdone.znwh.entity.CallContentSubject
+     */
+    @Override
+    public CallContentSubject save(CallContentSubject callContentSubject) {
+        return callContentSubjectRepository.save(callContentSubject);
+    }
+
+    /**
+     * @Description: 根据主题名称查询
+     * @Auther: zhuLong
+     * @Date: 2018/7/10 15:26
+     * @Param: [name]
+     * @return: com.quickdone.znwh.entity.CallContentSubject
+     */
+    @Override
+    public CallContentSubject findByName(String name) {
+        return callContentSubjectRepository.findByName(name);
+    }
+
+    /**
+     * @Description: 根据主题id查询
+     * @Auther: zhuLong
+     * @Date: 2018/7/10 15:57
+     * @Param: [contentSubjectId]
+     * @return: com.quickdone.znwh.entity.CallContentSubject
+     */
+    @Override
+    public CallContentSubject findById(Long contentSubjectId) {
+        return callContentSubjectRepository.findById(contentSubjectId);
+    }
+
+    /**
+     * @Description: 批量删除主题
+     * @Auther: zhuLong
+     * @Date: 2018/7/10 16:33
+     * @Param: [contentSubjectIds]
+     * @return: java.lang.String
+     */
+    @Override
+    public ResponseData delete(String contentSubjectIds) {
+        ResponseData responseData;
+        boolean flag = true;
+        String notBeDelete = "";
+        String[] ids = contentSubjectIds.split(",");
+        for (String contentSubjectId : ids) {
+            CallContentSubject callContentSubject = callContentSubjectRepository.findById(Long.valueOf(contentSubjectId));
+            //删除主题的时候，需注意，若该主题关联内容，则不给删除，并给出提示（先删除内容，才可删除该主题）
+            List<CallContent> callContents = callContentRepository.findByContentSubjectId(Long.valueOf(contentSubjectId));
+            if (callContents.isEmpty()) { //该主题无关联内容，可删除
+                callContentSubjectRepository.delete(callContentSubject);
+            } else { //该主题已关联内容，不可删除
+                flag = false;
+                notBeDelete += callContentSubject.getName() + ",";
+            }
+        }
+        if (flag) {
+            responseData = ResponseData.getSuccessResponse("删除成功");
+        } else {
+            String returnMsg = "名称为 " + notBeDelete.substring(0, notBeDelete.length() - 1) + " 的主题不可删除，因为以上主题已关联内容，请先至内容管理删除内容";
+            responseData = ResponseData.getErrorResponse(returnMsg);
+        }
+        return responseData;
+    }
+}

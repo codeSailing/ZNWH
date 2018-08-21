@@ -1,0 +1,163 @@
+package com.quickdone.znwh.controller;
+
+import com.mysql.jdbc.StringUtils;
+import com.quickdone.znwh.entity.Customer;
+import com.quickdone.znwh.entity.CustomerBetweenGroup;
+import com.quickdone.znwh.entity.CustomerGroup;
+import com.quickdone.znwh.pojo.LayuiRequest;
+import com.quickdone.znwh.pojo.LayuiResponseMap;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CustomerBetweenGroupService;
+import com.quickdone.znwh.service.CustomerGroupService;
+import com.quickdone.znwh.service.CustomerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Controller
+@RequestMapping(value = "/customer")
+public class CustomerController {
+    private static Logger logger = LoggerFactory.getLogger(CustomerController.class);
+
+    @Resource
+    private CustomerService customerService;
+    @Resource
+    private CustomerBetweenGroupService customerBetweenGroupService;
+    @Resource
+    private CustomerGroupService customerGroupService;
+
+
+    /**
+     * 调至客户管理页面
+     * @return
+     */
+    @RequestMapping(value = "/showCustomer.do", method = RequestMethod.GET)
+    public ModelAndView showCustomer(){
+        ModelAndView modelAndView=new ModelAndView("/customer/list");
+        return modelAndView;
+    }
+
+    /**
+     * 分页查询客户
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    @RequestMapping(value = "/pageCustomer.do", method = RequestMethod.GET)
+    @ResponseBody
+    public LayuiResponseMap pageCustomer(HttpServletRequest request) {
+        LayuiRequest layuiRequest = LayuiRequest.fromHttpRequest(request);
+        PaginationMapLayui pagination = PaginationMapLayui.formJQueryLayuiTableRequest(layuiRequest);
+        customerService.pageCustomer(layuiRequest.getSearchParams(), pagination);
+        LayuiResponseMap dtResp = LayuiResponseMap.fromPagination(pagination);
+        return dtResp;
+    }
+
+    /**
+     * 添加客户
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/addCustomer.do", method = RequestMethod.POST)
+    public ResponseData addCustomer(Customer customer) {
+        logger.debug("============进入添加客户============addCustomer.do");
+        Customer customerValue = (Customer) customerService.findByTelephone(customer.getTelephone());
+        //代表查询出现重复的用户
+        if (customerValue != null) {
+            return ResponseData.getErrorResponse("此用户已存在");
+        } else {
+            //代表选择了分组
+            if (!StringUtils.isNullOrEmpty(customer.getCustomerGroupId())) {
+                Customer customerSuccess = (Customer) customerService.addCustomer(customer);
+                String[] ids = customer.getCustomerGroupId().split(",");
+                for (String contentSubjectId : ids) {
+                    CustomerGroup customerGroup = (CustomerGroup) customerGroupService.findById(Long.valueOf(contentSubjectId));
+                    customerBetweenGroupService.addCustomerGroup(customerSuccess.getId(), customerGroup.getId());
+                }
+                return ResponseData.getSuccessResponse(customerSuccess);
+            } else {
+                //未选择分组
+                Customer customerSuccess = (Customer) customerService.addCustomer(customer);
+                //添加成功后会返回该对象
+                if (customerSuccess != null) {
+                    return ResponseData.getSuccessResponse(customerSuccess);
+                } else {//未返回代表添加失败
+                    return ResponseData.getErrorResponse("添加失败");
+                }
+            }
+        }
+    }
+
+    /**
+     * 客户详细信息
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/detailedCustomer.do", method = RequestMethod.GET)
+    public ResponseData detailedCustomer(Long id) {
+        logger.debug("============显示该客户信息详细============detailedCustomer.do");
+        Customer customer = (Customer) customerService.findById(id);
+        List<CustomerBetweenGroup> customerBetweenGroupList = customerBetweenGroupService.findByCustomerId(customer.getId());
+        Map<String, Object> map = new HashMap<String, Object>(0);
+        map.put("customer", customer);
+        if (customerBetweenGroupList != null) {
+            map.put("customerBetweenGroupList", customerBetweenGroupList);
+        }
+        return ResponseData.getSuccessResponse(map);
+    }
+
+    /**
+     * 修改客户
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/updateCustomer.do", method = RequestMethod.POST)
+    public ResponseData updateCustomer(Customer customer) {
+        logger.debug("============修改客户信息============updateCustomer.do");
+        return customerService.updateCustomer(customer);
+    }
+
+    /**
+     * 删除客户
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/delCustomer.do", method = RequestMethod.POST)
+    public ResponseData delCustomer(String customerId) {
+        if (!StringUtils.isNullOrEmpty(customerId)) {
+            String[] ids = customerId.split(",");
+            for (String contentSubjectId : ids) {
+                Customer customer = (Customer) customerService.findById(Long.valueOf(contentSubjectId));
+                customerService.delCustomer(customer);
+            }
+            return ResponseData.getSuccessResponse("删除成功");
+        } else {
+            return ResponseData.getErrorResponse("请选择需要删除客户");
+        }
+    }
+
+}

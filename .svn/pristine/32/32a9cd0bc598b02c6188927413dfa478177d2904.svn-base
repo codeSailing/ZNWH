@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- definitions 节点保留，后面可能会扩展一些Schema约束等-->
+ <definitions><!-- 一个process节点标识一个流程-->
+    <process id="" name="">
+        <!-- 流程中的具体节点,当前场景下，每个流程的节点是固定的 -->
+        <startEvent>
+            <!-- 每个流程节点有一个或多个内容，标识本节点需要做的事情，如需要返回的文本 -->
+            <content type="text" >播放问候语</content>
+        </startEvent>
+        <!-- 通过 id区分不同流程节点，怎么约定id具有唯一性?  sourceRef标识当前节点上一个节点id  targetRef标识当前节点需要流转到的下一节点-->
+        <sequenceFlow id="1" sourceRef="" targetRef="2" >
+            <content type="text" >请问患者患病多久了</content>
+        </sequenceFlow>
+        <!-- 每一个节点都有可能出现挂断、无法识别等异常情况，如何在出现异常情况下跳到默认的节点或者下一个环节 -->
+        <sequenceFlow id="2" sourceRef="1" targetRef="3,4">
+            <content type="text" >请问是否坚持服药</content>
+        </sequenceFlow>
+
+        <!-- 如果某个节点需要根据用户的回答和语义引擎返回的结果去做分支判断，使用answer属性 -->
+        <sequenceFlow id="3" sourceRef="2" targetRef="" answer="否">
+            <content type="text" >请问药品是否容易买到</content>
+        </sequenceFlow>
+
+
+        <sequenceFlow id="4" sourceRef="2" targetRef="" answer="是">
+            <content type="text" >请问最需要哪些方面的治疗</content>
+        </sequenceFlow>
+
+        <endEvent>
+            <content type="text" >感谢您的接听，再见！</content>
+        </endEvent>
+    </process>
+</definitions>

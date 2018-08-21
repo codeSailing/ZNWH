@@ -1,0 +1,9 @@
+package com.quickdone.znwh.service;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/9 21:42
+ * @Description:
+ */
+public interface CustomerService {
+}

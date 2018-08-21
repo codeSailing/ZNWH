@@ -1,0 +1,477 @@
+package com.quickdone.znwh.controller;
+
+import com.mysql.jdbc.StringUtils;
+import com.quickdone.znwh.entity.Customer;
+import com.quickdone.znwh.entity.CustomerBetweenGroup;
+import com.quickdone.znwh.entity.CustomerGroup;
+import com.quickdone.znwh.pojo.LayuiRequest;
+import com.quickdone.znwh.pojo.LayuiResponseMap;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CustomerBetweenGroupService;
+import com.quickdone.znwh.service.CustomerGroupService;
+import com.quickdone.znwh.service.CustomerService;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Controller
+@RequestMapping(value = "/customer")
+public class CustomerController {
+    private static Logger logger = LoggerFactory.getLogger(CustomerController.class);
+
+    @Resource
+    private CustomerService customerService;
+    @Resource
+    private CustomerBetweenGroupService customerBetweenGroupService;
+    @Resource
+    private CustomerGroupService customerGroupService;
+
+
+    /**
+     * 调至客户管理页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/showCustomer.do", method = RequestMethod.GET)
+    public ModelAndView showCustomer() {
+        ModelAndView modelAndView = new ModelAndView("/customer/list");
+        return modelAndView;
+    }
+
+    /**
+     * 分页查询客户
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    @RequestMapping(value = "/pageCustomer.do", method = RequestMethod.GET)
+    @ResponseBody
+    public LayuiResponseMap pageCustomer(HttpServletRequest request) {
+        LayuiRequest layuiRequest = LayuiRequest.fromHttpRequest(request);
+        PaginationMapLayui pagination = PaginationMapLayui.formJQueryLayuiTableRequest(layuiRequest);
+        customerService.pageCustomer(layuiRequest.getSearchParams(), pagination);
+        LayuiResponseMap dtResp = LayuiResponseMap.fromPagination(pagination);
+        return dtResp;
+    }
+
+    /**
+     * 添加客户
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/addCustomer.do", method = RequestMethod.POST)
+    public ResponseData addCustomer(Customer customer) {
+        logger.debug("============进入添加客户============addCustomer.do");
+        return customerService.addCustomer(customer);
+    }
+
+    /**
+     * 客户详细信息
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/detailedCustomer.do", method = RequestMethod.GET)
+    public ResponseData detailedCustomer(Long id) {
+        logger.debug("============显示该客户信息详细============detailedCustomer.do");
+        Customer customer = (Customer) customerService.findById(id);
+        List<CustomerBetweenGroup> customerBetweenGroupList = customerBetweenGroupService.findByCustomerId(customer.getId());
+        Map<String, Object> map = new HashMap<String, Object>(0);
+
+        if (customerBetweenGroupList != null) {
+            map.put("customerBetweenGroupList", customerBetweenGroupList);
+        }
+        String groupName = "";
+        if (customerBetweenGroupList.size() != 0) {
+            for (CustomerBetweenGroup cbg : customerBetweenGroupList) {
+                CustomerGroup customerGroup = (CustomerGroup) customerGroupService.findById(cbg.getCustomerGroupId());
+                if (customerBetweenGroupList.size() > 1) {
+                    if (groupName == "") {
+                        //groupName = cbg.getCustomerGroup().getName()+",";
+                        groupName = customerGroup.getName() + ",";
+                    } else {
+                        //groupName = groupName+cbg.getCustomerGroup().getName()+",";
+                        groupName = groupName + customerGroup.getName() + ",";
+                    }
+                }
+            }
+        }
+        customer.setGroupName(groupName);
+        map.put("customer", customer);
+        return ResponseData.getSuccessResponse(map);
+    }
+
+    /**
+     * 修改客户
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/updateCustomer.do", method = RequestMethod.POST)
+    public ResponseData updateCustomer(Customer customer) {
+        logger.debug("============修改客户信息============updateCustomer.do");
+        return customerService.updateCustomer(customer);
+    }
+
+    /**
+     * 删除客户
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/delCustomer.do", method = RequestMethod.POST)
+    public ResponseData delCustomer(String customerId) {
+        if (!StringUtils.isNullOrEmpty(customerId)) {
+            String[] ids = customerId.split(",");
+            for (String contentSubjectId : ids) {
+                Customer customer = (Customer) customerService.findById(Long.valueOf(contentSubjectId));
+                customerService.delCustomer(customer);
+            }
+            return ResponseData.getSuccessResponse("删除成功");
+        } else {
+            return ResponseData.getErrorResponse("请选择需要删除客户");
+        }
+    }
+
+    /**
+     * 导出客户管理导入模板
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/25
+     */
+    @RequestMapping(value = "/exportExcel.do")
+    @ResponseBody
+    public String exportExcel(HttpServletResponse response) {
+        OutputStream os = null;
+        //每一页的大小
+        org.apache.poi.ss.usermodel.Workbook wb = new HSSFWorkbook();
+        Integer pageSize = 3000;
+        //创建一个工作表sheet
+        org.apache.poi.ss.usermodel.Sheet sheet = null;
+        //申明行
+        Row row = null;
+        Row rowArr = null;
+        //申明单元格
+        Cell cell = null;
+        String sheetName = "";
+        String fileName = "";
+        try {
+            sheetName = "sheet1";
+            fileName = "客户管理模板.xls";
+            String[] title = {"姓名", "手机号", "性别(非必填)", "年龄(非必填)", "省(非必填)", "市(非必填)", "区/县(非必填)", "描述(非必填)"};
+            String[] showArr = {"张铁蛋", "17755018888", "男", "24", "安徽省", "合肥市", "包河区"};
+            //创建Excle表格的头
+            //单元格样式
+            CellStyle titleStyle = wb.createCellStyle();
+            CellStyle cellStyle = wb.createCellStyle();
+            //字体样式
+            Font font = wb.createFont();
+            //粗体
+            font.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);
+            titleStyle.setFont(font);
+            cellStyle.setFont(font);
+            //水平、垂直居中
+            titleStyle.setAlignment(CellStyle.ALIGN_CENTER);
+            cellStyle.setAlignment(CellStyle.ALIGN_CENTER);
+            titleStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+            cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+            //创建工作表
+            sheet = wb.createSheet();
+            //设置工作表名称
+            wb.setSheetName(0, sheetName);
+            row = sheet.createRow(0);
+            rowArr = sheet.createRow(1);
+            //设置EXcle表格的头
+            for (int i = 0; i < title.length; i++) {
+                cell = row.createCell(i);
+                cell.setCellValue(title[i]);
+                cell.setCellStyle(titleStyle);
+            }
+            for (int i = 0; i < showArr.length; i++) {
+                cell = rowArr.createCell(i);
+                cell.setCellValue(showArr[i]);
+            }
+            os = response.getOutputStream();//
+            response.setHeader("Content-disposition", "attachment; filename=" + new String(fileName.getBytes("gbk"), "iso-8859-1"));//filename是下载的xls的名，建议最好用英文
+            response.setContentType("application/msexcel;charset=UTF-8");//设置类型
+            response.setHeader("Pragma", "No-cache");//设置头
+            response.setHeader("Cache-Control", "no-cache");//设置头
+            response.setDateHeader("Expires", 0);//设置日期头
+            wb.write(os);
+            if (os != null) {
+                os.close();
+            }
+
+        } catch (Exception e) {
+            e.getMessage();
+        } finally {
+            try {
+                if (os != null) {
+                    os.close();
+                }
+            } catch (IOException e1) {
+                e1.getMessage();
+            }
+
+        }
+        return null;
+    }
+
+    /**
+     * 客户管理导入
+     *
+     * @auther: Hou-jun
+     * @date: 2018/8/6
+     */
+    @RequestMapping(value = "/saveImport.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData importExcel(HttpServletRequest request, @RequestParam(value = "file", required = true) MultipartFile file, @RequestParam(value = "importCustomerGroupId", required = false) String importCustomerGroupId) {
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        String regex = "^((13[0-9])|(14[5,7,9])|(15([0-3]|[5-9]))|(166)|(17[0,1,3,5,6,7,8])|(18[0-9])|(19[8|9]))\\d{8}$";
+        try {
+            InputStream inputStream = file.getInputStream();
+            List<String> excleHeadList = new ArrayList<String>();
+            String[] toutle = new String[]{"姓名", "手机号", "性别(非必填)", "年龄(非必填)", "省(非必填)", "市(非必填)", "区/县(非必填)", "描述(非必填)"};
+            Workbook wb = null;
+            if (file.getOriginalFilename().endsWith("xls")) {
+                wb = new HSSFWorkbook(inputStream);
+            } else {
+                //wb = new XSSFWorkbook(inputStream);
+                return ResponseData.getErrorResponse("请导入正确的模板");
+            }
+            Sheet sheet = null;
+            for (int s = 0; s < wb.getNumberOfSheets(); s++) {
+                sheet = wb.getSheetAt(s);
+                if (sheet.getLastRowNum() == 0 && sheet.getPhysicalNumberOfRows() == 0) {
+                    continue;
+                }
+                Sheet fs = wb.getSheetAt(s);
+                DecimalFormat df = new DecimalFormat("#");
+                int rowNum = fs.getLastRowNum();// 行数
+                Row rowTitle = sheet.getRow(0);//头部列
+                int cellNum = rowTitle.getLastCellNum();
+                    /*if (rowNum == 0 || rowNum == 1 || rowNum == 2) {
+                        msg = "1";// 你导入的模板是空模板，请你重新导入一个模板
+                        return msg;
+                    }*/
+                if (cellNum != 0) {
+                    for (int c = 0; c < cellNum; c++) {
+                        Cell cc = rowTitle.getCell(c);
+                        excleHeadList.add(cc.toString());
+                    }
+                    if (excleHeadList.size() == toutle.length) {
+                        for (int i = 0; i < excleHeadList.size(); i++) {
+                            if (!excleHeadList.get(i).equals(toutle[i])) {
+                                return ResponseData.getErrorResponse("您导入的模板表头数据不规范，请你重新导入一个");
+                            }
+                        }
+                    } else {
+                        return ResponseData.getErrorResponse("您导入的模板表头数据缺少数据，请你重新导入一个");
+                    }
+                }
+                for (int i = 1; i <= rowNum; i++) {
+                    Long typ;
+                    //循环Excel中的行数开始
+                    Row row = fs.getRow(i);
+                    //判断行为空
+                    boolean ii=isRowEmpty(row);
+                    Map<String, Object> map = new HashMap<String, Object>();
+                    if(!ii){
+                        for (int j = 0; j < cellNum; j++) {
+                            if (j > 1) {
+                                //分组
+                                if (!StringUtils.isNullOrEmpty(importCustomerGroupId)) {
+                                    map.put("importCustomerGroupId", importCustomerGroupId);
+                                }
+                                //姓名
+                                if (row.getCell(0) != null) {
+                                    String name = row.getCell(0).toString().trim();
+                                    if (!StringUtils.isNullOrEmpty(name)) {
+                                        if (name.length() > 10) {
+                                            return ResponseData.getErrorResponse("第" + i + "行姓名长度不能超过10个字符!");
+                                        }
+                                        map.put("name", name);
+                                    } else {
+                                        return ResponseData.getErrorResponse("第" + i + "行姓名为空!");
+                                    }
+                                } else {
+                                    return ResponseData.getErrorResponse("第" + i + "行姓名为空!");
+                                }
+                                //手机号
+                                if (row.getCell(1) != null) {
+                                    String telephone;
+                                    try {
+                                        telephone = df.format(row.getCell(1).getNumericCellValue()).trim();
+                                    } catch (Exception e) {
+                                        return ResponseData.getErrorResponse("第" + i + "行手机号不正确,请输入正确的11位手机号");
+                                    }
+                                    if (!StringUtils.isNullOrEmpty(telephone)) {
+                                        Customer customer = (Customer) customerService.findByTelephone(telephone);
+                                        if (customer == null) {
+                                            if (telephone.length() != 11) {
+                                                return ResponseData.getErrorResponse("第" + i + "行请输入11位手机号!");
+                                            } else {
+                                                Pattern p = Pattern.compile(regex);
+                                                Matcher m = p.matcher(telephone);
+                                                boolean isMatch = m.matches();
+                                                if (!isMatch) {
+                                                    return ResponseData.getErrorResponse("第" + i + "行请输入正确的11位手机号!");
+                                                }
+                                            }
+                                            map.put("telephone", telephone);
+                                        } else {
+                                            return ResponseData.getErrorResponse("第" + i + "行手机号已存在!");
+                                        }
+                                    }
+                                } else {
+                                    return ResponseData.getErrorResponse("第" + i + "行手机号为空!");
+                                }
+                                //性别
+                                if (row.getCell(2) != null) {
+                                    String sex = row.getCell(2).toString().trim();
+                                    if (!StringUtils.isNullOrEmpty(sex)) {
+                                        if (sex.equals("男")) {
+                                            map.put("sex", 0);
+                                        } else if (sex.equals("女")) {
+                                            map.put("sex", 1);
+                                        } else {
+                                            return ResponseData.getErrorResponse("第" + i + "行性别填写错误必须为(男/女)!!!");
+                                        }
+                                    }
+                                }
+                                //年龄
+                                if (row.getCell(3) != null) {
+                                    String ag = row.getCell(3).toString().trim();
+                                    if (!StringUtils.isNullOrEmpty(ag)) {
+                                        Pattern pattern = Pattern.compile("^[-+]?[0-9]+(\\.[0-9]+)?$");
+                                        if (pattern.matcher(ag).matches()) {
+                                            //数字
+                                            double c = Double.parseDouble(ag);
+                                            Integer age = (new Double(c)).intValue();
+                                            if (age > 125) {
+                                                return ResponseData.getErrorResponse("第" + i + "行年龄范围必须在0~125之间!");
+                                            } else if (age < 0) {
+                                                return ResponseData.getErrorResponse("第" + i + "行年龄范围必须在0~125之间!");
+                                            } else if (age == 0) {
+                                                return ResponseData.getErrorResponse("第" + i + "行年龄不能为0!!!");
+                                            } else {
+                                                map.put("age", age);
+                                            }
+                                        } else {
+                                            //非数字
+                                            return ResponseData.getErrorResponse("第" + i + "行年龄必须为纯数字");
+                                        }
+                                    }
+                                }
+                                //省
+                                if (row.getCell(4) != null) {
+                                    String province = row.getCell(4).toString().trim();
+                                    if (!StringUtils.isNullOrEmpty(province)) {
+                                        if (province.length() > 10) {
+                                            return ResponseData.getErrorResponse("第" + i + "行省长度不能超过10个字符!");
+                                        }
+                                        map.put("province", province);
+                                    }
+                                }
+                                //市
+                                if (row.getCell(5) != null) {
+                                    String city = row.getCell(5).toString().trim();
+                                    if (!StringUtils.isNullOrEmpty(city)) {
+                                        if (city.length() > 10) {
+                                            return ResponseData.getErrorResponse("第" + i + "行市长度不能超过10个字符!");
+                                        }
+                                        map.put("city", city);
+                                    }
+                                }
+
+                                //区/县
+                                if (row.getCell(6) != null) {
+                                    String county = row.getCell(6).toString().trim();
+                                    if (!StringUtils.isNullOrEmpty(county)) {
+                                        if (county.length() > 10) {
+                                            return ResponseData.getErrorResponse("第" + i + "行区/县长度不能超过10个字符!");
+                                        }
+                                        map.put("county", county);
+                                    }
+                                }
+                                //描述
+                                if (row.getCell(7) != null) {
+                                    String descri = row.getCell(7).toString().trim();
+                                    if (!StringUtils.isNullOrEmpty(descri)) {
+                                        if (descri.length() > 250) {
+                                            return ResponseData.getErrorResponse("第" + i + "行描述长度不能超过250个长度!");
+                                        }
+                                        map.put("descri", descri);
+                                    }
+                                }
+                            }
+                        }
+                        list.add(map);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        //为了判断excel表里有没有重复的手机号
+        for (int i = 0; i < list.size(); i++) {
+            String telephone = String.valueOf(list.get(i).get("telephone"));
+            for (int j = i + 1; j < list.size(); j++) {
+                if (telephone.equals(String.valueOf(list.get(j).get("telephone")))) {
+                    return ResponseData.getErrorResponse("第" + (i + 1) + "行手机号码和第" + (j + 1) + "行手机号重复!");
+                }
+            }
+        }
+        return customerService.saveImportCustomer(list);
+    }
+
+    /**
+     * @Author: ly
+     * @Date: 2018/8/15
+     * @Description: 判断row是否为空
+     */
+    public static boolean isRowEmpty(Row row) {
+        for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
+            Cell cell = row.getCell(c);
+            if (cell != null && cell.getCellTypeEnum() != CellType.BLANK)
+                return false;
+        }
+        return true;
+    }
+
+}

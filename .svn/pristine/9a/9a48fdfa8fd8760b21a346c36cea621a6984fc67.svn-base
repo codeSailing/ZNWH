@@ -1,0 +1,159 @@
+package com.quickdone.znwh.entity;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/9 16:03
+ * @Description: 客户表
+ */
+
+@Entity
+@Table(name = "t_customer")
+public class Customer implements Serializable {
+    private static final long serialVersionUID = -5933138318301683324L;
+
+    /**
+     * 主键
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false, columnDefinition = "bigint(20) COMMENT '主键'")
+    private Long id;
+
+    /**
+     * 外键关联 客户组表主键
+     */
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "CUSTOMERGROUP_ID",columnDefinition = "bigint(20) COMMENT '外键关联  客户组表主键'")
+    private CustomerGroup customerGroup;
+
+    /**
+     * 手机号
+     */
+    @Column(nullable = false, columnDefinition = "varchar(11)  COMMENT '手机号'")
+    private String telephone;
+
+    /**
+     * 姓名
+     */
+    @Column(nullable = false, columnDefinition = "varchar(20)  COMMENT '姓名'")
+    private String name;
+
+    /**
+     * 性别 1:男 2:女
+     */
+    @Column(nullable = false, columnDefinition = "int(1)  COMMENT '性别 1:男 2:女'")
+    private int sex;
+
+    /**
+     * 年龄
+     */
+    @Column(nullable = false, columnDefinition = "int(3)  COMMENT '年龄'")
+    private int age;
+
+    /**
+     * 省
+     */
+    @Column(nullable = false, columnDefinition = "varchar(20)  COMMENT '省'")
+    private String province;
+
+    /**
+     * 市
+     */
+    @Column(nullable = false, columnDefinition = "varchar(20)  COMMENT '市'")
+    private String city;
+
+    /**
+     * 区/县
+     */
+    @Column(nullable = false, columnDefinition = "varchar(20)  COMMENT '区/县'")
+    private String area;
+
+    /**
+     * 描述
+     */
+    @Column(columnDefinition = "varchar(255) COMMENT '描述'")
+    private String descri;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public CustomerGroup getCustomerGroup() {
+        return customerGroup;
+    }
+
+    public void setCustomerGroup(CustomerGroup customerGroup) {
+        this.customerGroup = customerGroup;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getSex() {
+        return sex;
+    }
+
+    public void setSex(int sex) {
+        this.sex = sex;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getDescri() {
+        return descri;
+    }
+
+    public void setDescri(String descri) {
+        this.descri = descri;
+    }
+}

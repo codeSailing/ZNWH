@@ -1,0 +1,16 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.entity.CallTask;
+import com.quickdone.znwh.service.CallTaskService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/10 14:43
+ * @Description:任务管理service实现
+ */
+@Service
+@Transactional
+public class CallTaskServiceImpl implements CallTaskService<CallTask,Long> {
+}

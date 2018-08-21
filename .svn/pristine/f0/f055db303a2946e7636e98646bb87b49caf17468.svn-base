@@ -1,0 +1,330 @@
+var callContent = function ($, layui) {
+    function init() {
+        //定义ztree对象，用于后面的合并操作
+        var zTreeObj;
+        var add_tree;
+        var update_tree;
+        var updateSubject_tree;
+        showTree();
+        //初始化layui
+        layui.use(['table', 'form', 'element'], function () {
+            var ajaxParams = {};
+            var table = layui.table
+                , form = layui.form
+                , element = layui.element;
+
+            //展示已知数据
+            table.render({
+                elem: '#content-subject'
+                , url: context + "/customerGroup/pageCustomerGroup.do" //数据接口
+                , page: true //是否显示分页
+                , skin: 'row'//表格风格
+                , even: true //开启隔行背景
+                , id: 'callContent' //初始化标识id
+                , cols: [[ //标题栏
+                    {checkbox: true, field: 'id', title: '全选'}
+                    ,{field: 'name', title: '组名称',align:'center', width: 200}
+                    ,{field: 'descri', title: '描述',align:'center', width: 430}
+                    ,{field: 'addTime', title: '添加时间',align:'center', width:220,
+                        templet: '<div>{{ layui.laytpl.toDateString(d.addTime,"yyyy-MM-dd HH:mm:ss") }}</div>'
+                    }
+                    , {title: '操作', width: 180, align: 'center', toolbar: '#bar-subject'}
+                ]]
+            });
+
+            /************************监听每行按钮事件****************************/
+            table.on('tool(contentList)', function (obj) {
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值
+                if (layEvent == "delete") { //删除
+                    layer.confirm("删除后无法恢复，确定删除吗？", {
+                        btn: ["确定", "取消"],
+                        btn1: function () {
+                            $.ajax({
+                                type: "POST",
+                                url: context + "/customerGroup/delCustomerGroup.do",
+                                data: {"customerGroupId": data.id},
+                                success: function (data) {
+                                    if (data.status == 0) {
+                                        layer.msg(data.message, {time: 2000, icon: 1});
+                                        reloadTable();
+                                        showTree();
+                                    } else {
+                                        layer.msg(data.message, {time: 2000, icon: 5});
+                                    }
+                                },
+                                error: function (data) {
+                                    layer.msg("删除失败", {time: 2000, icon: 5});
+                                }
+                            });
+                        }
+                    });
+                } else if (layEvent == "update") { //修改
+                    /*$("#updateContengt").find("[name='id']").val(data.id);
+                    $("#update_contentSubjectId").val(data.contentSubjectId);
+                    $("#update_contentSubjectName").val(data.contentSubjectName);
+                    $("#updateContengt").find("[name='title']").val(data.title);
+                    $("#updateContengt").find("[name='content']").val(data.content);*/
+                    $.ajax({
+                        type: "GET",
+                        url: context + "/customerGroup/detailCustomerGroup.do",
+                        data: {"id": data.id},
+                        success: function (data) {
+                            if (data.status == 0) {
+                                $("#updateContengt").find("[name='id']").val(data.data.id);
+                                $("#updateContengt").find("[name='name']").val(data.data.name);
+                                $("#updateContengt").find("[name='groupName']").val(data.data.name);
+                                $("#updateContengt").find("[name='descri']").val(data.data.descri);
+                                $("#updateContengt").find("[name='groupId']").val(data.data.groupId);
+                                showTree();
+                                $("#updateContengt").modal("show");
+                            } else {
+
+                            }
+                        },
+                        error: function (data) {
+                            layer.msg("修改失败", {time: 2000, icon: 5});
+                        }
+                    });
+
+                }
+            });
+
+            function setAjaxParam(event) {
+                var $form = $(event.target).parents(".search-form");
+                var params = $form.serializeArray();
+                $.each(params, function (key, value) {
+                    if (textReplace.test(value.value.trim())) {
+                        parent.layer.msg("搜索字段不能包含特殊字符", {
+                            time: 2000, //2s后自动关闭
+                            icon: 5
+                        });
+                        return false;
+                    }
+                    ajaxParams[value.name] = value.value.trim();
+                });
+                params = $("#moreQueryForm").serializeArray();
+                $.each(params, function (key, value) {
+                    ajaxParams[value.name] = value.value.trim();
+                });
+            }
+
+            function clearAjaxParams() {
+                ajaxParams = {};
+            }
+
+            /************************查询****************************/
+            $('.btn-search').on('click', function (event) {
+                clearAjaxParams();
+                setAjaxParam(event);
+                table.reload('callContent', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    , where: {
+                        key: ajaxParams
+                    }
+                });
+            });
+
+            /************************刷新table****************************/
+            var reloadTable = function () {
+                table.reload("callContent", { //此处是上文提到的 初始化标识id
+                });
+            };
+
+            /************************新增内容****************************/
+            $("#commitAdd").on("click", function () {
+                var form = $("#addForm").serialize();
+                $.ajax({
+                    type: "POST",
+                    url: context + "/customerGroup/addCustomerGroup.do",
+                    data: form,
+                    success: function (data) {
+                        showTree();
+                        if (data.status == 0) {
+                            $("#addContengt").modal("hide");
+                            layer.msg(data.message, {time: 2000, icon: 1});
+                            reloadTable();
+                        } else {
+                            layer.msg(data.message, {time: 2000, icon: 5});
+                        }
+                    },
+                    error: function (data) {
+                        layer.msg("添加失败", {time: 2000, icon: 5});
+                    }
+                });
+            });
+
+            /************************修改内容****************************/
+            $("#commitUpdate").on("click", function () {
+                var form = $("#updateForm").serialize();
+                $.ajax({
+                    type: "POST",
+                    url: context + "/customerGroup/updateCustomerGroup.do",
+                    data: form,
+                    success: function (data) {
+                        showTree();
+                        if (data.status == 0) {
+                            $("#updateContengt").modal("hide");
+                            layer.msg(data.message, {time: 2000, icon: 1});
+                            reloadTable();
+                        } else {
+                            layer.msg(data.message, {time: 2000, icon: 5});
+                        }
+                    },
+                    error: function (data) {
+                        layer.msg("修改失败", {time: 2000, icon: 5});
+                    }
+                });
+            });
+
+            /************************批量删除内容模态框****************************/
+            $("#deleteMany").on("click", function () {
+                var checkStatus = table.checkStatus('callContent'),
+                    data = checkStatus.data;//获取选中的数据
+                if (data.length == 0) {
+                    layer.msg("请选择数据！", {time: 1000, icon: 5});
+                    return;
+                }
+                $("#deleteContengt").modal("show");
+            });
+
+            /************************批量删除内容****************************/
+            $("#commitDelete").on("click", function () {
+                var checkStatus = table.checkStatus('callContent'),
+                    data = checkStatus.data;//获取选中的数据
+                var ids = "";
+                for (var i in data) {
+                    ids += data[i].id + ",";
+                }
+                $.ajax({
+                    type: "POST",
+                    url: context + "/customerGroup/delCustomerGroup.do",
+                    data: {"customerGroupId": ids},
+                    success: function (data) {
+                        showTree();
+                        if (data.status == 0) {
+                            $("#deleteContengt").modal("hide");
+                            layer.msg(data.message, {time: 2000, icon: 1});
+                            reloadTable();
+                        } else {
+                            layer.msg(data.message, {time: 2000, icon: 5});
+                        }
+                    },
+                    error: function (data) {
+                        layer.msg("删除失败", {time: 2000, icon: 5});
+                    }
+                });
+            });
+
+        });
+        /************************左侧树状结构****************************/
+            // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+        var setting = {
+                treeId: "",
+                treeObj: null,
+                view: {
+                    showLine: true,
+                    showIcon: false,
+                    selectedMulti: false,
+                    dblClickExpand: false
+                    // addDiyDom: addDiyDom
+                },
+                data: {
+                    simpleData: {   //简单的数据源，一般开发中都是从数据库里读取，API有介绍，这里只是本地的
+                        enable: true,
+                        idKey: "id",  //id和pid，
+                        pIdKey: "groupId",
+                        rootPId: null   //根节点
+                    }
+                },
+                callback: {
+
+                    /********************************* 回调函数。单击节点触发事件*****************************************/
+                    onClick: zTreeOnClick
+                }
+            };
+
+        // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+        function showTree() {
+            $.ajax({
+                type: "GET",
+                url: context + "/customerGroup/showTree.do",
+                data: {},
+                success: function (data) {
+                    var resu = eval(data.data);
+                    //展示左侧树状
+                    zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, resu);
+                    //展示新增页面树状
+                    add_tree = $.fn.zTree.init($("#add_tree"), setting, resu);
+                    //展示修改页面树状
+                    update_tree = $.fn.zTree.init($("#update_tree"), setting, resu);
+                    //展示修改主题页面树状
+                    updateSubject_tree = $.fn.zTree.init($("#updateSubject_tree"), setting, resu);
+                },
+                error: function (data) {
+                    layer.msg("查询主题失败", {time: 2000, icon: 5});
+                }
+            });
+        }
+
+        /********************************* 单击树节点触发的方法*****************************************/
+        function zTreeOnClick(event, treeId, treeNode) {
+            var id = treeNode.id;
+            var name = treeNode.name;
+            //判断是点击左侧树节点还是点击添加页面的树节点
+            var addFlag = $("#addContengt").is(":hidden");
+            var updateFlag = $("#updateContengt").is(":hidden");
+            var updateSubjectFlag = $("#updateSubject").is(":hidden");
+            if (!addFlag) { //点击添加页面的树节点
+                //需要给点击的节点信息添加到输入框中
+                $("#add_contentSubjectId").val(id);
+                $("#add_contentSubjectName").val(name);
+                hideMenu();
+            } else if (!updateFlag) { //点击修改页面的树节点
+                //需要给点击的节点信息添加到输入框中
+                $("#update_contentSubjectId").val(id);
+                $("#update_contentSubjectName").val(name);
+                hideMenu_update();
+            } else if (!updateSubjectFlag) { //点击修改主题页面的树节点
+                $("#updateSubject_subjectId").val(id);
+            }
+        }
+
+        /************************添加模块下拉树div****************************/
+        showAddTree = function () {
+            $("#add_content").slideDown("fast");
+            $("#addContengt").bind("mousedown", onBodyDown);
+        };
+        onBodyDown = function (event) {
+            if (!(event.target.id == "add_content" || $(event.target).parents("#add_content").length > 0)) {
+                hideMenu();
+            }
+        };
+        hideMenu = function () {
+            $("#add_content").fadeOut("fast");
+            $("#addContengt").unbind("mousedown", onBodyDown);
+        };
+
+        /************************修改模块下拉树div****************************/
+        showUpdateTree = function () {
+            $("#update_content").slideDown("fast");
+            $("#updateContengt").bind("mousedown", onBodyDown_update);
+        };
+        onBodyDown_update = function (event) {
+            if (!(event.target.id == "update_content" || $(event.target).parents("#update_content").length > 0)) {
+                hideMenu_update();
+            }
+        };
+        hideMenu_update = function () {
+            $("#update_content").fadeOut("fast");
+            $("#updateContengt").unbind("mousedown", onBodyDown_update);
+        };
+    };
+    return {
+        init: function () {
+            init();
+        }
+    }
+}(jQuery, layui, document);

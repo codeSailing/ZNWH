@@ -1,0 +1,74 @@
+package com.quickdone.znwh.entity;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/9 16:09
+ * @Description: 客户组表
+ */
+@Entity
+@Table(name = "t_customerGroup")
+public class CustomerGroup implements Serializable {
+    private static final long serialVersionUID = -6428370320561962250L;
+
+    /**
+     * 主键
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false, columnDefinition = "bigint(20) COMMENT '主键'")
+    private Long id;
+
+
+    /**
+     * 分组名称
+     */
+    @Column(nullable = false, columnDefinition = "varchar(50)  COMMENT '分组名称'")
+    private String name;
+
+    /**
+     * 描述
+     */
+    @Column(columnDefinition = "varchar(255) COMMENT '描述'")
+    private String descri;
+
+    /**
+     * 删除状态 0:未删除 1:删除
+     */
+    @Column(name="is_delete",nullable = false,columnDefinition="tinyint(5)  COMMENT '0未删除 1删除'")
+    private Integer isDelete = 0;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescri() {
+        return descri;
+    }
+
+    public void setDescri(String descri) {
+        this.descri = descri;
+    }
+
+    public Integer getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
+    }
+}

@@ -1,0 +1,676 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: Administrator
+  Date: 2018/7/11
+  Time: 15:39
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+
+<%@include file="../common/taglibs.jsp" %>
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>任务配置</title>
+    </head>
+    <body>
+        <%--任务配置页面--%>
+        <div style="padding: 15px;">
+        <div class="layui-row layui-col-space10">
+            <div class="left-content layui-col-md3">
+                <div class="panel">
+                    <div class="panel-heading">
+                        等接口开发树状图
+                    </div>
+                    <div class="panel-body">
+                        <ul id="treeDemo" class="ztree"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="right-content layui-col-md9" id="right-content" style="display: block;">
+                <form class="contform layui-form btm-bdr">
+                    <div class="contform-heading layui-form-item">
+                        <div class="layui-input-inline">
+                            <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder=" 输入任务名称查询" class="layui-input">
+                        </div>
+                        <button class="layui-btn">任务查询</button>
+                        <%--<span class="more-btn">更多筛选条件</span>--%>
+                        <a href="javascript:void(0);" class="more-btn">
+                            更多筛选条件
+                        </a>
+                        <button class="btn-add layui-btn" type="button">新建</button>
+                        <button class="layui-btn" data-toggle="modal" data-target="#planchange" type="button">变计划</button>
+                        <button class="layui-btn" data-toggle="modal" data-target="#fiowoption" type="button">选流程</button>
+                        <button class="layui-btn" data-toggle="modal" data-target="#start-taskcontengt" type="button">启用</button>
+                        <button class="layui-btn" data-toggle="modal" data-target="#ban-taskcontengt" type="button">废弃</button>
+                        <button class="layui-btn" data-toggle="modal" data-target="#del-taskcontengt" type="button">删除</button>
+                    </div>
+                </form>
+                <form class="more-condition layui-form hide">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label wd120">任务类型</label>
+                            <div class="layui-input-inline">
+                                <input type="radio" name="tasktype" value="一次性" title="一次性" checked="" class="layui-input-inline">
+                                <input type="radio" name="tasktype" value="周期性" title="周期性" class="layui-input-inline">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label wd120">执行日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="time-horizon" placeholder=" - ">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label wd120">外呼主题</label>
+                            <div class="layui-input-inline">
+                                <select name="quiz1">
+                                    <option value="">--请选择--</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="quiz2">
+                                    <option value="">--请选择--</option>
+                                    <option value="11">11</option>
+                                    <option value="22">22</option>
+                                    <option value="33">33</option>
+                                    <option value="44">44</option>
+                                    <option value="55">55</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label wd120">状态</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="Status" value="待执行" title="待执行" checked="">
+                                <input type="radio" name="Status" value="执行中" title="执行中">
+                                <input type="radio" name="Status" value="执行完毕" title="执行完毕">
+                                <input type="radio" name="Status" value="已废弃" title="已废弃">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <table class="layui-hide" id="content-configuration"></table>
+                <div id="page-configuration"></div>
+            </div>
+
+            <%--新建任务页面--%>
+            <div class="layui-col-md9" id="add-task" style="display: none;">
+                <div class="">
+                    <div class="">
+                        <div class="add-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="">
+                                新建任务
+                            </h4>
+                        </div>
+                        <div class="add-body">
+                            <form class="layui-form">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd120">
+                                            <span>*</span>
+                                            任务名称：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd120">
+                                            <span>*</span>
+                                            是否启用：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="radio" name="tasktype" value="启用" title="启用" checked="" class="layui-input-inline">
+                                            <input type="radio" name="tasktype" value="暂不启用" title="暂不启用" class="layui-input-inline">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd120">营销主题：</label>
+                                        <div class="layui-input-inline wd120">
+                                            <select name="quiz1">
+                                                <option value="">--请选择--</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                        </div>
+                                        <div class="layui-input-inline wd120">
+                                            <select name="quiz2">
+                                                <option value="">--请选择--</option>
+                                                <option value="11">11</option>
+                                                <option value="22">22</option>
+                                                <option value="33">33</option>
+                                                <option value="44">44</option>
+                                                <option value="55">55</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            客户：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                        <button class="btn btn-primary fl btn2">选择</button>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            计划类型：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="radio" name="tasktype" value="一次性" title="一次性" checked="" class="layui-input-inline">
+                                            <input type="radio" name="tasktype" value="周期性" title="周期性" class="layui-input-inline">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">执行日期：</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240" id="ExecDate" placeholder="">
+                                        </div>
+                                        <i class="layui-icon">&#xe637;</i>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">执行时间：</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240" id="Exectime" placeholder="">
+                                        </div>
+                                        <i class="layui-icon">&#xe637;</i>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">有效日期：</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240" id="validity" placeholder=" 开始时间-结束时间 ">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            执行时间：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240" id="Exectime2" placeholder="">
+                                        </div>
+                                        <button class="layui-btn"></button>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            外呼流程：
+                                        </label>
+                                        <div class="layui-input-inline wd240">
+                                            <select name="">
+                                                <option value="">--请选择--</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            拨号出局玛：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            失败尝试次数：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            外呼基数：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-block">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            外呼显示号码：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="radio" name="phonenum" value="随机" title="随机" checked="" class="layui-input-inline">
+                                            <input type="radio" name="phonenum" value="统一号码" title="统一号码" class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label wd140">任务描述：</label>
+                                    <div class="layui-input-block">
+                                        <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="add-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+                            <button type="button" class="btn btn-primary">
+                                提交更改
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <%--修改任务页面--%>
+            <div id="edit-task" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg1">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="">
+                                修改任务
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="layui-form">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd120">
+                                            <span>*</span>
+                                            任务名称：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd120">
+                                            <span>*</span>
+                                            是否启用：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="radio" name="tasktype" value="启用" title="启用" checked="" class="layui-input-inline">
+                                            <input type="radio" name="tasktype" value="暂不启用" title="暂不启用" class="layui-input-inline">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd120">营销主题：</label>
+                                        <div class="layui-input-inline wd120">
+                                            <select name="quiz1">
+                                                <option value="">--请选择--</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                        </div>
+                                        <div class="layui-input-inline wd120">
+                                            <select name="quiz2">
+                                                <option value="">--请选择--</option>
+                                                <option value="11">11</option>
+                                                <option value="22">22</option>
+                                                <option value="33">33</option>
+                                                <option value="44">44</option>
+                                                <option value="55">55</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            客户：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                        <button class="btn btn-primary fl btn2">选择</button>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            计划类型：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="radio" name="tasktype" value="一次性" title="一次性" checked="" class="layui-input-inline">
+                                            <input type="radio" name="tasktype" value="周期性" title="周期性" class="layui-input-inline">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">执行日期：</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240" id="ExecDate" placeholder="">
+                                        </div>
+                                        <i class="layui-icon">&#xe637;</i>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">执行时间：</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240" id="Exectime" placeholder="">
+                                        </div>
+                                        <i class="layui-icon">&#xe637;</i>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">有效日期：</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240" id="validity" placeholder=" 开始时间-结束时间 ">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            执行时间：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240" id="Exectime2" placeholder="">
+                                        </div>
+                                        <button class="layui-btn"></button>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            外呼流程：
+                                        </label>
+                                        <div class="layui-input-inline wd240">
+                                            <select name="">
+                                                <option value="">--请选择--</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            拨号出局玛：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            失败尝试次数：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline wd45">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            外呼基数：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-block">
+                                        <label class="layui-form-label wd140">
+                                            <span>*</span>
+                                            外呼显示号码：
+                                        </label>
+                                        <div class="layui-input-inline">
+                                            <input type="radio" name="phonenum" value="随机" title="随机" checked="" class="layui-input-inline">
+                                            <input type="radio" name="phonenum" value="统一号码" title="统一号码" class="layui-input-inline">
+                                            <input type="text" class="layui-input wd240">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label wd140">任务描述：</label>
+                                    <div class="layui-input-block">
+                                        <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+                            <button type="button" class="btn btn-primary">
+                                提交更改
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    <%--变计划弹窗--%>
+    <div id="planchange" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg1">
+                    <button type="button" class="close col1" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title col1">
+                        新建
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label wd120">
+                                    <span>*</span>
+                                    计划类型：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <input type="radio" name="tasktype" value="一次性" title="一次性" checked="" class="layui-input-inline">
+                                    <input type="radio" name="tasktype" value="周期性" title="周期性" class="layui-input-inline">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label wd120">有效日期：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" placeholder=" 开始时间-结束时间 ">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label wd120">
+                                    <span>*</span>
+                                    执行时间：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input">
+                                </div>
+                                <button class="btn btn-primary fl btn2"></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="layui-input-block">
+                        <button class="layui-btn">提交</button>
+                        <button type="" class="layui-btn">取消</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+        <%--改流程弹窗--%>
+    <div id="fiowoption" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg1">
+                    <button type="button" class="close col1" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title col1">
+                        新建
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label wd120">
+                                    <span>*</span>
+                                    外呼流程：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <select name="">
+                                        <option value="">--请选择--</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="layui-input-block">
+                        <button class="layui-btn">提交</button>
+                        <button type="" class="layui-btn">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        <%--废弃弹框--%>
+        <div class="modal fade" id="ban-taskcontengt" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg1">
+                        <button type="button" class="close col1" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                        <h4 class="modal-title col1">
+                            废弃
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        确认废弃？
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                        </button>
+                        <button type="button" class="btn btn-primary">
+                            确认
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%--启用弹框--%>
+        <div class="modal fade" id="start-taskcontengt" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg1">
+                        <button type="button" class="close col1" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                        <h4 class="modal-title col1">
+                            启用
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        确认启用？
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                        </button>
+                        <button type="button" class="btn btn-primary">
+                            确认
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%--删除弹框--%>
+        <div class="modal fade" id="del-taskcontengt" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg1">
+                        <button type="button" class="close col1" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                        <h4 class="modal-title col1" id="">
+                            删除
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        确认删除？
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                        </button>
+                        <button type="button" class="btn btn-primary">
+                            确认
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="../../resources/js/src/customer/calltask.js"></script>
+        <script type="text/html" id="bar-configuration">
+            <a class="layui-btn layui-btn-danger layui-btn-xs" data-toggle="modal" data-target="#del-taskcontengt" type="button">删除</a>
+            <a class="layui-btn layui-btn-xs" data-toggle="modal" data-target="#edit-task" type="button">修改</a>
+            <a class="layui-btn layui-btn-xs" lay-event="edit">详情</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" data-toggle="modal" data-target="#ban-taskcontengt" type="button">废弃</a>
+        </script>
+
+    </body>
+</html>
+

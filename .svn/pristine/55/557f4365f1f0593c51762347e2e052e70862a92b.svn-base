@@ -1,0 +1,219 @@
+var customer = function ($,layui) {
+    function init() {
+        // 新增确认
+        //layui调用模块
+        layui.use(['table','form','element','laydate'], function(){
+            var table = layui.table;
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#date'
+            });
+
+            //展示已知数据
+            table.render({
+                elem: '#demo'
+                ,cols: [[ //标题栏
+                    {type:'checkbox'}
+                    ,{field: 'id', title: 'ID', width: 80,}
+                    ,{field: 'username', title: '用户名', width: 120}
+                    ,{field: 'email', title: '邮箱', minWidth: 150}
+                    ,{field: 'sign', title: '签名', minWidth: 160}
+                    ,{field: 'sex', title: '性别', width: 80}
+                    ,{field: 'city', title: '城市', width: 100}
+                    ,{field: 'experience', title: '积分', width: 80,}
+                    ,{ width:178, align:'center', toolbar: '#barDemo'}
+                ]]
+                ,data: [{
+                    "id": "10001"
+                    ,"username": "杜甫"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "116"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "108"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10002"
+                    ,"username": "李白"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "12"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10003"
+                    ,"username": "王勃"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "65"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10004"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "666"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10005"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "86"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10006"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "12"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10007"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "16"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10008"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "106"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10008"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "106"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10008"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "106"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10008"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "106"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10008"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "106"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10008"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "106"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10008"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "106"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }, {
+                    "id": "10008"
+                    ,"username": "贤心"
+                    ,"email": "xianxin@layui.com"
+                    ,"sex": "男"
+                    ,"city": "浙江杭州"
+                    ,"sign": "人生恰似一场修行"
+                    ,"experience": "106"
+                    ,"ip": "192.168.0.8"
+                    ,"logins": "106"
+                    ,"joinTime": "2016-10-14"
+                }]
+                //,skin: 'line' //表格风格
+//            ,even: true
+//            ,page: true //是否显示分页
+//            ,limits: [5, 7, 10]
+//            ,limit: 5 //每页默认显示的数量
+            });
+        });
+        var zTreeObj;
+        // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+        var setting = {};
+        // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+        var zNodes = [
+            {name:"test1", open:true, children:[
+                {name:"test1_1"}, {name:"test1_2"}]},
+            {name:"test2", open:true, children:[
+                {name:"test2_1"}, {name:"test2_2"}]}
+        ];
+        $(document).ready(function(){
+            zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+        });
+    };
+    return {
+        init: function () {
+            init();
+        }
+
+    }
+}(jQuery, layui, document)

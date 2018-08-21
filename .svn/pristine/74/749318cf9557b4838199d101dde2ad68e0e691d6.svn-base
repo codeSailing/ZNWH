@@ -1,0 +1,15 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.service.CustomerService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Service
+@Transactional
+public class CustomerServiceImpl implements CustomerService {
+}

@@ -1,0 +1,70 @@
+
+$(function () {
+    change();
+})
+var ctx=$('#ctx').val();
+var times = null;var timer = null;
+function change() {
+    var userName=$('#userName').val();
+    var userPhone=$('#userPhone').val();
+    times = 60;
+    // 计时开始
+    timer = setInterval(function(){
+        $('#voice').val("尊敬的"+"（"+userPhone+"）用户，正在与您通话中 "+$("callContent").val()+"   "+times );
+        times--;
+        if (times < 0) {
+            $('#voice').val("与"+"（"+userPhone+"）用户的通话结束！");
+            times =60;
+            clearInterval(timer);
+        }
+    }, 1000);
+}
+function submitForm(){
+    var desc = $("#desc").val();
+    console.log(desc);
+    $.ajax({
+        type: "post",
+        url: ctx+"/ivr/receive.do",
+        data: {
+            "currentNode":$("#currentNode").val(),
+            "answer":desc,
+            "status":0,
+            "taskid":1
+        },
+        success: function (data) {
+            clearInterval(timer);
+
+            console.log(data);
+            var userPhone=data.userPhone
+            var currentNode=data.currentNode;
+            var callContent=data.callContent;
+            $('#currentNode').val(currentNode);
+            var timess = 60;
+            // 计时开始
+            timer= setInterval(function(){
+                $('#voice').val("尊敬的"+"（"+userPhone+"）用户，正在与您通话:   "+callContent+"   "+times );
+                timess--;
+                if (timess <= 0) {
+                    $('#voice').val("与"+"（"+userPhone+"）用户的通话结束！");
+                    timess =60;
+                    clearInterval(timer);
+                }
+
+            }, 500);
+
+
+        }
+    });
+}
+function interrupt(){
+    $.ajax({
+        type: "post",
+        url: ctx+"/ivr/receive.do",
+        data: {
+            "status":3
+        },
+        success: function (suc) {
+            console.log("已挂断！");
+        }
+    });
+}

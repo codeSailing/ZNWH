@@ -1,0 +1,21 @@
+.btm-bdr{
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+}
+.red {
+    color: red;
+}
+.wd120 {
+    width: 120px!important;
+}
+.wd140 {
+    width: 140px!important;
+}
+.wd240 {
+    width: 240px!important;
+}
+.btn3{
+    position: absolute;
+    top:0;
+    right:0;
+    border-radius: 0!important;
+}

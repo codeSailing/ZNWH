@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- definitions 节点保留，后面可能会扩展一些Schema约束等-->
+ <definitions>
+    <!-- 一个process节点标识一个流程-->
+    <process id="process1" name="精神病人回访">
+        <!-- 通过 id区分不同流程节点，怎么约定id具有唯一性?  sourceRef标识当前节点上一个节点id  targetRef标识当前节点需要流转到的下一节点-->
+        <node id="1" sourceRef="" targetRef="" defaultRef="2" exceptionRef="">
+            <content type="text" >张三监护人您好，为更好了解张三的用药情况，请您如实回答下面几个问题：患者患病多久？</content>
+        </node>
+
+        <!-- 每一个节点都有可能出现挂断、无法识别等异常情况，如何在出现异常情况下跳到默认的节点或者下一个环节 -->
+        <node id="2" sourceRef="" targetRef="3,4" defaultRef="3" exceptionRef="">
+            <content type="text" >患者是否坚持服药</content>
+        </node>
+
+        <!-- 如果某个节点需要根据用户的回答和语义引擎返回的结果去做分支判断，使用answer属性 -->
+        <node id="3" sourceRef="2" targetRef="" answer="否" defaultRef="4" exceptionRef="">
+            <content type="text" >请问药品是否容易买到</content>
+        </node>
+
+        <node id="4" sourceRef="2" targetRef="" answer="是" defaultRef="5" exceptionRef="">
+            <content type="text" >您认为精神障碍患者最需要得到哪方面的救助</content>
+        </node>
+
+        <node id="5" sourceRef="" targetRef="" defaultRef="" exceptionRef="">
+            <content type="text" >感谢您的宝贵建议，我们会竭尽所能为您提供更好的服务，预祝张三病人早日康复！再次感谢您对我们工作的配合与支持，再见</content>
+        </node>
+    </process>
+</definitions>

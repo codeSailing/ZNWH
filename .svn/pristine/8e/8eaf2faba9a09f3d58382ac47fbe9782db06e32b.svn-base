@@ -1,0 +1,107 @@
+package com.quickdone.znwh.controller.api;
+
+import com.quickdone.znwh.controller.LoginController;
+import com.quickdone.znwh.enums.IvrEnum;
+import com.quickdone.znwh.taskhandle.TaskSchedule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/10 10:41
+ * @Description: 用于和IVR系统交互的接口
+ */
+
+@Controller
+@RequestMapping(value = "/ivr")
+public class IVRController {
+    private static Logger logger = LoggerFactory.getLogger(LoginController.class);
+    @Resource
+    private TaskSchedule taskSchedule;
+
+
+    /**
+     * *  外呼系统接收到到IVR电话接通的请求
+     * @param
+     * @param status   ivr传递的状态  0 正常   3 挂断
+     */
+    @RequestMapping(value = "/receive.do")
+    public String  reciveIvrMessage(RedirectAttributes redirectAttributes,String currentNode,String answer,int status,int taskid){
+        logger.info("reciveIvrMessage接口开始调用....message:"+answer+"  status "+status);
+        String result_answer="";
+        //拿到IVR结果，开始解析语义  输入参数 answer 输出参数 result
+
+        //解析流程配置文件
+        /**
+         * 1、获取当前任务的的流程配置文件
+         * 2、解析配置文件
+         */
+        try {
+            String result=taskSchedule.executeTask(currentNode,result_answer,taskid);
+
+            //将本次结果推送给IVR
+            redirectAttributes.addAttribute("userPhone","18867654342");
+            redirectAttributes.addAttribute("callContent",result);
+            return "redirect:/ivr/test.do";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+            return "";
+    }
+
+    /**
+     * *  模拟IVR拨号系统
+     * @param customer  传递ivr的文本消息
+     * @param telephone   电话号码
+     */
+    @RequestMapping(value = "/ivrDial.do")
+    public String ivrDial(String customer, String telephone, RedirectAttributes redirectAttributes, HttpServletRequest request, HttpServletResponse response){
+        logger.info("ivrDial....message: "+customer+"  telephone: "+telephone);
+        try {
+            logger.info("模拟ivr正在尝试接通客户......");
+            Thread.sleep(3000);//模拟电话拨号过程
+            logger.info("模拟ivr拨通用户......");
+            logger.info("播放提示音......");
+            //电话拨通后向调用外呼系统
+            redirectAttributes.addAttribute("status", IvrEnum.CONNECT.getValue());
+            redirectAttributes.addAttribute("userName", "李四");
+            redirectAttributes.addAttribute("userPhone", "111111");
+            return "redirect:/ivr/test.do";
+        } catch (InterruptedException e) {
+            logger.error("电话拨号失败"+e.getMessage());
+        }
+
+        return"";
+
+    }
+
+
+
+    /**
+     * @Author: ly
+     *@Date: 2018/7/10
+     *@Description: 模拟IVR通话页面
+     * @return
+     */
+    @RequestMapping(value = "/test.do", method = RequestMethod.GET)
+    public ModelAndView ivrTestJsp(String userName, String userPhone) {
+        logger.info("IVRController==== test.do,  params: userName=" + userName + ", userPhone:" + userPhone);
+        ModelAndView mv =new ModelAndView();
+        mv.setViewName("simulate");
+        mv.addObject("userName",userName);
+        mv.addObject("userPhone",userPhone);
+        return mv;
+    }
+
+
+}

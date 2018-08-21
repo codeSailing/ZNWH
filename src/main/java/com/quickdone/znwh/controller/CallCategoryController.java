@@ -1,0 +1,150 @@
+package com.quickdone.znwh.controller;
+
+import com.mysql.jdbc.StringUtils;
+import com.quickdone.znwh.common.Constants;
+import com.quickdone.znwh.entity.CallCategory;
+import com.quickdone.znwh.pojo.LayuiRequest;
+import com.quickdone.znwh.pojo.LayuiResponseMap;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallCategoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @Auther: ly
+ * @Date: 2018/7/11
+ * @Description:任务类别
+ */
+@Controller
+@RequestMapping(value = "/callCategory")
+public class CallCategoryController {
+
+    private static Logger logger = LoggerFactory.getLogger(CallCategoryController.class);
+
+    @Resource
+    private CallCategoryService callCategoryService;
+
+    /**
+     * @Author: ly
+     * @Date: 2018/7/11
+     * @Description: 跳转到任务类别页面
+     */
+    @RequestMapping(value = "/list.do", method = RequestMethod.GET)
+    public ModelAndView list() {
+        logger.info("CallCategoryController==== list.do");
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("callCategory/list");
+        return mv;
+    }
+    /**
+     * @Author: ly
+     * @Date: 2018/7/11
+     * @Description: 分页查寻任务类别
+     */
+    @RequestMapping(value = "/data.do", method = RequestMethod.GET)
+    @ResponseBody
+    public LayuiResponseMap data(HttpServletRequest request) {
+        logger.info("CallCategoryController==== data.do");
+        LayuiRequest layuiRequest = LayuiRequest.fromHttpRequest(request);
+        Map<String, Object> searchParams = layuiRequest.getSearchParams();
+        PaginationMapLayui pagination = PaginationMapLayui.formJQueryLayuiTableRequest(layuiRequest);
+        callCategoryService.findAll(searchParams,pagination);
+        LayuiResponseMap dtResp = LayuiResponseMap.fromPagination(pagination);
+        return dtResp;
+    }
+
+    /**
+     * @Author: ly
+     * @Date: 2018/7/11
+     * @Description: 新建任务分类
+     */
+    @RequestMapping(value = "/add.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData add( CallCategory callCategory){
+        logger.info("CallCategoryController==== add.do,  params:" + callCategory.toString());
+        ResponseData responseData;
+        String name = callCategory.getName();
+        if (!StringUtils.isNullOrEmpty(name)) {
+            //查询该主题名称是否存在，不存在时再执行保存操作
+            CallCategory findCallCategory = (CallCategory) callCategoryService.findByName(name);
+            if (findCallCategory == null) {
+                callCategoryService.addCallCategory(callCategory);
+                responseData = ResponseData.getSuccessResponse("保存成功！");
+            } else {
+                responseData = ResponseData.getErrorResponse("该任务分类名称已存在！");
+            }
+        } else {
+            responseData = ResponseData.getErrorResponse("任务分类名称不能为空！");
+        }
+        return responseData;
+    }
+    /**
+     * @Author: ly
+     * @Date: 2018/7/11
+     * @Description: 删除任务分类
+     */
+    @RequestMapping(value = "/delete.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData delCallCategory(String callCategoryIds) {
+        logger.info("CallCategoryController==== delete.do,  params:" +callCategoryIds);
+        ResponseData responseData=callCategoryService.delCallCategory(callCategoryIds);
+        return responseData;
+    }
+
+    /**
+     * @Author: ly
+     * @Date: 2018/7/11
+     * @Description: 修改任务分类
+     */
+    @RequestMapping(value = "/update.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData updateContentSubject(CallCategory callCategory) {
+        logger.info("CallCategoryController==== update.do,  params:" +callCategory.toString());
+        ResponseData responseData;
+        String name = callCategory.getName();
+        if (!StringUtils.isNullOrEmpty(name)) {
+            CallCategory findCallCategory = (CallCategory) callCategoryService.findByName(name);
+            //若不存在分类名称或者修改的分类名称是其本身，则可修改
+            if (findCallCategory == null || findCallCategory.getId().longValue() == callCategory.getId().longValue()) {
+                responseData=callCategoryService.updateCallCategory(callCategory);
+            } else {
+                responseData = ResponseData.getErrorResponse("该任务分类名称已存在！");
+            }
+        } else {
+            responseData = ResponseData.getErrorResponse("任务分类名称不能为空！");
+        }
+        return responseData;
+    }
+    /**
+     * @Author: ly
+     * @Date: 2018/7/12
+     * @Description: 查询树的子节点
+     */
+    @RequestMapping(value = "/findTree.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData findTree() {
+        logger.debug("CallCategoryController==========findTree.do  -->");
+        ResponseData responseData;
+        List<CallCategory> list = callCategoryService.findAll();
+        if(!list.isEmpty()){
+            responseData = ResponseData.getSuccessResponse(list);
+        }else{
+            responseData = ResponseData.getErrorResponse("暂无任务分类！");
+        }
+        return responseData;
+    }
+}

@@ -1,0 +1,454 @@
+/**
+ * @Author: zhum
+ * @Date: 2018/7/12 17:01
+ * @Description: 流程配置
+ */
+var callFlow = function ($, layui) {
+    function init() {
+        layui.use(['table','form','element','laydate'], function () {
+            var table = layui.table
+                , form = layui.form
+                , element = layui.element
+                , laydate = layui.laydate
+
+            var editData;
+            laydate.render({
+                elem: '#date'
+            });
+            //展示已知数据
+            table.render({
+                elem: '#content-flow'
+                , url: context + "/callFlow/data.do" //数据接口
+                , page: true //是否显示分页
+                , skin: 'row'//表格风格
+                , even: true //开启隔行背景
+                , id: 'callFlow' //初始化标识id
+                , cols: [[ //标题栏
+                    {checkbox: true, field: 'id', title: '全选'}
+                    , {field: 'name', title: '流程名称', width: 180,}
+                    , {field: 'descri', title: '流程描述', minWidth: 300}
+                    , {field: 'updateUser', title: '更新人员', minWidth: 140}
+                    , {field: 'updateTime', title: '更新时间',templet:'<div>{{layui.laytpl.toDateString(d.updateTime,"yyyy-MM-dd HH:mm")}}</div>', minWidth: 140}
+                    , {field: 'right', title: '操作', width: 180, align: 'center', toolbar: '#bar-flow'}
+                ]]
+                , id: 'callFlow' //初始化标识id
+                // , data: [{}]
+
+            });
+            // laypage.render({
+            //     elem: 'page-flow' //注意，这里的 test1 是 ID，不用加 # 号
+            //     , count: 15 //数据总数，从服务端得到
+            //     , layout: ['count', 'prev', 'page', 'next', 'refresh', 'skip']
+            //     , jump: function (obj) {
+            //         console.log(obj)
+            //     }
+            // });
+
+            /************************监听每行按钮事件****************************/
+            table.on('tool(contentList)', function (obj) {
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值
+                if (layEvent == "delete") { //删除
+                    layer.confirm("删除后无法恢复，确定删除吗？", {
+                        btn: ["确定", "取消"],
+                        btn1: function () {
+                            $.ajax({
+                                type: "get",
+                                url: context + "/callFlow/delete.do",
+                                data: {"ids": data.id},
+                                success: function (data) {
+                                    if (data.status == 0) {
+                                        layer.msg(data.message, {time: 2000, icon: 1});
+                                        reloadTable();
+                                    } else {
+                                        layer.msg(data.message, {time: 2000, icon: 5});
+                                    }
+                                },
+                                error: function (data) {
+                                    layer.msg("删除失败", {time: 2000, icon: 5});
+                                }
+                            });
+                        }
+                    });
+                } else if (layEvent == "edit") { //修改
+                    editData = data;
+                    $("#updateFlow").find("[name='updateId']").val(data.id);
+                    $("#updateFlow").find("[name='updateName']").val(data.name);
+                    $("#updateFlow").find("[name='updateDescri']").val(data.descri);
+                    $("#updateFlow").find("[name='updateResourcePath']").val(data.resourcePath);
+                    $("#updateFlow").modal("show");
+                }
+            });
+            //gooFLow插件
+            var property={
+                width:800,
+                height:500,
+                toolBtns:["start round","end","task","node","chat","state","plug","join","fork","complex mix"],
+                haveHead:true,
+                headBtns:["new","open","save","undo","redo","reload"],//如果haveHead=true，则定义HEAD区的按钮
+                haveTool:true,
+                haveGroup:true,
+                useOperStack:true
+            };
+            var remark={
+                cursor:"选择指针",
+                direct:"结点连线",
+                start:"入口结点",
+                "end":"结束结点",
+                "task":"任务结点",
+                node:"自动结点",
+                chat:"决策结点",
+                state:"状态结点",
+                plug:"附加插件",
+                fork:"分支结点",
+                "join":"联合结点",
+                "complex mix":"复合结点",
+                group:"组织划分框编辑开关"
+            };
+            var demo;
+            $(document).ready(function(){
+                demo=$.createGooFlow($("#flow-content"),property);
+                demo.setNodeRemarks(remark);
+                // demo.onItemDel=function(id,type){
+                // 	if(confirm("确定要删除该单元吗?")){
+                //      this.blurItem();
+                //      return true;
+                // 	}else{
+                //      return false;
+                // 	}
+                // }
+                demo.loadData(jsondata);
+                // console.log(jsondata);
+                demo.onItemFocus=function(id,model){
+                    // var obj;
+                    $("#node_id").val("");
+                    $("#node_sourceRef").val("");
+                    $("#node_answer").val("");
+                    $("#node_targetRef").val("");
+                    $("#node_defaultRef").val("");
+                    $("#node_exceptionRef").val("");
+                    $("#node_content").val("");
+                    return true;
+                };
+
+                demo.onItemBlur=function(id,model){
+                    document.getElementById("propertyForm").reset();
+                    return true;
+                };
+            });
+            var out;
+            Export = function (){
+                document.getElementById("result").value=JSON.stringify(demo.exportData());
+            }
+            $(function (){
+                $.fn.serializeObject = function(){
+                    var o = {};
+                    var a = this.serializeArray();
+                    $.each(a, function() {
+                        if (o[this.name] !== undefined) {
+                            if (!o[this.name].push) {
+                                o[this.name] = [o[this.name]];
+                            }
+                            o[this.name].push(this.value || '');
+                        } else {
+                            o[this.name] = this.value || '';
+                        }
+                    });
+                    return o;
+                }
+                $("#fun1").click(function (){
+                    var data = {};
+                    $("#propertyForm").serializeArray().map(function(x){
+                        if (data[x.name] !== undefined) {
+                            if (!data[x.name].push) {
+                                data[x.name] = [data[x.name]];
+                            }
+                            data[x.name].push(x.value || '');
+                        } else {
+                            data[x.name] = x.value || '';
+                        }
+                    });
+                    $(".item_focus input").val(JSON.stringify(data));
+                    layer.msg("请填写下一个节点信息，若已经填写完成请保存！");
+                });
+            });
+            var reloadTable = function () {
+                table.reload("callFlow", { //此处是上文提到的 初始化标识id
+                });
+            };
+            test = function (){
+                // var title = $('.GooFlow_head label').text();
+                var node = $('.GooFlow_item input');
+                // var nodeLen = $('.GooFlow_item input').val();
+                var name = $('#flowName').val();
+                var content = $('#flowContent').val();
+                var nodeArr = [];
+                for (var i = 0;i<node.length;i++) {
+                    nodeArr.push(JSON.parse(node.eq(i).val()));
+                }
+                var obj={
+                    "@id":"process1",
+                    "@name": "精神病人回访",
+                    "node":nodeArr
+                };
+                console.log(obj);
+                var newNodeArr = [];
+                newNodeArr.push(obj);
+                console.log(newNodeArr);
+                var nodeObj = JSON.stringify(newNodeArr);
+                $.ajax({
+                    type: "post",
+                    url: context + "/callFlow/add.do",
+                    data: {"callFlowInfo": nodeObj,"title":name,"descri":content},
+                    success:function (data) {
+                        console.log(data);
+                    }
+                });
+                reloadTable();
+                // console.log(nodeObj);
+                $('.flow-wrap').css('display','none');
+                $('.flowForm').css('display','block');
+
+            };
+            closeFlow = function () {
+                $('.flow-wrap').css('display','none');
+                $('.flowForm').css('display','block');
+            }
+
+            // function setAjaxParam(event) {
+            //     var $form = $(event.target).parents(".search-form");
+            //     var params = $form.serializeArray();
+            //     $.each(params, function (key, value) {
+            //         if (textReplace.test(value.value.trim())) {
+            //             parent.layer.msg("搜索字段不能包含特殊字符", {
+            //                 time: 2000, //2s后自动关闭
+            //                 icon: 5
+            //             });
+            //             return false;
+            //         }
+            //         ajaxParams[value.name] = value.value.trim();
+            //     });
+            //     params = $("#moreQueryForm").serializeArray();
+            //     $.each(params, function (key, value) {
+            //         ajaxParams[value.name] = value.value.trim();
+            //     });
+            // }
+            //
+            // function clearAjaxParams() {
+            //     ajaxParams = {};
+            // }
+
+            /************************查询****************************/
+            $('.btn-search').on('click', function (event) {
+                // clearAjaxParams();
+                // setAjaxParam(event);
+                var ajaxParams = {searchParams:$("#searchParams").val()};
+                table.reload('callFlow', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    , where: {
+                        key: ajaxParams
+                    }
+                });
+            });
+            /************************刷新table****************************/
+            var reloadTable = function () {
+                table.reload("callFlow", { //此处是上文提到的 初始化标识id
+                });
+            };
+
+            /************************修改内容****************************/
+            $("#commitUpdate").on("click", function () {
+                var updateName = $("input[name='updateName']").val();
+                var updateDescri = $("textarea[name='updateDescri']").val();
+                var updateId = $("input[name='updateId']").val();
+                if(updateName==null || updateName==""){
+                    layer.msg("请输入流程名称！", {time: 2000, icon: 5});
+                    return false;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: context + "/callFlow/update.do",
+                    data: {id:updateId,name:updateName,descri:updateDescri},
+                    success: function (data) {
+                        if (data.status == 0) {
+                            $("#updateFlow").modal("hide");
+                            layer.msg(data.message, {time: 2000, icon: 1});
+                            reloadTable();
+                        } else {
+                            layer.msg(data.message, {time: 2000, icon: 5});
+                        }
+                    },
+                    error: function (data) {
+                        layer.msg("修改失败", {time: 2000, icon: 5});
+                    }
+                });
+            });
+            //新增获取xml资源文件
+            // $("#addFlow").click(function () {
+            //     $.ajax({
+            //         url:context + "/callFlow/getXmlPath.do",
+            //         type:'get',
+            //         async:false,
+            //         success:function (data) {
+            //             if(data.status == 0){
+            //                 var tpl_source1 = $("#resourcePath_handlebars").html();
+            //                 var operate1 = Handlebars.compile(tpl_source1);
+            //                 var html1 = operate1(data.data);
+            //                 $("#resourcePath").html(html1);
+            //                 form.render('radio');
+            //             }
+            //         },
+            //         error:function () {
+            //             alert("获取资源文件信息失败！");
+            //         }
+            //     });
+            // });
+            $('#addFlow').click(function () {
+                // alert(1111);
+                // $('.flow-wrap').css('display','block');
+                // $('.flowForm').css('display','none');
+                $('#add-callFlow').modal('show');
+            });
+
+            //添加提交
+            $(".file").bind("change",function(){
+                var fileType = $(this).val().substring($(this).val().lastIndexOf(".") + 1);
+                if(fileType != "xls" &&　fileType != "xlsx"){
+                    layer.msg("只能上传excel文件", {time: 2000, icon: 5});
+                    return false;
+                }
+            });
+            $("#add-submit").click(function () {
+                var title = $(" input[ name='name' ] ").val();
+                var fileName = $(".file").val();
+                if(title==null || title==""){
+                    layer.msg("请输入流程名称！", {time: 2000, icon: 5});
+                    return false;
+                }
+                var descri = $(" textarea[ name='descri' ] ").val();
+                if(fileName==null || fileName==""){
+                    layer.msg("请选择文件！", {time: 2000, icon: 5});
+                    return false;
+                }
+                var fileType = fileName.substring(fileName.lastIndexOf(".") + 1);
+                if(fileType != "xls" &&　fileType != "xlsx"){
+                    layer.msg("只能上传excel文件", {time: 2000, icon: 5});
+                    return false;
+                }
+                var form = $("form[name=fileForm]");
+                var options = {
+                    url:context + "/callFlow/add.do", //上传文件的路径
+                    type:'post',
+                    data:{
+                        callFlowInfo:'',
+                        title:title,
+                        descri:descri
+                    },
+                    success:function(data){
+                        layer.msg("新建成功！", {time: 2000, icon: 1});
+                        $('#add-callFlow').modal('hide');
+                        window.location.reload()
+                        // reloadTable();
+                    }
+                };
+                form.ajaxSubmit(options);
+                // var resourcePath = $("input[type='radio']:checked").val();
+                // if(name==null || name==""){
+                //     layer.msg("请输入流程名称！", {time: 2000, icon: 5});
+                //     return false;
+                // }
+                // // if(resourcePath==null || resourcePath==""){
+                // //     layer.msg("请选择资源文件！", {time: 2000, icon: 5});
+                // //     return false;
+                // // }
+                // $('#add-callFlow').submit();
+                // $.ajax({
+                //     type: "post",
+                //     url: context + "/callFlow/add.do",
+                //     data: {"callFlowInfo": "","title":"","descri":""},
+                //     success:function (data) {
+                //         console.log(data);
+                //     }
+                // });
+                // $.ajax({
+                //     url:context + "/callFlow/add.do",
+                //     data:{name:name,descri:descri,resourcePath:resourcePath},
+                //     type:'post',
+                //     success:function (data) {
+                //         if(data.status == 0){
+                //             layer.msg(data.message, {time: 2000, icon: 1});
+                //             $("#add-callFlow").modal("hide");
+                //             reloadTable();
+                //         } else {
+                //             layer.msg(data.message, {time: 2000, icon: 5});
+                //         }
+                //     },
+                //     error:function () {
+                //         layer.msg("添加失败", {time: 2000, icon: 5});
+                //     }
+                // });
+            });
+            /************************批量删除内容模态框****************************/
+            $("#deleteMany").on("click", function () {
+                var checkStatus = table.checkStatus('callFlow'),
+                    data = checkStatus.data;//获取选中的数据
+                if (data.length == 0) {
+                    layer.msg("请选择数据！", {time: 1000, icon: 5});
+                    return;
+                }
+                $("#del").modal("show");
+            });
+
+            $('#resetUpdate').click(function () {
+                var data = editData;
+                $("#updateFlow").find("[name='updateId']").val(data.id);
+                $("#updateFlow").find("[name='updateName']").val(data.name);
+                $("#updateFlow").find("[name='updateDescri']").val(data.descri);
+                $("#updateFlow").find("[name='updateResourcePath']").val(data.resourcePath);
+            });
+
+            /************************批量删除内容****************************/
+            $("#commitDelete").on("click", function () {
+                var checkStatus = table.checkStatus('callFlow'),
+                    data = checkStatus.data;//获取选中的数据
+                var ids = "";
+                for (var i in data) {
+                    ids += data[i].id + ",";
+                }
+                console.log(ids)
+                $.ajax({
+                    type: "GET",
+                    url: context + "/callFlow/delete.do",
+                    data: {"ids": ids},
+                    success: function (data) {
+                        if (data.status == 0) {
+                            $("#del").modal("hide");
+                            layer.msg(data.message, {time: 2000, icon: 1});
+                            reloadTable();
+                        } else {
+                            layer.msg(data.message, {time: 2000, icon: 5});
+                        }
+                    },
+                    error: function (data) {
+                        layer.msg("删除失败", {time: 2000, icon: 5});
+                    }
+                });
+            });
+
+
+        });
+
+
+    };
+
+
+    return {
+        init: function () {
+            init();
+        }
+    }
+}(jQuery, layui, document);
+

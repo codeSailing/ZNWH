@@ -1,0 +1,45 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.dao.CustomerGroupRepository;
+import com.quickdone.znwh.entity.CustomerGroup;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CustomerGroupService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Service
+@Transactional
+public class CustomerGroupServiceImpl implements CustomerGroupService<CustomerGroup,Long> {
+
+    @Resource
+    private CustomerGroupRepository customerGroupRepository;
+
+    @Override
+    public CustomerGroup findById(Long id) {
+        return customerGroupRepository.findById(id);
+    }
+
+    @Override
+    public List<CustomerGroup> findAll(){
+        return customerGroupRepository.findAll();
+    }
+
+    @Override
+    public CustomerGroup addCustomerGroup(CustomerGroup customerGroup){
+        return customerGroupRepository.save(customerGroup);
+    }
+
+    @Override
+    public ResponseData delCustomerGroup(CustomerGroup customerGroup){
+        customerGroupRepository.delete(customerGroup);
+        return ResponseData.getSuccessResponse("删除成功");
+    }
+}

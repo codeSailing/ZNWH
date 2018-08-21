@@ -1,0 +1,66 @@
+/* ����ͼ�� �Ѽ����� www.lanrentuku.com */
+body{color:#666666;"����";}
+a,img{border:0;text-decoration:none;}
+em{font-style:normal;}
+ol, ul{list-style:none outside none;padding:0;margin:0;}
+
+.tab li, .tab a, .tab-item{float:left;text-align:center;}
+.tab li, .tab a, .tab-item{cursor:pointer;float:left;text-align:center;}
+#summary-stock-s .dt{margin-top:4px;}
+#list1-s .dt{float:left;height:18px;text-align:right;width:72px;}
+/*#list1 .dd{width:324px;float:left;}*/
+
+/*#store-selector-s{position:relative;float:left;z-index:2;height:26px;margin-right:6px}*/
+#store-selector-s{position:relative;z-index:2;}
+#store-selector-s dl,#store-selector-s dt,#store-selector-s dd{float:none;color:#999}
+#store-selector-s dl{position:absolute;top:23px;z-index:1;width:358px;width:358px;padding:5px;border:1px solid #ddd;background:#fff;display:none;-moz-box-shadow:0 0 5px #ddd;-webkit-box-shadow:0 0 5px #ddd;box-shadow:0 0 5px #ddd}
+#store-selector-s dt{padding:6px 0 10px;color:#999}
+#store-selector-s dd{padding-bottom:5px;line-height:18px}
+#store-selector-s a:link,#store-selector-s a:visited{color:#005aa0}
+#store-selector-s a:hover,#store-selector-s a:active{background:#005aa0;color:#fff}
+/*
+#store-selector-s .text{float:left;+float:none;_float:left;position:relative;top:0;z-index:2;height:23px;background:#fff;border:1px solid #CECBCE;padding:0 20px 0 4px;line-height:23px;overflow:hidden}
+*/
+#store-selector-s .text b{display:block;position:absolute;top:0;right:0;overflow:hidden;width:17px;height:24px;background:url(../../images/btn20121210.png) 0 0 no-repeat}
+#store-selector-s .close{display:none;position:absolute;z-index:2;top:33px;left:430px;cursor:pointer;width:17px;height:17px;background:url(../../images/20120418.png) no-repeat -40px 0}
+#store-selector-s a:hover{background:#B79567;color:#fff;cursor:pointer}
+#store-selector-s.hover .text{border-bottom:0}
+#store-selector-s.hover .i-storeinfo{position:relative;z-index:2;background:url(img/bg_store.gif) no-repeat right -50px}
+#store-selector-s.hover .i-storeinfo div{background:url(img/bg_store.gif) no-repeat -81px -75px}
+#store-selector-s.hover dl{display:block}
+#store-selector-s.hover .close{display:block}
+
+#store-prompt-s{clear:left;line-height:25px}
+#store-prompt-s strong{font-size:14px}
+#store-prompt-s a{color:#005EAA}
+*html #store-selector-s .i-storeinfo,*html #store-selector-s .i-storeinfo div{float:left}
+*html #store-selector-s dl{left:0}
+#store-selector-s .content{display:none;position:absolute;border:1px solid #cecbce;width:450px;padding:15px;background:#fff;-moz-box-shadow:0 0 5px #ddd;-webkit-box-shadow:0 0 5px #ddd;box-shadow:0 0 5px #ddd}
+#store-selector-s .content select{float:left;width:120px;border:1px solid #cecbce;margin-right:15px}
+#store-selector-s .content .select3{margin-right:0}
+#store-selector-s.hover .content,#store-selector-s.hover .close{display:block}
+#JD-stock-s{position:relative;margin-bottom:0}
+#JD-stock-s .tab{width:100%;height:25px;float:left;border-bottom:2px solid #edd28b;overflow:visible;*overflow:hidden}
+#JD-stock-s .tab li{float:left;clear:none;height:23px;padding:1px 1px 0;border:1px solid #ddd;border-bottom:0;margin-right:3px;background-color:#fff;line-height:22px;text-decoration:none}
+#JD-stock-s .tab .curr{*position:relative;height:25px;padding:0;border:2px solid #edd28b;border-bottom:0}
+#JD-stock-s .tab a{position:relative;float:left;height:23px;padding:0 20px 1px 10px;line-height:23px;text-align:center;text-decoration:none;cursor:pointer;color:#005AA0;outline:0;*blr:expression(this.onFocus=this.blur())}
+#JD-stock-s .tab a:hover{background:0;color:#005AA0}
+#JD-stock-s .tab a i{position:absolute;right:5px;top:10px;*top:9px;display:block;width:7px;height:5px;overflow:hidden;background:url(../../images/20130606B.png) no-repeat -76px -34px;opacity:.5;filter:alpha(opacity=50)}
+#JD-stock-s .tab .curr i,#JD-stock-s .tab a:hover i{opacity:1;filter:alpha(opacity=100)}
+#JD-stock-s .area-list{padding-top:5px}
+#JD-stock-s .area-list li{float:left;width:100px;padding:2px 0 2px 15px;clear:none}
+#JD-stock-s .area-list li a{float:left;padding:2px 4px;*padding:0 4px;color:#005aa0}
+#JD-stock-s .area-list li a:hover{color:#fff}
+#JD-stock-s .area-list .longer-area{width:370px}
+#JD-stock-s .area-list .long-area{width:170px}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    visibility: hidden;
+    clear: both;
+}
+.clearfix {
+    *zoom: 1;
+}

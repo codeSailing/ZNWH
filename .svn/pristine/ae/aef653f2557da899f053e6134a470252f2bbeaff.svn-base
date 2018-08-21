@@ -1,0 +1,18 @@
+package com.quickdone.znwh.controller;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/*
+ * @Author: zhum
+ * @Date: 2018/7/10 14:39
+ * @Description:任务管理
+ */
+@Controller
+@RequestMapping(value = "/callTask")
+public class CallTaskController {
+    private static Logger logger = LoggerFactory.getLogger(CallTaskController.class);
+    
+}

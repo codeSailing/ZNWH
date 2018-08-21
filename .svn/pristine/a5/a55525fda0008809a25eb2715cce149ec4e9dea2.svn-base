@@ -1,0 +1,169 @@
+package com.quickdone.znwh.controller.api;
+
+import com.quickdone.znwh.common.Constants;
+import com.quickdone.znwh.controller.LoginController;
+import com.quickdone.znwh.enums.IvrEnum;
+import com.quickdone.znwh.taskhandle.TaskSchedule;
+import com.quickdone.znwh.webService.GetWebserviceInfo;
+import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/10 10:41
+ * @Description: 用于和IVR系统交互的接口
+ */
+
+@Controller
+@RequestMapping(value = "/ivr")
+public class IVRController {
+    private static Logger logger = LoggerFactory.getLogger(LoginController.class);
+    @Resource
+    private TaskSchedule taskSchedule;
+
+
+    /**
+     * *  外呼系统接收到到IVR电话接通的请求
+     * @param
+     * @param status   ivr传递的状态  0 正常   3 挂断
+     */
+    @RequestMapping(value = "/receive.do")
+    public String  reciveIvrMessage(RedirectAttributes redirectAttributes,String currentNode,String answer,int status,int taskid){
+        logger.info("reciveIvrMessage接口开始调用....message:"+answer+"  status "+status);
+        //拿到IVR结果，开始解析语义  输入参数 answer 输出参数 result
+        String webServiceResult = GetWebserviceInfo.getIntelligentCall(answer,1L);//TODO iss_uid 参数无意义，暂时写死
+        //处理语义返回结果
+        String result_answer = "";
+        Map<String,Object> resultMap = getSemanticResults(webServiceResult);
+        System.out.println("resultMap:"+resultMap);
+        logger.debug("result_answer:"+resultMap);
+        //解析流程配置文件
+        /**
+         * 1、获取当前任务的的流程配置文件
+         * 2、解析配置文件
+         */
+        try {
+            String result=taskSchedule.executeTask(currentNode,result_answer,taskid);
+
+            //将本次结果推送给IVR
+            redirectAttributes.addAttribute("userPhone","18867654342");
+            redirectAttributes.addAttribute("callContent",result);
+            return "redirect:/ivr/test.do";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    /**
+     * *  模拟IVR拨号系统
+     * @param customer  传递ivr的文本消息
+     * @param telephone   电话号码
+     */
+    @RequestMapping(value = "/ivrDial.do")
+    public String ivrDial(String customer, String telephone, RedirectAttributes redirectAttributes, HttpServletRequest request, HttpServletResponse response){
+        logger.info("ivrDial....message: "+customer+"  telephone: "+telephone);
+        try {
+            logger.info("模拟ivr正在尝试接通客户......");
+            Thread.sleep(3000);//模拟电话拨号过程
+            logger.info("模拟ivr拨通用户......");
+            logger.info("播放提示音......");
+            //电话拨通后向调用外呼系统
+            redirectAttributes.addAttribute("status", IvrEnum.CONNECT.getValue());
+            redirectAttributes.addAttribute("userName", "李四");
+            redirectAttributes.addAttribute("userPhone", "111111");
+            return "redirect:/ivr/test.do";
+        } catch (InterruptedException e) {
+            logger.error("电话拨号失败"+e.getMessage());
+        }
+
+        return"";
+
+    }
+
+
+
+    /**
+     * @Author: ly
+     *@Date: 2018/7/10
+     *@Description: 模拟IVR通话页面
+     * @return
+     */
+    @RequestMapping(value = "/test.do", method = RequestMethod.GET)
+    public ModelAndView ivrTestJsp(String userName, String userPhone) {
+        logger.info("IVRController==== test.do,  params: userName=" + userName + ", userPhone:" + userPhone);
+        ModelAndView mv =new ModelAndView();
+        mv.setViewName("simulate");
+        mv.addObject("userName",userName);
+        mv.addObject("userPhone",userPhone);
+        return mv;
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/12 10:33
+     * @Description: 处理语义返回结果
+     */
+    private Map<String,Object> getSemanticResults(String webServiceResult){
+        Map<String,Object> resultMap = new HashMap<String,Object>();
+        logger.debug("webServiceResult:"+webServiceResult.trim());
+        //处理结果
+        String[] resultAry = webServiceResult.replaceAll(" ", "").split("\\|");
+        if(resultAry.length>0){//处理结果有内容 1、正常通话 2、闲聊 3、没听清 4、用户忙
+            if(Constants.intelligentCalStatus.CHAT.equals(resultAry[0])){//闲聊 CHAT
+                //闲聊 先播报闲聊内容，再重复上一次播报(三次), resultAry[1] 为闲聊播报内容
+                resultMap.put("type",Constants.intelligentCalStatus.CHAT);//类型
+                resultMap.put("content",resultAry[1]);//播报内容 如果为空则重复上一次播报内容,不为空则播报content内容后再继续播报上次内容
+                resultMap.put("operate","REPEAT");//后续操作 包括：1、重复上次播报 REPEAT 2、继续下次播报[Y/N 是/否，对应节点回答的是/否] 3、挂断 EXIT
+            }
+            if(Constants.intelligentCalStatus.NORMAL.equals(resultAry[0])){//正常通话 NORMAL
+                //正常通话 Y/N
+                resultMap.put("type",Constants.intelligentCalStatus.NORMAL);
+                resultMap.put("content",resultAry[1]);
+                resultMap.put("operate",resultAry[1]);
+            }
+            if(Constants.intelligentCalStatus.NOTHEARING.equals(resultAry[0])){//没听清 NOT_HEARING
+                //没听清 重复上一次播报(三次) ， 获取上一次节点需要播报内容
+                resultMap.put("type",Constants.intelligentCalStatus.NOTHEARING);
+                resultMap.put("content","");
+                resultMap.put("operate","REPEAT");
+            }
+            if(Constants.intelligentCalStatus.USERBUSY.equals(resultAry[0])){//用户忙 USER_BUSY
+                //用户忙 直接挂断退出
+                resultMap.put("type",Constants.intelligentCalStatus.USERBUSY);
+                resultMap.put("content","");
+                resultMap.put("operate","EXIT");//如果operate为EXIT 则直接退出
+            }
+            //处理结果无内容 1、没调语义 2、语义返回无结果(知识库没有匹配到)
+            if(Constants.intelligentCalStatus.NORESULT.equals(resultAry[0])){//语义返回无结果 NULL
+                //重复上一次播报(三次)，如果依然没匹配到就挂断
+                resultMap.put("type",Constants.intelligentCalStatus.NORESULT);
+                resultMap.put("content","");
+                resultMap.put("operate","REPEAT");
+            }
+            if(Constants.intelligentCalStatus.ERRORRESULT.equals(resultAry[0])){//没调语义 ERROR
+                //多问几次，如果依然没匹配到就挂断
+                resultMap.put("type",Constants.intelligentCalStatus.ERRORRESULT);
+                resultMap.put("content","");
+                resultMap.put("operate","REPEAT");//ERROR
+            }
+        }else{
+            //异常情况
+        }
+        return resultMap;
+    }
+
+}

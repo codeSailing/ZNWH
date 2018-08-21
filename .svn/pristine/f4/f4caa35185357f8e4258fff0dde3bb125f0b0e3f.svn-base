@@ -1,0 +1,33 @@
+package com.quickdone.znwh.controller.api;
+
+import com.quickdone.znwh.controller.LoginController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/10 10:41
+ * @Description: 用于和IVR系统交互的接口
+ */
+
+@RestController
+@RequestMapping(value = "/ivr")
+public class IVRController {
+    private static Logger logger = LoggerFactory.getLogger(LoginController.class);
+
+
+
+    /**
+     * * 模拟IVR 向外呼系统发送客户语音消息
+     * @param message  ivr传递过来的文本消息
+     * @param status   ivr传递的状态  0 正常   -1 挂断
+     */
+    @RequestMapping(value = "/recive")
+    public void  reciveIvrMessage(String message,int status){
+        logger.info("reciveIvrMessage接口开始调用....message: "+message+"  status "+status);
+
+    }
+
+}

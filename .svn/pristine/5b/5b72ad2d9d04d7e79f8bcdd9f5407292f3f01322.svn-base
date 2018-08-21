@@ -1,0 +1,110 @@
+
+$('.more-btn').click(function () {
+    if ($('.more-condition').css('display') == "none") {
+        $(this).addClass('down');
+        $('.more-condition').addClass('show');
+    } else if ($('.more-condition').hasClass('show')) {
+        $(this).removeClass('down');
+        $('.more-condition').removeClass('show');
+    }
+});
+
+layui.use(['table', 'form', 'element', 'laypage', 'laydate', 'layer'], function () {
+    var table = layui.table
+        , form = layui.form
+        , element = layui.element
+        , laypage = layui.laypage
+        , laydate = layui.laydate
+        , layer = layui.layer;
+
+    //展示已知数据
+    table.render({
+        elem: '#content-configuration'
+        , cols: [[ //标题栏
+            {type: 'checkbox'}
+            , {field: 'taskcategory', title: '任务分类', width: 100,}
+            , {field: 'taskname', title: '任务名称', width: 140,}
+            , {field: 'tasktype', title: '任务类型', width: 140,}
+            , {field: 'executiontime', title: '执行时间', width: 300,}
+            , {field: 'tasktheme', title: '外呼主题', width: 140,}
+            , {field: 'flowpath', title: '外呼会话流程', width: 140,}
+            , {field: 'Status', title: '状态', width: 100,}
+            , {field: 'right', title: '操作', width: 220, align: 'center', toolbar: '#bar-configuration'}
+        ]]
+        , data: [{
+            "taskcategory": "2018年618"
+            , "taskname": "VIP客户营销"
+            , "tasktype": "周期性"
+            , "executiontime": "(2018-06-16至2018-06-17)   0 9 * 6  *"
+            , "tasktheme": "618年中大促"
+            , "flowpath": "产品营销流程"
+            , "Status": "待执行"
+        }, {
+            "taskcategory": "产品使用回访"
+            , "taskname": "VIP客户回访"
+            , "tasktype": "一次性"
+            , "executiontime": "2018-06-15 10:00"
+            , "tasktheme": "VIP回访"
+            , "flowpath": "VIP回访流程"
+            , "Status": "执行中"
+        }, {
+            "taskcategory": "改进建议调查"
+            , "taskname": "VIP客户调查"
+            , "tasktype": "一次性"
+            , "executiontime": "2018-06-14 10:00"
+            , "tasktheme": "问卷调查"
+            , "flowpath": " 问卷流程"
+            , "Status": "执行完毕"
+        }, {
+            "taskcategory": ""
+            , "taskname": ""
+            , "tasktype": ""
+            , "executiontime": ""
+            , "tasktheme": ""
+            , "flowpath": ""
+            , "Status": "已废弃"
+        }]
+    });
+    laypage.render({
+        elem: 'page-configuration' //注意，这里的 test1 是 ID，不用加 # 号
+        , count: 15 //数据总数，从服务端得到
+        , layout: ['count', 'prev', 'page', 'next', 'refresh', 'skip']
+        , jump: function (obj) {
+            console.log(obj)
+        }
+    });
+    laydate.render({
+        elem: '#time-horizon'
+        , range: true
+    });
+
+    // 新建任务
+    laydate.render({
+        elem: '#Exectime'
+        , type: 'time'
+        , format: 'H点m分'
+    });
+    laydate.render({
+        elem: '#Exectime2'
+        , type: 'time'
+        , format: 'H点m分'
+    });
+    laydate.render({
+        elem: '#Execdate'
+        , format: 'yyyy年MM月dd日'
+    });
+    laydate.render({
+        elem: '#validity'
+        , range: true
+    });
+});
+
+
+
+
+    // $(document).ready(function() {
+    $('.btn-add').click(function () {
+        $('#right-content').css("display", "none");
+        $('#add-task').css("display", "block");
+    });
+// });

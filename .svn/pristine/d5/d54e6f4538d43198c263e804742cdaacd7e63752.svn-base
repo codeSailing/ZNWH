@@ -1,0 +1,78 @@
+package com.quickdone.znwh.controller;
+
+import com.mysql.jdbc.StringUtils;
+import com.quickdone.znwh.entity.CallContentSubject;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallContentService;
+import com.quickdone.znwh.service.CallContentSubjectService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+
+/**
+ * 内容主题相关接口
+ *
+ * @Author: zhuLong
+ * @Date: 2018/7/10 14:26
+ */
+@RestController
+@RequestMapping(value = "/callContentSubject")
+public class CallContentSubjectController {
+    private Logger logger = LoggerFactory.getLogger(CallContentSubjectController.class);
+
+    @Resource
+    private CallContentSubjectService callContentSubjectService;
+    @Resource
+    private CallContentService callContentService;
+
+    /**
+     * @Description: 新增内容主题
+     * @Auther: zhuLong
+     * @Date: 2018/7/10 15:09
+     * @Param: [callContentSubject]
+     * @return: com.quickdone.znwh.pojo.ResponseData
+     */
+    @RequestMapping(value = "/addContentSubject.do", method = RequestMethod.POST)
+    public ResponseData addContentSubject(CallContentSubject callContentSubject) {
+        logger.debug("--------------------- 请求 addContentSubject.do ---------------------");
+        ResponseData responseData;
+        String name = callContentSubject.getName();
+        logger.debug("--------------------- addContentSubject.do ---------------------name=" + name);
+        if (!StringUtils.isNullOrEmpty(name)) {
+            //查询该主题名称是否存在，不存在时再执行保存操作
+            CallContentSubject findCallContentSubject = (CallContentSubject) callContentSubjectService.findByName(name);
+            if (findCallContentSubject == null) {
+                callContentSubjectService.save(callContentSubject);
+                responseData = ResponseData.getSuccessResponse("保存成功");
+            } else {
+                responseData = ResponseData.getErrorResponse("该主题名称已存在");
+            }
+        } else {
+            responseData = ResponseData.getErrorResponse("主题名称不能为空");
+        }
+        return responseData;
+    }
+
+    /**
+     * @Description: 删除内容主题
+     * @Auther: zhuLong
+     * @Date: 2018/7/10 15:36
+     * @Param: [contentSubjectIds]
+     * @return: com.quickdone.znwh.pojo.ResponseData
+     */
+    @RequestMapping(value = "/deleteContentSubject.do", method = RequestMethod.POST)
+    public ResponseData deleteContentSubject(String contentSubjectIds) {
+        logger.debug("--------------------- 请求 deleteContentSubject.do ---------------------");
+        ResponseData responseData;
+        if (!StringUtils.isNullOrEmpty(contentSubjectIds)) {
+            responseData = callContentSubjectService.delete(contentSubjectIds);
+        } else {
+            responseData = ResponseData.getErrorResponse("请选择需要删除的内容主题");
+        }
+        return responseData;
+    }
+}

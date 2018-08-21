@@ -1,0 +1,474 @@
+var taskconfiguration = function ($, layui) {
+    function init() {
+        showTree();
+        //获取yyyy-mm-dd
+        var getDayTime = function (d) {
+            var month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : '' + (d.getMonth() + 1);
+            var day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
+            return d.getFullYear() + '-' + month + '-' + day;
+        };
+        //HH:mm:ss
+        var getTime = function (time) {//毫秒
+            var d = new Date(time);
+            var month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : '' + (d.getMonth() + 1);
+            var day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
+            var huors = d.getHours() < 10 ? '0' + d.getHours() : '' + d.getHours();
+            var minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : '' + d.getMinutes();
+            var seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : '' + d.getSeconds();
+            return huors + ':' + minutes+":"+seconds;
+        };
+        // 新增确认
+        layui.use(['table', 'form', 'element', 'laypage', 'laydate', 'layer'], function () {
+            var table = layui.table
+                , form = layui.form
+                , element = layui.element
+                , laypage = layui.laypage
+                , laydate = layui.laydate
+                , layer = layui.layer;
+
+            //展示已知数据
+            table.render({
+                elem: '#content-configuration'
+                , url: context + '/callTask/data.do'  //数据请求路径
+                , cols: [[ //标题栏
+                    {checkbox: true, field: 'id', title: '全选'}
+                    , {field: 'callCategory', title: '任务分类', width: 100, templet: '#category'}
+                    , {field: 'name', title: '任务名称', width: 140,}
+                    , {field: 'planType', title: '任务类型', width: 140, templet: '#planType'}
+                    , {field: 'executeBeginDate', title: '执行时间', width: 300, templet: '#period'}
+                    , {field: 'callContentSubject', title: '外呼主题', width: 140, templet: '#contentSubject'}
+                    , {field: 'callFlow', title: '外呼会话流程', width: 140, templet: '#callFlow'}
+                    , {field: 'status', title: '状态', width: 100, templet: '#status'}
+                    , {field: 'right', title: '操作', width: 220, align: 'center', toolbar: '#bar-configuration'}
+                ]]
+                , skin: 'row' //表格风格
+                , even: true
+                , page: true //是否显示分页
+                , id: 'callTask' //初始化标识id
+                // ,limits: [5, 7, 10]
+                //,limit: 5 //每页默认显示的数量
+                , jump: function (obj) {
+                    console.log(obj)
+                }
+            });
+            var $ = layui.$, active = {
+                reload: function () {
+                    var name = $('#keyword');
+                    table.reload('category', {
+                        where: {
+                            key: {
+                                name: $.trim(name.val()),
+                            }
+                        }
+                    });
+                }
+            };
+            /************************刷新table****************************/
+            var reloadTable = function () {
+                table.reload("callTask", { //此处是上文提到的 初始化标识id
+                });
+            };
+
+            $('#search').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            laydate.render({
+                elem: '#time-horizon'
+                , range: true
+            });
+
+            // 新建任务
+            laydate.render({
+                elem: '#ExectimeOne'
+                , type: 'time'
+                , format: 'HH:mm:ss'
+            });
+            laydate.render({
+                elem: '#ExectimeTwo'
+                , type: 'time'
+                , format: 'HH:mm:ss'
+            });
+            laydate.render({
+                elem: '#Execdate'
+                , format: 'yyyy-MM-dd'
+            });
+            laydate.render({
+                elem: '#executeBeginDate'
+                , format: 'yyyy-MM-dd'
+            });
+            laydate.render({
+                elem: '#executeEndDate'
+                , format: 'yyyy-MM-dd'
+            });
+            //修改时间弹框
+            laydate.render({
+                elem: '#upExectimeOne'
+                , type: 'time'
+                , format: 'HH:mm:ss'
+            });
+            laydate.render({
+                elem: '#upExectimeTwo'
+                , type: 'time'
+                , format: 'HH:mm:ss'
+            });
+            laydate.render({
+                elem: '#upExecdate'
+                , format: 'yyyy-MM-dd'
+            });
+            laydate.render({
+                elem: '#upexecuteBeginDate'
+                , format: 'yyyy-MM-dd'
+            });
+            laydate.render({
+                elem: '#upexecuteEndDate'
+                , format: 'yyyy-MM-dd'
+            });
+            //弹出变计划
+            $('#plan').on('click', function () {
+                layer.open({
+                    type: 1,
+                    area: ['600px', '360px'],
+                    shadeClose: true, //点击遮罩关闭
+                    content: $("#planchange")
+                });
+            });
+            //添加新建
+            $('.btn-add').click(function () {
+                $('#right-content').css("display", "none");
+                $('#add-task').css("display", "block");
+                //获取主题信息
+                $.ajax({
+                    url:context+'/callContentSubject/tree.do',
+                    type:'get',
+                    async:false,
+                    success:function (data) {
+                        // console.log(data.data);
+                        // var tpl_source = $("#subject_handlebars").html();
+                        // console.log(tpl_source)
+                        // var operate = Handlebars.compile(tpl_source);
+                        // console.log(operate)
+                        // var html = operate(data.data);
+                        // $("#subject").html(html);
+                    },
+                    error:function () {
+
+                    }
+                });
+                //获取客户组信息
+                $.ajax({
+                    url:context+'/customerGroup/showTree.do',
+                    type:'get',
+                    async:false,
+                    success:function (data) {
+                        console.log(data);
+                        // var tpl_source = $("#resourcePath_handlebars").html();
+                        // var operate = Handlebars.compile(tpl_source);
+                        // var html = operate1(data.data);
+                        // $("#resourcePath").html(html);
+                    },
+                    error:function () {
+
+                    }
+                });
+                //获取流程信息
+                $.ajax({
+                    url:context+'/callFlow/tree.do',
+                    type:'get',
+                    async:false,
+                    success:function (data) {
+                        console.log(data);
+                        // var tpl_source = $("#resourcePath_handlebars").html();
+                        // var operate = Handlebars.compile(tpl_source);
+                        // var html = operate1(data.data);
+                        // $("#resourcePath").html(html);
+                    },
+                    error:function () {
+
+                    }
+                });
+            });
+
+            //修改提交
+            form.on('submit(update)', function(data){
+                // console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
+                // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+                var form = $("#up-form").serialize();
+                console.log(form);
+                $.ajax({
+                    url:context + '/callTask/update.do',
+                    type:'post',
+                    data:form,
+                    success:function (data) {
+                        if(data.status == 0){
+                            layer.msg(data.message, {time: 2000, icon: 1});
+                            // $('#right-content').css("display", "block");
+                            $('#edit-task').modal("hide");
+                            reloadTable();
+                        } else {
+                            layer.msg(data.message, {time: 2000, icon: 5});
+                        }
+                    },
+                    error:function () {
+                        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                    }
+                });
+                // return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+
+            form.on('submit(add)', function(data){
+                // console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
+                // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+                var form = $("#add-form").serialize();
+                $.ajax({
+                    url:context + '/callTask/add.do',
+                    type:'post',
+                    data:form,
+                    success:function (data) {
+                        if(data.status == 0){
+                            layer.msg(data.message, {time: 2000, icon: 1});
+                            $('#right-content').css("display", "block");
+                            $('#add-task').css("display", "none");
+                            reloadTable();
+                        } else {
+                            layer.msg(data.message, {time: 2000, icon: 5});
+                        }
+                    },
+                    error:function () {
+                        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                    }
+                });
+            });
+
+            //新建关闭
+            $('.close-div').click(function () {
+                $('#right-content').css("display", "block");
+                $('#add-task').css("display", "none");
+            });
+            //更多筛选条件
+            $('.more-btn').click(function () {
+                if ($('.more-condition').css('display') == "none") {
+                    $(this).addClass('down');
+                    $('.more-condition').addClass('show');
+                } else if ($('.more-condition').hasClass('show')) {
+                    $(this).removeClass('down');
+                    $('.more-condition').removeClass('show');
+                }
+            });
+
+            //选择一次性/周期性 改变时间选择框
+            form.on('radio(planType)', function(data){
+                console.log(data)
+                if(data.value == 1){//周期性
+                    $("#add-planType-two").show();
+                    $("#add-planType-one").hide();
+                }else if(data.value == 0){//一次性
+                    $("#add-planType-two").hide();
+                    $("#add-planType-one").show();
+                }
+            });
+            //修改任务 选择一次性/周期性 改变时间选择框
+            form.on('radio(uplanType)', function(data){
+                console.log(data)
+                if(data.value == 1){//周期性
+                    $("#up-planType-two").show();
+                    $("#up-planType-one").hide();
+                }else if(data.value == 0){//一次性
+                    $("#up-planType-two").hide();
+                    $("#up-planType-one").show();
+                }
+            });
+
+            //弹出选流程
+            $('#flow').on('click', function () {
+                layer.open({
+                    type: 1,
+                    area: ['600px', '360px'],
+                    shadeClose: true, //点击遮罩关闭
+                    content: $("#fiowoption")
+                });
+            });
+            //监听工具条
+            table.on('tool(callTaskList)', function (obj) {
+                var data = obj.data //获得当前行数据
+                    , layEvent = obj.event; //获得 lay-event 对应的值
+                if (layEvent === 'del') {
+                    layer.confirm("删除后无法恢复，确定删除吗？", {
+                        btn: ["确定", "取消"],
+                        btn1: function () {
+                            $.ajax({
+                                type: "get",
+                                url: context + "/callTask/delete.do",
+                                data: {"ids": data.id},
+                                success: function (data) {
+                                    if (data.status == 0) {
+                                        layer.msg(data.message, {time: 2000, icon: 1});
+                                        // showTree();
+                                        reloadTable();
+                                    } else {
+                                        layer.msg(data.message, {time: 2000, icon: 5});
+                                    }
+                                },
+                                error: function (data) {
+                                    layer.msg("删除失败", {time: 2000, icon: 5});
+                                }
+                            });
+                        }
+                    });
+                } else if (layEvent === 'edit') {
+                    console.log(data);
+                    $("#up-form").find("[name='id']").val(data.id);
+                    $("#up-form").find("[name='name']").val(data.name);
+                    // $("#up-form").find("input[type='radio'][name='uptype']").val(data.status);
+                    if(data.planType == 1){//周期性
+                        $("#up-planType-two").show();
+                        $("#up-planType-one").hide();
+                    }else if(data.planType == 0){//一次性
+                        $("#up-planType-two").hide();
+                        $("#up-planType-one").show();
+                    }
+                    $('[id=uptype]').each(function(i,item){
+                        if($(item).val()==data.type){
+                            $(item).prop('checked',true);
+                            form.render();
+                        }
+                    });
+
+                    $("#up-form").find("[name='callCategoryId']").val(data.callCategoryId);
+                    $("#up-form").find("[name='callContentSubjectId']").val(data.callContentSubjectId);
+                    $("#up-form").find("[name='customerGroupId']").val(data.customerGroupId);
+
+                    $('[id=upplanType]').each(function(i,item){
+                        if($(item).val()==data.planType){
+                            $(item).prop('checked',true);
+                            form.render();
+                        }
+                    });
+
+                    if(data.planType == 0){
+                        $("#up-form").find("[name='executeOneDate']").val(data.executeBeginDate);
+                        $("#up-form").find("[name='executeOneTime']").val(getTime(data.executeTime));
+                    }else if(data.planType == 1){
+                        $("#up-form").find("[name='executeBeginDate']").val(data.executeBeginDate);
+                        $("#up-form").find("[name='executeEndDate']").val(data.executeEndDate);
+                        $("#up-form").find("[name='executeTime']").val(getTime(data.executeTime));
+                    }
+                    $("#up-form").find("[name='callFlowId']").val(data.callFlowId);
+                    $("#up-form").find("[name='callcjNumber']").val(data.callcjNumber);
+                    $("#up-form").find("[name='tryCount']").val(data.tryCount);
+                    $("#up-form").find("[name='basicNum']").val(data.basicNum);
+
+                    $('[id=upcallNumShowType]').each(function(i,item){
+                        if($(item).val()==data.callNumShowType){
+                            $(item).prop('checked',true);
+                            form.render();
+                        }
+                    });
+                    // $("#up-form").find("[name='callNumShowType']").val(data.callNumShowType);
+                    $("#up-form").find("[name='callNumShow']").val(data.callNumShow);
+                    $("#up-form").find("[name='descri']").val(data.descri);
+                } else if (layEvent === 'detail') {
+                    $("#detail-form").find("[name='detailname']").text(data.name);
+                    if(data.status == 0){
+                        $("#detail-form").find("[name='detailstatus']").text("待执行");
+                    }else if(data.status == 1){
+                        $("#detail-form").find("[name='detailstatus']").text("执行中");
+                    }else if(data.status == 2){
+                        $("#detail-form").find("[name='detailstatus']").text("已完成");
+                    }
+
+                    // $("#detail-form").find("[name='detailcallcategory']").text(data.callCategory.name);
+                    // $("#detail-form").find("[name='detailsubject']").text(data.callContentSubject.name);
+                    // $("#detail-form").find("[name='detailcustomer']").text(data.customerGroup.name);
+
+                    if(data.planType == 0){
+                        $("#detail-form").find("[name='detailplanetype']").text('一次性');
+                        $("#detail-form").find("[name='detailexecutime']").text(data.executeBeginDate+" "+getTime(data.executeTime));
+                    }else if(data.planType == 1){
+                        $("#detail-form").find("[name='detailplanetype']").text('周期性');
+                        $("#detail-form").find("[name='detailexecutime']").text(data.executeBeginDate+"至"+data.executeEndDate+" "+getTime(data.executeTime));
+                    }
+                    // $("#detail-form").find("[name='detailflow']").text(data.callFlow.name);
+                    $("#detail-form").find("[name='detailflow']").text(data.callFlowId);
+                    $("#detail-form").find("[name='detailcjnum']").text(data.callcjNumber);
+                    $("#detail-form").find("[name='detailtrycount']").text(data.tryCount);
+                    $("#detail-form").find("[name='detailbasicnum']").text(data.basicNum);
+
+                    $("#detail-form").find("[name='detailshownum']").text(data.callNumShow);
+                    $("#detail-form").find("[name='detaildescri']").text(data.descri);
+                    $("#detail-task").modal('show');
+                } else if (layEvent === 'destroyIt') {
+                    layer.confirm('确定废弃该任务吗？', function (index) {
+                    });
+                }
+            });
+        });
+
+
+
+
+        /************************左侧树状结构****************************/
+        var zTreeObj;
+        // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+        var setting = {
+            treeId: "",
+            treeObj: null,
+            view: {
+                showLine: true,
+                showIcon: false,
+                selectedMulti: false,
+                dblClickExpand: false
+                // addDiyDom: addDiyDom
+            },
+            data: {
+                simpleData: {   //简单的数据源，一般开发中都是从数据库里读取，API有介绍，这里只是本地的
+                    enable: true,
+                    idKey: "id",  //id和pid，
+                    pIdKey: "parentId",
+                    rootPId: null   //根节点
+                }
+            },
+            callback: {
+
+                /********************************* 回调函数。单击节点触发事件*****************************************/
+                onClick: zTreeOnClick
+            }
+        };
+        // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+        function showTree(){
+            $.ajax({
+                type: "GET",
+                url: context + "/callCategory/findTree.do",
+                data: {},
+                success: function (data) {
+                    var resu = eval(data.data);
+                    zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, resu);
+                }
+            });
+        }
+        /********************************* 单击树节点触发的方法*****************************************/
+        function zTreeOnClick(event, treeId, treeNode) {
+            $("#callCategoryId").val(treeNode.id);
+            var parentId = treeNode.id;
+            $("#addForm").find("#parentId").val(treeNode.id);
+            var name = treeNode.name;
+            layui.use('table', function() {
+                var table = layui.table;
+                table.reload('callTask', {
+                    where: {
+                        key: {
+                            parentId: parentId,
+                        }
+                    }
+                });
+            });
+        }
+    };
+    return {
+        init: function () {
+            init();
+        }
+
+    }
+}(jQuery, layui, document)
+

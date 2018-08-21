@@ -1,0 +1,232 @@
+package com.quickdone.znwh.service.impl;
+
+import com.iflytek.mt_scylla.mt_scylla;
+import com.quickdone.znwh.pojo.AnalSemResult;
+import com.quickdone.znwh.utils.HttpClient4Util;
+import com.quickdone.znwh.utils.StringUtils;
+import org.activiti.engine.impl.util.json.JSONArray;
+import org.activiti.engine.impl.util.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+
+/**
+ * Created by dell on 2018/5/14.
+ */
+@Component
+public class OutcrySemanticservice {
+    private static final Logger logger = LoggerFactory
+        .getLogger(OutcrySemanticservice.class);
+
+
+    /**
+     * 第一次调后台语义的时候，就是用新的uuid去查
+     *
+     * @param newuid
+     * @param voiceResult
+     * @param nlpAddress
+     * @param scoreThreshold
+     * @param ismwebaipAddress
+     * @return
+     * @throws Exception
+     */
+    public String firstAndNewIdToquery(String voiceResult, String newuid,String nlpAddress, String scoreThreshold, String ismwebaipAddress, mt_scylla miat) throws Exception {
+        //调用讯飞引擎
+        logger.info("第一次调用语义开始");
+        //注意区分第一次
+        int merroyNlpCout = 0;
+        String resu = nlpNew(voiceResult, newuid, nlpAddress, merroyNlpCout,miat);
+        if (resu != null) {
+            JSONObject result = new JSONObject(resu)
+                    .getJSONObject("result");
+            //标准问id，存在讯飞的TB_ISM_KONWLEDGE_POINT
+            String resuId = result.getJSONObject("matchInfo")
+                    .getString("id");
+            String rc = result.getString("rc");
+            double score = result.getJSONObject("matchInfo").getDouble(
+                    "score");
+            double scoreThresholdDouble = Double
+                    .valueOf(scoreThreshold);
+            if ("0".equals(rc)) {
+                //解析语义查询的结果
+                List<AnalSemResult> analSemResultBeanList = analSemResult(resu);
+                if (analSemResultBeanList != null && analSemResultBeanList.size() > 0) {
+                    if (analSemResultBeanList.size() == 1) {
+                        //此时就是没有更多答案
+                        if (score >= scoreThresholdDouble) {
+                            //调用讯飞接口获得问答答案的id
+                            String ismResult = getAnswer(resuId, ismwebaipAddress);
+                            //先要验证这个知识条目分类是否存在
+                            String meassge = valiteItemExtior(ismResult);
+                            return meassge;
+                        } else {
+                            return "得分过低："+score;
+                        }
+                    }
+                } else {
+                    return "解析语义查询的结果没有得到数据";
+                }
+            } else {
+                return "rc是-1,判断为闲话，当前得分为：" + score;
+            }
+        } else {
+            //调用热词查询结果
+            return "闲话";
+        }
+        return null;
+    }
+
+    public String nlpNew(String voiceResult, String iss_uid, String nlpAddress, int merroyNlpCout, mt_scylla miat) throws Exception {
+        String resu=null;
+        try {
+            //初始化语义引
+            resu = nlpNewTest(voiceResult, iss_uid, nlpAddress, miat);
+            if(resu==null){
+                resu = nlpNewTest(voiceResult, iss_uid, nlpAddress, miat);
+                if(resu==null){
+                    resu = nlpNewTest(voiceResult, iss_uid, nlpAddress, miat);
+                    logger.info("第三次，输出结果是："+resu);
+                    return resu;
+                }else{
+                    logger.info("第二次，输出结果是："+resu);
+                    return resu;
+                }
+            }else{
+                logger.info("第一次，输出结果是："+resu);
+                return resu;
+            }
+
+        }catch (Exception  e){
+            throw e;
+        }finally {
+            // closeSemanticEngine(miat);
+            logger.info("调用语义插件结束");
+        }
+
+    }
+
+    /**
+     * 调语义得到结果
+     * @param voiceResult
+     * @param iss_uid
+     * @param nlpAddress
+     * @param miat
+     * @return
+     * @throws Exception
+     */
+    public String nlpNewTest(String voiceResult, String iss_uid, String nlpAddress,mt_scylla miat) throws Exception {
+        int textlen = voiceResult.getBytes("UTF-8").length;
+        String param = "svc=nlp,newsess=0,nbest=10,username=unicom,org=1001,iss_uid=" + iss_uid + ","
+                + "url=" + nlpAddress + ",appid=" + "pc20onli";
+        int[] errCode = new int[1];
+        String resu = miat.SCYMTNLPEx(param, voiceResult, textlen, errCode,
+                null);
+        if (errCode[0] == 0) {
+            logger.info("讯飞引擎语义结果为：" + resu);
+
+        } else {
+            logger.error("哎呀，出错了，错误码：" + errCode[0] + ".");
+            resu=null;
+        }
+        return resu;
+    }
+
+    /**
+     * 解析语义查询得到的结果
+     *
+     * @return
+     * @throws Exception
+     */
+    public List<AnalSemResult> analSemResult(String resu) throws Exception {
+        JSONObject result = new JSONObject(resu)
+                .getJSONObject("result");
+        //标准问id，存在讯飞的TB_ISM_KONWLEDGE_POINT
+        String resuId = result.getJSONObject("matchInfo")
+                .getString("id");
+        String rc = result.getString("rc");
+        double score = result.getJSONObject("matchInfo").getDouble(
+                "score");
+        String questionStd = result.getJSONObject("matchInfo").getString("questionStd");
+        List<AnalSemResult> analSemResultBeanList = new ArrayList<>();
+        Map<Double, Double> map = new TreeMap<Double, Double>(
+                new Comparator<Double>() {
+                    public int compare(Double obj1, Double obj2) {
+                        // 降序排序
+                        return obj2.compareTo(obj1);
+                    }
+                });
+        AnalSemResult analSemResultBean = new AnalSemResult();
+        analSemResultBean.setId(resuId);
+        analSemResultBean.setRc(rc);
+        analSemResultBean.setScore(score);
+        analSemResultBean.setQuestionName(questionStd);
+        map.put(score, score);
+        analSemResultBeanList.add(analSemResultBean);
+        //这个就是有更多答标准问时候
+        if (result.has("moreResult")) {
+            //获得更多答案
+            JSONArray moreResult = result.getJSONArray("moreResult");
+            for (int i = 0; i < moreResult.length(); i++) {
+                JSONObject matchInfo = moreResult.getJSONObject(i).getJSONObject("matchInfo");
+                String questionStdOne = matchInfo.getString("questionStd");
+                String standardIdMoreOne = matchInfo.getString("id");
+                double scoreOne = matchInfo.getDouble("score");
+                map.put(scoreOne, scoreOne);
+                AnalSemResult analSemResultBeanOne = new AnalSemResult();
+                analSemResultBeanOne.setId(standardIdMoreOne);
+                analSemResultBeanOne.setQuestionName(questionStdOne);
+                analSemResultBeanOne.setScore(scoreOne);
+                analSemResultBeanList.add(analSemResultBeanOne);
+            }
+            Set<Double> keySet = map.keySet();
+            Iterator<Double> iter = keySet.iterator();
+            List<AnalSemResult> listOne = new ArrayList<>();
+            while (iter.hasNext()) {
+                Double key = iter.next();
+                Double scoreTwo = map.get(key);
+                for (int t = 0; t < analSemResultBeanList.size(); t++) {
+                    if (scoreTwo == analSemResultBeanList.get(t).getScore()) {
+                        listOne.add(analSemResultBeanList.get(t));
+                    }
+                }
+            }
+            return listOne;
+        }
+        return analSemResultBeanList;
+    }
+
+
+    /**
+     * 获取知识库接口答案
+     *
+     * @param id
+     * @return
+     */
+    public String getAnswer(String id, String ismwebaipAddress) {
+        return HttpClient4Util.doGet(ismwebaipAddress + id, "UTF-8");
+    }
+
+    /**
+     * 验证知识条目是否存在
+     *
+     * @return
+     */
+    private String valiteItemExtior(String ismResult) throws Exception {
+        String message = "false" + "@" + "1";
+        if (StringUtils.isNullOrEmpry(ismResult)) {
+            //知识库没有答案
+            return message;
+        } else {
+            if (StringUtils.isNullOrEmpry(new JSONObject(ismResult).getString("content"))) {
+                //知识库没有答案
+                return message;
+            }
+        }
+        String ismContent = new JSONObject(ismResult).getString("content");
+        message = ismContent;
+        return message;
+    }
+
+}

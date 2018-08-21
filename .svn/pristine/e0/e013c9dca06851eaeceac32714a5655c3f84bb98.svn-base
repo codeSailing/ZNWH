@@ -1,0 +1,31 @@
+
+$(function () {
+    change();
+})
+var times = null;var timer = null;
+function change() {
+    var userName=$('#userName').val();
+    var userPhone=$('#userPhone').val();
+    times = 60;
+    // 计时开始
+    timer = setInterval(function(){
+        $('#voice').val("尊敬的"+userName+"（"+userPhone+"）用户，正在与您通话中 "+times );
+        times--;
+        if (times < 0) {
+            $('#voice').val("与"+userName+"（"+userPhone+"）用户的通话结束！");
+            times = 60;
+            clearInterval(timer);
+        }
+    }, 1000);
+}
+function submitForm(){
+    var desc = $("#desc").val();
+    if(desc!=""){
+        console.log(desc);
+    }else{
+        console.log("通话内容为空！");
+    }
+}
+function interrupt(){
+    console.log("已挂断！");
+}

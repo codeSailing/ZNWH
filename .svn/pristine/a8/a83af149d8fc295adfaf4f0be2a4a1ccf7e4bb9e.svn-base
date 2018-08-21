@@ -1,0 +1,72 @@
+package com.quickdone.znwh.taskhandle;
+
+import com.quickdone.znwh.common.Constants;
+import com.quickdone.znwh.controller.api.IVRController;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/13 15:35
+ * @Description:流程执行实例 定时任务
+ */
+
+
+public class QuartzTask implements Job {
+    private static Logger logger = LoggerFactory.getLogger(QuartzTask.class);
+
+    @Override
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        logger.info("定时任务开始执行==============：");
+        /**
+         * 转型逻辑
+         * 新建任务后生成一个定时任务
+         * 定时任务在指定时间开始执行
+         * 将任务ID  电话号码等通过http 发送给IVR（或者跳转到模拟的测试页面）
+         */
+        JobDataMap jobDataMap=jobExecutionContext.getJobDetail().getJobDataMap();
+        String task=jobDataMap.getString("taskid");
+        String flow=jobDataMap.getString("flowid");
+        HttpServletResponse response=(HttpServletResponse)jobDataMap.get("response");
+        String[] phones=(String[])jobDataMap.get("telephones");
+
+
+        // 1、http  调用IVR
+
+        // 2、跳转到测试页面
+
+        PrintWriter writer= null;
+        String url="http://localhost:8086/ivr/test.do";
+        String localtion="window.open ("+"\'"+url+"\'"+" ,'_top')";
+        try {
+            writer = response.getWriter();
+            writer.println("<html>");
+            writer.println("<script>");
+            writer.println(localtion);
+            writer.println("</script>");
+            writer.println("</html>");
+            writer.println("<html>");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+
+
+    }
+}

@@ -1,0 +1,708 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: Administrator
+  Date: 2018/7/11
+  Time: 21:16
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+
+<%@include file="../common/taglibs.jsp" %>
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>流程配置</title>
+    <%--<script>--%>
+        <%--function init() {--%>
+            <%--if (window.goSamples) goSamples();  // 这些样本的init - 你不需要调用它--%>
+            <%--var $$ = go.GraphObject.make;  // 为了简洁定义模板--%>
+<%--//            console.log($$);--%>
+            <%--myDiagram =--%>
+                <%--$$(go.Diagram, "myDiagramDiv",  // 必须命名或引用div HTML元素--%>
+                    <%--{--%>
+                        <%--// grid: $$(go.Panel, "Grid",--%>
+                        <%--//     $$(go.Shape, "LineH", {stroke: "lightgray", strokeWidth: 0.5}),--%>
+                        <%--//     $$(go.Shape, "LineH", {stroke: "gray", strokeWidth: 0.5, interval: 10}),--%>
+                        <%--//     $$(go.Shape, "LineV", {stroke: "lightgray", strokeWidth: 0.5}),--%>
+                        <%--//     $$(go.Shape, "LineV", {stroke: "gray", strokeWidth: 0.5, interval: 10})--%>
+                        <%--// ),--%>
+                        <%--allowDrop: true,  // 必须是真的才能接受调色板中的液滴--%>
+                        <%--"draggingTool.dragsLink": true,--%>
+                        <%--"draggingTool.isGridSnapEnabled": true,--%>
+                        <%--"linkingTool.isUnconnectedLinkValid": true,--%>
+                        <%--"linkingTool.portGravity": 20,--%>
+                        <%--"relinkingTool.isUnconnectedLinkValid": true,--%>
+                        <%--"relinkingTool.portGravity": 20,--%>
+                        <%--"relinkingTool.fromHandleArchetype":--%>
+                            <%--$$(go.Shape, "Diamond", {--%>
+                                <%--segmentIndex: 0,--%>
+                                <%--cursor: "pointer",--%>
+                                <%--desiredSize: new go.Size(8, 8),--%>
+                                <%--fill: "tomato",--%>
+                                <%--stroke: "darkred"--%>
+                            <%--}),--%>
+                        <%--"relinkingTool.toHandleArchetype":--%>
+                            <%--$$(go.Shape, "Diamond", {--%>
+                                <%--segmentIndex: -1,--%>
+                                <%--cursor: "pointer",--%>
+                                <%--desiredSize: new go.Size(8, 8),--%>
+                                <%--fill: "darkred",--%>
+                                <%--stroke: "tomato"--%>
+                            <%--}),--%>
+                        <%--"linkReshapingTool.handleArchetype":--%>
+                            <%--$$(go.Shape, "Diamond", {--%>
+                                <%--desiredSize: new go.Size(7, 7),--%>
+                                <%--fill: "lightblue",--%>
+                                <%--stroke: "deepskyblue"--%>
+                            <%--}),--%>
+                        <%--rotatingTool: $$(TopRotatingTool),  // 定义如下--%>
+                        <%--"rotatingTool.snapAngleMultiple": 15,--%>
+                        <%--"rotatingTool.snapAngleEpsilon": 15,--%>
+                        <%--"undoManager.isEnabled": true--%>
+                    <%--});--%>
+            <%--// 当文档被修改时，为标题添加一个“*”并启用“保存”按钮--%>
+            <%--myDiagram.addDiagramListener("Modified", function (e) {--%>
+                <%--var button = document.getElementById("SaveButton");--%>
+                <%--// if (button) button.disabled = !myDiagram.isModified;--%>
+                <%--var idx = document.title.indexOf("*");--%>
+                <%--if (myDiagram.isModified) {--%>
+                    <%--if (idx < 0) document.title += "*";--%>
+                <%--} else {--%>
+                    <%--if (idx >= 0) document.title = document.title.substr(0, idx);--%>
+                <%--}--%>
+            <%--});--%>
+            <%--var Select_Port = null;--%>
+            <%--myDiagram.addDiagramListener("ObjectSingleClicked", function(e) {--%>
+                <%--Select_Port = e.subject.part.data;--%>
+                <%--// console.log(e.diagram.commandHandler);--%>
+                <%--// alert(e.subject.part.data.res);--%>
+
+                <%--// e.subject.part.data即获取到的data--%>
+                <%--// alert(e.subject.part.data.key);--%>
+                <%--// $("#res").val(e.subject.part.data.key);--%>
+                <%--// $$('html').html(e.subject.part.data.key);--%>
+                <%--$('#res').val(e.subject.part.data.key);--%>
+                <%--// console.log(e.subject.part.data);--%>
+                <%--// e.subject.part.data.id = 2;--%>
+
+
+                <%--// myDiagram.model.removeNodeData(Select_Port);--%>
+
+            <%--});--%>
+
+            <%--// 定义一个创建通常透明的“端口”的函数。--%>
+            <%--//“name”用作GraphObject.portId，“spot”用于控制链接的连接方式--%>
+            <%--// 以及端口在节点上的位置以及布尔型“输出”和“输入”参数--%>
+            <%--// 控制用户是否可以从端口或从端口获取链接。--%>
+            <%--function makePort(name, spot, output, input) {--%>
+                <%--// 港口基本上只是一个小透明的广场--%>
+                <%--return $$(go.Shape, "Circle",--%>
+                    <%--{--%>
+                        <%--fill: null,  // 没有看到，默认情况下; 通过showSmallPorts设置为半透明灰色，如下定义--%>
+                        <%--stroke: null,--%>
+                        <%--desiredSize: new go.Size(7, 7),--%>
+                        <%--alignment: spot,  // 对齐主Shape中的端口--%>
+                        <%--alignmentFocus: spot,  // 只是在形状内--%>
+                        <%--portId: name,  // 声明这个对象是一个“端口”--%>
+                        <%--fromSpot: spot, toSpot: spot,  // 声明链接可能在此端口连接的位置--%>
+                        <%--fromLinkable: output, toLinkable: input,  // 声明用户是否可以在此处绘制链接--%>
+                        <%--cursor: "pointer"  // 显示不同的光标以指示潜在的链接点--%>
+                    <%--});--%>
+            <%--}--%>
+            <%--$('#deletePart').click(function(e){--%>
+                <%--var content = $('#content').val();--%>
+                <%--var exceptionRef = $('#exceptionRef').val();--%>
+                <%--var id = $('#id').val();--%>
+                <%--var answer = $('#answer').val();--%>
+                <%--var defaultRef = $('#defaultRef').val();--%>
+                <%--var exceptionRef = $('#exceptionRef').val();--%>
+                <%--if("undefined" == typeof myDiagram){--%>
+                    <%--result_prompt(0, "浏览器不兼容此功能，请使用高版本谷歌浏览器！");--%>
+                    <%--return false;--%>
+                <%--}--%>
+                <%--console.log(Select_Port);--%>
+                <%--if (Select_Port == null) {--%>
+                    <%--alert("请先选中节点！");--%>
+                <%--}--%>
+                <%--Select_Port.id = id;--%>
+                <%--Select_Port.answer = answer;--%>
+                <%--Select_Port.defaultRef = defaultRef;--%>
+                <%--Select_Port.exceptionRef = exceptionRef;--%>
+                <%--Select_Port.content = content;--%>
+                <%--//  var node = obj.part;//拿到节点的对象，后面要拿什么值就直接.出来--%>
+                <%--// myDiagram.model.removeNodeData(Select_Port);--%>
+            <%--});--%>
+
+            <%--$('#undo-buttun').click(function(){--%>
+                <%--if("undefined" == typeof myDiagram){--%>
+                    <%--result_prompt(0, "浏览器不兼容此功能，请使用高版本谷歌浏览器！");--%>
+                    <%--return false;--%>
+                <%--}--%>
+                <%--myDiagram.undoManager.undo();--%>
+            <%--});--%>
+
+            <%--$('#redo-buttun').click(function(){--%>
+                <%--if("undefined" == typeof myDiagram){--%>
+                    <%--result_prompt(0, "浏览器不兼容此功能，请使用高版本谷歌浏览器！");--%>
+                    <%--return false;--%>
+                <%--}--%>
+                <%--myDiagram.undoManager.redo();--%>
+            <%--});--%>
+            <%--var nodeSelectionAdornmentTemplate =--%>
+                <%--$$(go.Adornment, "Auto",--%>
+                    <%--$$(go.Shape, {fill: null, stroke: "deepskyblue", strokeWidth: 1.5, strokeDashArray: [4, 2]}),--%>
+                    <%--$$(go.Placeholder)--%>
+                <%--);--%>
+            <%--var nodeResizeAdornmentTemplate =--%>
+                <%--$$(go.Adornment, "Spot",--%>
+                    <%--{locationSpot: go.Spot.Right},--%>
+                    <%--$$(go.Placeholder),--%>
+                    <%--$$(go.Shape, {--%>
+                        <%--alignment: go.Spot.TopLeft,--%>
+                        <%--cursor: "nw-resize",--%>
+                        <%--desiredSize: new go.Size(6, 6),--%>
+                        <%--fill: "lightblue",--%>
+                        <%--stroke: "deepskyblue"--%>
+                    <%--}),--%>
+                    <%--$$(go.Shape, {--%>
+                        <%--alignment: go.Spot.Top,--%>
+                        <%--cursor: "n-resize",--%>
+                        <%--desiredSize: new go.Size(6, 6),--%>
+                        <%--fill: "lightblue",--%>
+                        <%--stroke: "deepskyblue"--%>
+                    <%--}),--%>
+                    <%--$$(go.Shape, {--%>
+                        <%--alignment: go.Spot.TopRight,--%>
+                        <%--cursor: "ne-resize",--%>
+                        <%--desiredSize: new go.Size(6, 6),--%>
+                        <%--fill: "lightblue",--%>
+                        <%--stroke: "deepskyblue"--%>
+                    <%--}),--%>
+                    <%--$$(go.Shape, {--%>
+                        <%--alignment: go.Spot.Left,--%>
+                        <%--cursor: "w-resize",--%>
+                        <%--desiredSize: new go.Size(6, 6),--%>
+                        <%--fill: "lightblue",--%>
+                        <%--stroke: "deepskyblue"--%>
+                    <%--}),--%>
+                    <%--$$(go.Shape, {--%>
+                        <%--alignment: go.Spot.Right,--%>
+                        <%--cursor: "e-resize",--%>
+                        <%--desiredSize: new go.Size(6, 6),--%>
+                        <%--fill: "lightblue",--%>
+                        <%--stroke: "deepskyblue"--%>
+                    <%--}),--%>
+                    <%--$$(go.Shape, {--%>
+                        <%--alignment: go.Spot.BottomLeft,--%>
+                        <%--cursor: "se-resize",--%>
+                        <%--desiredSize: new go.Size(6, 6),--%>
+                        <%--fill: "lightblue",--%>
+                        <%--stroke: "deepskyblue"--%>
+                    <%--}),--%>
+                    <%--$$(go.Shape, {--%>
+                        <%--alignment: go.Spot.Bottom,--%>
+                        <%--cursor: "s-resize",--%>
+                        <%--desiredSize: new go.Size(6, 6),--%>
+                        <%--fill: "lightblue",--%>
+                        <%--stroke: "deepskyblue"--%>
+                    <%--}),--%>
+                    <%--$$(go.Shape, {--%>
+                        <%--alignment: go.Spot.BottomRight,--%>
+                        <%--cursor: "sw-resize",--%>
+                        <%--desiredSize: new go.Size(6, 6),--%>
+                        <%--fill: "lightblue",--%>
+                        <%--stroke: "deepskyblue"--%>
+                    <%--})--%>
+                <%--);--%>
+            <%--var nodeRotateAdornmentTemplate =--%>
+                <%--$$(go.Adornment,--%>
+                    <%--{locationSpot: go.Spot.Center, locationObjectName: "CIRCLE"},--%>
+                    <%--$$(go.Shape, "Circle", {--%>
+                        <%--name: "CIRCLE",--%>
+                        <%--cursor: "pointer",--%>
+                        <%--desiredSize: new go.Size(7, 7),--%>
+                        <%--fill: "lightblue",--%>
+                        <%--stroke: "deepskyblue"--%>
+                    <%--}),--%>
+                    <%--$$(go.Shape, {--%>
+                        <%--geometryString: "M3.5 7 L3.5 30",--%>
+                        <%--isGeometryPositioned: true,--%>
+                        <%--stroke: "deepskyblue",--%>
+                        <%--strokeWidth: 1.5,--%>
+                        <%--strokeDashArray: [4, 2]--%>
+                    <%--})--%>
+                <%--);--%>
+            <%--myDiagram.nodeTemplate =--%>
+                <%--$$(go.Node, "Spot",--%>
+                    <%--{locationSpot: go.Spot.Center},--%>
+                    <%--new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),--%>
+                    <%--{selectable: true, selectionAdornmentTemplate: nodeSelectionAdornmentTemplate},--%>
+                    <%--{resizable: true, resizeObjectName: "PANEL", resizeAdornmentTemplate: nodeResizeAdornmentTemplate},--%>
+                    <%--{rotatable: true, rotateAdornmentTemplate: nodeRotateAdornmentTemplate},--%>
+                    <%--new go.Binding("angle").makeTwoWay(),--%>
+                    <%--//主要对象是围绕具有形状的TextBlock的面板--%>
+                    <%--$$(go.Panel, "Auto",--%>
+                        <%--{name: "PANEL"},--%>
+                        <%--new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),--%>
+                        <%--$$(go.Shape, "Rectangle",  // 默认数字--%>
+                            <%--{--%>
+                                <%--portId: "", // 默认端口：如果链接数据没有位置，请使用最近端--%>
+                                <%--fromLinkable: true, toLinkable: true, cursor: "pointer",--%>
+                                <%--fill: "white",  // default color--%>
+                                <%--strokeWidth: 2--%>
+                            <%--},--%>
+                            <%--new go.Binding("figure"),--%>
+                            <%--new go.Binding("fill")),--%>
+                        <%--$$(go.TextBlock,--%>
+                            <%--{--%>
+                                <%--font: "bold 11pt sans-serif, Arial, sans-serif",--%>
+                                <%--margin: 8,--%>
+                                <%--stroke: "white",--%>
+                                <%--maxSize: new go.Size(160, NaN),--%>
+                                <%--wrap: go.TextBlock.WrapFit,--%>
+                                <%--editable: true--%>
+                            <%--},--%>
+                            <%--new go.Binding("text").makeTwoWay())--%>
+                    <%--),--%>
+                    <%--// 四个小的有名港口，每边一个：--%>
+                    <%--makePort("T", go.Spot.Top, false, true),--%>
+                    <%--makePort("L", go.Spot.Left, true, true),--%>
+                    <%--makePort("R", go.Spot.Right, true, true),--%>
+                    <%--makePort("B", go.Spot.Bottom, true, false),--%>
+                    <%--{ // 处理鼠标进入/离开事件以显示/隐藏端口--%>
+                        <%--mouseEnter: function (e, node) {--%>
+                            <%--showSmallPorts(node, true);--%>
+                        <%--},--%>
+                        <%--mouseLeave: function (e, node) {--%>
+                            <%--showSmallPorts(node, false);--%>
+                        <%--}--%>
+                    <%--}--%>
+                <%--);--%>
+
+
+            <%--function showSmallPorts(node, show) {--%>
+                <%--node.ports.each(function (port) {--%>
+                    <%--if (port.portId !== "") {  // 不要更改默认端口，这是一个很大的形状--%>
+                        <%--port.fill = show ? "rgba(0,0,0,.3)" : null;--%>
+                    <%--}--%>
+                <%--});--%>
+            <%--}--%>
+            <%--var linkSelectionAdornmentTemplate =--%>
+                <%--$$(go.Adornment, "Link",--%>
+                    <%--$$(go.Shape,--%>
+                        <%--// isPanelMain声明这个Shape共享Link.geometry--%>
+                        <%--{isPanelMain: true, fill: null, stroke: "deepskyblue", strokeWidth: 0})  // 使用选择对象的strokeWidth--%>
+                <%--);--%>
+            <%--myDiagram.linkTemplate =--%>
+                <%--$$(go.Link,  // 整个链接面板--%>
+                    <%--{selectable: true, selectionAdornmentTemplate: linkSelectionAdornmentTemplate},--%>
+                    <%--{relinkableFrom: true, relinkableTo: true, reshapable: true},--%>
+                    <%--{--%>
+                        <%--routing: go.Link.AvoidsNodes,--%>
+                        <%--curve: go.Link.JumpOver,--%>
+                        <%--corner: 5,--%>
+                        <%--toShortLength: 4--%>
+                    <%--},--%>
+                    <%--new go.Binding("points").makeTwoWay(),--%>
+                    <%--$$(go.Shape,  // the link path shape--%>
+                        <%--{isPanelMain: true, strokeWidth: 2}),--%>
+                    <%--$$(go.Shape,  // the arrowhead--%>
+                        <%--{toArrow: "Standard", stroke: null}),--%>
+                    <%--$$(go.Panel, "Auto",--%>
+                        <%--new go.Binding("visible", "isSelected").ofObject(),--%>
+                        <%--$$(go.Shape, "RoundedRectangle",  // 链接形状--%>
+                            <%--{fill: "#F8F8F8", stroke: null}),--%>
+                        <%--$$(go.TextBlock,--%>
+                            <%--{--%>
+                                <%--textAlign: "center",--%>
+                                <%--font: "10pt helvetica, arial, sans-serif",--%>
+                                <%--stroke: "#919191",--%>
+                                <%--margin: 2,--%>
+                                <%--minSize: new go.Size(10, NaN),--%>
+                                <%--editable: true--%>
+                            <%--},--%>
+                            <%--new go.Binding("text").makeTwoWay())--%>
+                    <%--)--%>
+                <%--);--%>
+            <%--load();  // 从一些JSON文本加载初始图--%>
+            <%--// 初始化页面左侧的Palette--%>
+            <%--myPalette =--%>
+                <%--$$(go.Palette, "myPaletteDiv",  // 必须命名或引用DIV HTML元素--%>
+                    <%--{--%>
+                        <%--maxSelectionCount: 1,--%>
+                        <%--nodeTemplateMap: myDiagram.nodeTemplateMap,  // 共享myDiagram使用的模板--%>
+                        <%--linkTemplate: // 简化链接模板，就在这个调色板中--%>
+                            <%--$$(go.Link,--%>
+                                <%--{ // 因为GridLayout.alignment是Location，并且节点具有locationSpot == Spot.Center，--%>
+                                    <%--// 以相同的方式排列链接，我们必须假装链接具有相同的位置点--%>
+                                    <%--locationSpot: go.Spot.Center,--%>
+                                    <%--selectionAdornmentTemplate:--%>
+                                        <%--$$(go.Adornment, "Link",--%>
+                                            <%--{locationSpot: go.Spot.Center},--%>
+                                            <%--$$(go.Shape,--%>
+                                                <%--{isPanelMain: true, fill: null, stroke: "deepskyblue", strokeWidth: 0}),--%>
+                                            <%--$$(go.Shape,  // the arrowhead--%>
+                                                <%--{toArrow: "Standard", stroke: null})--%>
+                                        <%--)--%>
+                                <%--},--%>
+                                <%--{--%>
+                                    <%--routing: go.Link.AvoidsNodes,--%>
+                                    <%--curve: go.Link.JumpOver,--%>
+                                    <%--corner: 5,--%>
+                                    <%--toShortLength: 4--%>
+                                <%--},--%>
+                                <%--new go.Binding("points"),--%>
+                                <%--$$(go.Shape,  // 链接路径形状--%>
+                                    <%--{isPanelMain: true, strokeWidth: 2}),--%>
+                                <%--$$(go.Shape,  // 箭头--%>
+                                    <%--{toArrow: "Standard", stroke: null})--%>
+                            <%--),--%>
+                        <%--model: new go.GraphLinksModel([  // 指定调色板的内容--%>
+                            <%--//{text: "模块内容", figure: "形状", fill: "颜色"},值可以接受变量--%>
+                            <%--{text: "开始",figure: "RoundedRectangle",fill:"red",start:"1",id:"",answer:"",defaultRef:"",exceptionRef:"",content:""},--%>
+                            <%--{text: "节点",fill:"red",id:"",answer:"",defaultRef:"",exceptionRef:"",content:""},--%>
+                            <%--{text: "还款提醒",fill:"red",id:"",answer:"",defaultRef:"",exceptionRef:"",content:""},--%>
+                            <%--{text: "判断",fill:"#7270AC", figure: "Diamond",id:"",answer:"",defaultRef:"",exceptionRef:"",content:""},--%>
+                            <%--{text: "处理",fill:"red",id:"",answer:"",defaultRef:"",exceptionRef:"",content:""},--%>
+                            <%--{text: "结束",fill:"red", figure: "RoundedRectangle",id:"",answer:"",defaultRef:"",exceptionRef:"",content:""}--%>
+                        <%--], [--%>
+                            <%--// 调色板也有一个断开的链接，用户可以拖放--%>
+                            <%--{points: new go.List(go.Point).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)])}--%>
+                        <%--])--%>
+                    <%--});--%>
+        <%--}--%>
+
+
+
+
+
+
+
+
+
+
+
+        <%--function TopRotatingTool() {--%>
+            <%--go.RotatingTool.call(this);--%>
+        <%--}--%>
+
+        <%--go.Diagram.inherit(TopRotatingTool, go.RotatingTool);--%>
+        <%--/** @override */--%>
+        <%--TopRotatingTool.prototype.updateAdornments = function (part) {--%>
+            <%--go.RotatingTool.prototype.updateAdornments.call(this, part);--%>
+            <%--var adornment = part.findAdornment("Rotating");--%>
+            <%--if (adornment !== null) {--%>
+                <%--adornment.location = part.rotateObject.getDocumentPoint(new go.Spot(0.5, 0, 0, -30));  // 在中间顶部以上--%>
+            <%--}--%>
+        <%--};--%>
+        <%--/** @override */--%>
+        <%--TopRotatingTool.prototype.rotate = function (newangle) {--%>
+            <%--go.RotatingTool.prototype.rotate.call(this, newangle + 90);--%>
+        <%--};--%>
+        <%--// TopRotatingTool类的结尾--%>
+        <%--// 以JSON格式显示用户可编辑的图表模型--%>
+        <%--function save() {--%>
+            <%--saveDiagramProperties();  // 在写入JSON之前先执行此操作--%>
+            <%--document.getElementById("mySavedModel").value = myDiagram.model.toJson();--%>
+            <%--// myDiagram.isModified = false;--%>
+        <%--}--%>
+
+        <%--function load() {--%>
+            <%--myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);--%>
+            <%--loadDiagramProperties();  // 在Model.modelData被带入内存后执行此操作--%>
+        <%--}--%>
+
+        <%--function saveDiagramProperties() {--%>
+            <%--myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);--%>
+        <%--}--%>
+
+        <%--function loadDiagramProperties(e) {--%>
+            <%--// 设置Diagram.initialPosition而不是Diagram.position，以处理初始化副作用--%>
+            <%--var pos = myDiagram.model.modelData.position;--%>
+            <%--if (pos) myDiagram.initialPosition = go.Point.parse(pos);--%>
+        <%--}--%>
+
+        <%--function del(){--%>
+            <%--console.log(this.selectedNode);--%>
+            <%--this.selectedNode;--%>
+        <%--}--%>
+    <%--</script>--%>
+</head>
+<body>
+<div style="padding: 15px;">
+    <div class="layui-row layui-col-space10">
+        <div class="flowForm" style="display: none;">
+            <form class="contform layui-form btm-bdr">
+                <div class="contform-heading layui-form-item">
+                    <div class="layui-input-inline">
+                        <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="输入流程名称或描述查询" id="searchParams" class="layui-input">
+                        <button type="button" class="layui-btn fl wd100 bdr-rad0 search-btn btn-bg1 btn-search">流程查询</button>
+                    </div>
+                    <button class="layui-btn fl btn-bg1 mar-left120" id="addFlow" type="button">新建</button>
+                    <%--<button class="layui-btn fl btn-bg1 mar-left120" data-toggle="modal" data-target="#add-callFlow" id="addFlow" type="button">新建</button>--%>
+                    <button type="button" class="layui-btn fl btn-bg1" id="deleteMany" data-toggle="modal">删除</button>
+                </div>
+            </form>
+            <table class="layui-hide" id="content-flow" lay-filter="contentList"></table>
+            <div id="page-flow"></div>
+        </div>
+        <div class="flow-wrap layui-col-md12">
+            <div class="layui-form-item">
+                <button type="button" class="layui-btn fl btn-bg1" onclick="test()">保存</button>
+                <button type="button" class="layui-btn fl btn-bg1" onclick="closeFlow()">关闭</button>
+                <input type="text" id="flowName">
+                <input type="text" id="flowContent">
+            </div>
+            <div id="sample">
+                <div style="width: 100%; display: flex; justify-content: center">
+
+                    <div id="myPaletteDiv"
+                         style="width: 105px; margin-right: 2px; background-color: #F0FAF5; border: solid 1px black"></div>
+                    <div id="myDiagramDiv" style="flex-grow: 1; height: 620px; border: solid 1px black"></div>
+                </div>
+                <form id="test1" style="position: absolute;top: 20px;right: 0;background-color: #fff;z-index: 111111;">
+                    <span>id</span>
+                    <input type="text" id="id">
+                    <span>answer</span>
+                    <input type="text" id="answer">
+                    <span>defaultRef</span>
+                    <input type="text" id="defaultRef">
+                    <span>exceptionRef</span>
+                    <input type="text" id="exceptionRef">
+                    <span>content</span>
+                    <!-- <select name="" id="content">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select> -->
+                    <input type="text" id="content">
+                    <input type="text" id="res">
+                    <button type="button" id="deletePart">del</button>
+                </form>
+                <div>
+                    <div>
+                        <button id="SaveButton" type="button" onclick="save()">Save</button>
+                        <button onclick="load()">Load</button>
+                        以JSON格式保存的图表模型：
+                    </div>
+                    <textarea id="mySavedModel" style="width:100%;height:300px">
+                        { "class": "go.GraphLinksModel",
+                          "linkFromPortIdProperty": "fromPort",
+                          "linkToPortIdProperty": "toPort",
+                          "nodeDataArray": [
+                         ],
+                          "linkDataArray": [
+                         ]}
+                    </textarea>
+                </div>
+            <%--</div>--%>
+
+            <%--<div id="flow-content" style="margin:5px;float:left"></div>--%>
+            <%--<form class="myForm" id="propertyForm">--%>
+                <%--<div class="form_title">属性设置</div>--%>
+                <%--<div class="form_content">--%>
+                    <%--<table>--%>
+                        <%--<tr><td class="th">id:</td><td><input name="@id" type="text" style="width:120px" id="node_id"/></td></tr>--%>
+                        <%--<tr><td class="th">sourceRef:</td><td><input name="@sourceRef" type="text" style="width:120px" id="node_sourceRef"/></td></tr>--%>
+                        <%--<tr><td class="th">answer:</td><td><input name="@answer" type="text" style="width:120px" id="node_answer"/></td></tr>--%>
+                        <%--<tr><td class="th">targetRef:</td><td><input name="@targetRef" type="text" style="width:120px" id="node_targetRef"/></td></tr>--%>
+                        <%--<tr><td class="th">defaultRef:</td><td><input name="@defaultRef" type="text" style="width:120px" id="node_defaultRef"/></td></tr>--%>
+                        <%--<tr><td class="th">exceptionRef:</td><td><input name="@exceptionRef" type="text" style="width:120px" id="node_exceptionRef"/></td></tr>--%>
+                        <%--<tr><td class="th">content:</td><td><input name="content" type="text" style="width:120px" id="node_content"/></td></tr>--%>
+                    <%--</table>--%>
+                <%--</div>--%>
+                <%--<div class="form_btn_div">--%>
+                    <%--<input type="reset" value="重置"/>--%>
+                    <%--<input type="button" id="fun1" value="确定"/>--%>
+                <%--</div>--%>
+            <%--</form>--%>
+            <%--<button onclick="test()">1111</button>--%>
+            <%--<div style="clear:both">--%>
+                <%--<input id="submit" type="button" value='导出结果' onclick="Export()"/>--%>
+                <%--<textarea id="result" row="6"></textarea>--%>
+            <%--</div>--%>
+        </div>
+    </div>
+</div>
+
+<%--新增--%>
+<div class="modal fade" id="add-callFlow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg1">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title col1">
+                    流程创建
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form class="layui-form" action='' enctype="multipart/form-data" method="post" name="fileForm">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label wd120">
+                                <span class="red">*</span>
+                                流程名称：
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" required class="layui-input wd240">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label wd120">
+                                <span class="red">*</span>
+                                流程描述：
+                            </label>
+                            <div class="layui-input-inline">
+                                <textarea type="text" name="descri" maxlength="200"  rows="3" cols="50" class="textarea423 layui-textarea"></textarea>
+                            </div>
+                            <%--<div class="layui-input-inline">--%>
+                                <%--<input type="text" name="descri" class="layui-input">--%>
+                            <%--</div>--%>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label wd120">
+                                <span class="red">*</span>
+                                资源文件：
+                            </label>
+                            <div class="layui-input-inline" id="resourcePath">
+                                <%--<label for="upload">--%>
+                                <input type="file" id="upload" class="file mar-top15 wd240" name="filename">
+                                <%--</label>--%>
+                            </div>
+                        </div>
+                    </div>
+                    <%--<div class="layui-form-item layui-form-text">--%>
+                        <%--<label class="layui-form-label wd120">--%>
+                            <%--<span class="red">*</span>--%>
+                            <%--资源文件：--%>
+                        <%--</label>--%>
+                        <%--<div class="layui-input-inline">--%>
+                            <%--<input type="text" class="layui-input">--%>
+                        <%--</div>--%>
+                    <%--</div>--%>
+                    <div class="modal-footer">
+                        <div class="layui-input-block">
+                            <button type="button" class="btn btn-primary btn-bg1 bdr" id="add-submit">提交</button>
+                            <button type="reset" class="btn btn-primary btn-bg1 bdr">
+                                重置
+                            </button>
+                            <button type="reset" class="btn btn-default" data-dismiss="modal">返回</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%--修改--%>
+<div class="modal fade" id="updateFlow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg1">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title col1">
+                    修改
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form class="layui-form" id="updateForm">
+                    <input type="hidden" name="updateId"/>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label wd120">
+                                <span class="red">*</span>
+                                流程名称：
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input wd240" required name="updateName">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label wd120">
+                                <span class="red">*</span>
+                                流程描述：
+                            </label>
+                            <div class="layui-input-inline">
+                                <textarea type="text" name="updateDescri" maxlength="200" rows="3" cols="50" class="textarea423 layui-textarea"></textarea>
+                            </div>
+                            <%--<div class="layui-input-inline">--%>
+                                <%--<input type="text" class="layui-input" name="updateDescri">--%>
+                            <%--</div>--%>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label wd120">
+                            <span class="red">*</span>
+                            资源路径：
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input wd240" name="updateResourcePath" readonly>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="layui-input-block">
+                            <button type="button" class="btn btn-primary btn-bg1 bdr" id="commitUpdate">提交</button>
+                            <button type="button"   id="resetUpdate" class="btn btn-primary btn-bg1 bdr">重置</button>
+                            <button type="reset" class="btn btn-default" data-dismiss="modal">返回</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%--删除弹框--%>
+<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg1">
+                <button type="button" class="close col1" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title col1">
+                    删除
+                </h4>
+            </div>
+            <div class="modal-body">
+                确认删除？
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-bg1 bdr" id="commitDelete">
+                    确认
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../../../resources/js/src/callFlow/callFlow.js"></script>
+<script>
+    callFlow.init();
+</script>
+<script id="resourcePath_handlebars" type="text/x-handlebars-template">
+    <ul>
+        {{#each this}}
+        <li>{{this}}<input name="path" value="{{this}}" type="radio"/></li>
+        {{/each}}
+    </ul>
+</script>
+<script type="text/html" id="bar-flow">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="delete" data-target="#del">删除</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-xs" lay-event="copy">复制</a>
+</script>
+</body>
+</html>

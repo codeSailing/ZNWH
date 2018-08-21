@@ -1,0 +1,39 @@
+package com.quickdone.znwh.controller;
+
+import com.quickdone.znwh.entity.CustomerCallFlow;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CustomerCallFlowService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+
+/**
+ * @Author: ly
+ * @Date: 2018/7/13
+ * @Description: 每个客户的外呼流程记录,客户任务表
+ */
+@Controller
+@RequestMapping(value = "/customerCallFlow")
+public class CustomerCallFlowController {
+    private static Logger logger = LoggerFactory.getLogger(CustomerCallFlowController.class);
+
+    @Resource
+    private CustomerCallFlowService customerCallFlowService;
+    /**
+     * @Author: ly
+     * @Date: 2018/7/13
+     * @Description: 新建
+     */
+    @RequestMapping(value = "/add.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData add(CustomerCallFlow customerCallFlow){
+        logger.info("CustomerCallFlowController==== add.do,  params:" + customerCallFlow.toString());
+        customerCallFlowService.addCustomerCallFlow(customerCallFlow);
+        return ResponseData.getSuccessResponse("保存成功！");
+    }
+}

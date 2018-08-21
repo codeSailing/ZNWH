@@ -1,0 +1,19 @@
+package com.quickdone.znwh.entity;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/9 16:09
+ * @Description:
+ */
+@Entity
+@Table(name = "t_customerGroup")
+public class CustomerGroup implements Serializable {
+    private static final long serialVersionUID = -6428370320561962250L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false,columnDefinition="bigint(20) COMMENT '主键'")
+    private Long id;//主键
+}

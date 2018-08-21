@@ -1,0 +1,42 @@
+package com.quickdone.znwh.controller;
+
+import com.quickdone.znwh.controller.vo.CallTaskVo;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallTaskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/10 14:39
+ * @Description:任务管理
+ */
+@Controller
+@RequestMapping(value = "/callTask")
+public class CallTaskController {
+    private static Logger logger = LoggerFactory.getLogger(CallTaskController.class);
+
+    @Resource
+    private CallTaskService callTaskService;
+
+    @RequestMapping(value = "/add.do",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData add(HttpServletRequest request,CallTaskVo callTaskVo){
+        if(callTaskVo!=null){
+            // 1、 新建任务
+            callTaskService.save(callTaskVo);
+            // TODO 2、创建定时任务
+            return ResponseData.getSuccessResponse("操作成功");
+        }else{
+            return ResponseData.getErrorResponse("操作失败");
+        }
+    }
+
+}

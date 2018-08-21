@@ -1,0 +1,380 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.service.CustomerBetweenGroupService;
+import com.quickdone.znwh.service.CustomerGroupService;
+import com.quickdone.znwh.vo.CallTaskVo;
+import com.quickdone.znwh.dao.*;
+import com.quickdone.znwh.entity.*;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallTaskService;
+import com.quickdone.znwh.utils.DateSearchUtils;
+import com.quickdone.znwh.utils.ToClass;
+import net.sf.json.JSONObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/10 14:43
+ * @Description:任务管理service实现
+ */
+@Service
+@Transactional
+public class CallTaskServiceImpl implements CallTaskService<CallTask,Long> {
+
+    @Resource
+    private CallTaskRepository callTaskRepository;
+
+    @Resource
+    private CallContentSubjectRepository callContentSubjectRepository;
+
+    @Resource
+    private CustomerGroupRepository customerGroupRepository;
+
+    @Resource
+    private CallCategoryRepository callCategoryRepository;
+
+    @Resource
+    private CallFlowRepository callFlowRepository;
+
+    @Resource
+    private CustomerRepository customerRepository;
+    @Resource
+    private CallRecordRepository callRecordRepository;
+
+    @Resource
+    private CustomerBetweenGroupService customerBetweenGroupService;
+
+    @Override
+    public ResponseData save(CallTaskVo callTaskVo) throws ParseException {
+        Date date = new Date();
+        CallTask callTask = new CallTask();
+        callTask.setName(callTaskVo.getName());//名称
+        callTask.setType(callTaskVo.getType());//启用、禁用
+        //获取任务分类
+        CallCategory callCategory = callCategoryRepository.findById(callTaskVo.getCallCategoryId());
+        if(callCategory!=null){
+            callTask.setCallCategoryId(callTaskVo.getCallCategoryId());
+            callTask.setCallCategoryName(callCategory.getName());
+        }
+        //获取主题信息
+        CallContentSubject callContentSubject = callContentSubjectRepository.findById(callTaskVo.getCallContentSubjectId());
+        if(callContentSubject!=null){
+            callTask.setCallContentSubjectId(callTaskVo.getCallContentSubjectId());
+            callTask.setCallContentSubjectName(callTaskVo.getCallContentSubjectName());
+        }else {
+            return ResponseData.getErrorResponse("主题不存在！");
+        }
+        //获取客户分组
+        CustomerGroup customerGroup = customerGroupRepository.findById(callTaskVo.getCustomerGroupId());
+        if(customerGroup!=null){
+            callTask.setCustomerGroupId(callTaskVo.getCustomerGroupId());
+            callTask.setCustomerGroupName(callTaskVo.getCustomerGroupName());
+        }else {
+            return ResponseData.getErrorResponse("客户组不存在！");
+        }
+        //获取流程配置信息
+        CallFlow callFlow = callFlowRepository.findById(callTaskVo.getCallFlowId());
+        if(callFlow!=null){
+            callTask.setCallFlowId(callTaskVo.getCallFlowId());
+            callTask.setCallFlowName(callTaskVo.getCallFlowName());
+        }else {
+            return ResponseData.getErrorResponse("流程不存在！");
+        }
+        callTask.setCallcjNumber(callTaskVo.getCallcjNumber());//出局码
+        callTask.setCallNumShow(callTaskVo.getCallNumShow());//显示号码
+        callTask.setCallNumShowType(callTaskVo.getCallNumShowType());//号码显示： 随机/统一
+        callTask.setCreateDate(date);//创建日期
+        callTask.setDescri(callTaskVo.getDescri());//描述
+        callTask.setPlanType(callTaskVo.getPlanType());//计划类型
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
+        if(callTaskVo.getPlanType() == 0){//一次性
+            callTask.setExecuteBeginDate(df.parse(callTaskVo.getExecuteOneDate()));//执行开始日期
+            callTask.setExecuteTime(tf.parse(callTaskVo.getExecuteOneTime()));//执行时间
+            callTask.setExecuteEndDate(df.parse(callTaskVo.getExecuteOneDate()));//执行结束日期
+        }else if(callTaskVo.getPlanType() == 1){//周期性
+            callTask.setExecuteBeginDate(df.parse(callTaskVo.getExecuteBeginDate()));//执行开始日期
+            callTask.setExecuteEndDate(df.parse(callTaskVo.getExecuteEndDate()));//执行结束日期
+            callTask.setExecuteTime(tf.parse(callTaskVo.getExecuteTime()));//执行时间
+        }
+        callTask.setBasicNum(callTaskVo.getBasicNum());//外呼基数
+        callTask.setTryCount(callTaskVo.getTryCount());//尝试次数
+        callTask.setStatus(0);//执行状态
+        callTask.setIsDelete(0);//删除状态
+        CallTask callTaskNow = callTaskRepository.save(callTask);
+        return ResponseData.getSuccessResponse(callTaskNow);
+    }
+
+    @Override
+    public ResponseData update(CallTaskVo callTaskVo) throws ParseException {
+        CallTask callTask = callTaskRepository.findOne(callTaskVo.getId());
+        Date date = new Date();
+        if(callTask!=null){
+            callTask.setName(callTaskVo.getName());//名称
+            callTask.setType(callTaskVo.getType());//启用、禁用
+            //获取任务分类
+            CallCategory callCategory = callCategoryRepository.findById(callTask.getCallCategoryId());
+            if(callCategory!=null){
+                callTask.setCallCategoryId(callTask.getCallCategoryId());
+                callTask.setCallCategoryName(callCategory.getName());
+//                if(callTask.getCallCategoryId() == 1){
+//                    callTask.setCallCategoryName(callCategory.getName());
+//                }else {
+//                    callTask.setCallCategoryName(callTaskVo.getCallCategoryName());
+//                }
+            }
+            //获取主题信息
+            CallContentSubject callContentSubject = callContentSubjectRepository.findById(callTaskVo.getCallContentSubjectId());
+            if(callContentSubject!=null){
+                callTask.setCallContentSubjectId(callTaskVo.getCallContentSubjectId());
+                callTask.setCallContentSubjectName(callTaskVo.getCallContentSubjectName());
+            }
+            //获取客户分组
+            CustomerGroup customerGroup = customerGroupRepository.findById(callTaskVo.getCustomerGroupId());
+            if(customerGroup!=null){
+                callTask.setCustomerGroupId(callTaskVo.getCustomerGroupId());
+                callTask.setCustomerGroupName(callTaskVo.getCustomerGroupName());
+            }
+            //获取流程配置信息
+            CallFlow callFlow = callFlowRepository.findById(callTaskVo.getCallFlowId());
+            if(callFlow!=null){
+                callTask.setCallFlowId(callTaskVo.getCallFlowId());
+                callTask.setCallFlowName(callTaskVo.getCallFlowName());
+            }
+            callTask.setCallcjNumber(callTaskVo.getCallcjNumber());//出局码
+            callTask.setCallNumShow(callTaskVo.getCallNumShow());//显示号码
+            callTask.setCallNumShowType(callTaskVo.getCallNumShowType());//号码显示： 随机/统一
+            callTask.setCreateDate(date);//创建日期
+            callTask.setDescri(callTaskVo.getDescri());//描述
+            callTask.setPlanType(callTaskVo.getPlanType());//计划类型
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
+            if(callTaskVo.getPlanType() == 0){//一次性
+                callTask.setExecuteBeginDate(df.parse(callTaskVo.getExecuteOneDate()));//执行开始日期
+                callTask.setExecuteEndDate(df.parse(callTaskVo.getExecuteOneDate()));//执行结束日期
+                callTask.setExecuteTime(tf.parse(callTaskVo.getExecuteOneTime()));//执行时间
+            }else if(callTaskVo.getPlanType() == 1){//周期性
+                callTask.setExecuteBeginDate(df.parse(callTaskVo.getExecuteBeginDate()));//执行开始日期
+                callTask.setExecuteEndDate(df.parse(callTaskVo.getExecuteEndDate()));//执行结束日期
+                callTask.setExecuteTime(tf.parse(callTaskVo.getExecuteTime()));//执行时间
+            }
+            callTask.setTryCount(callTaskVo.getTryCount());//尝试次数
+            callTask.setStatus(callTaskVo.getStatus());//执行状态
+            callTask.setIsDelete(callTask.getIsDelete());//删除状态
+            callTask.setBasicNum(callTaskVo.getBasicNum());//外呼基数
+            return ResponseData.getSuccessResponse("修改成功");
+        }else{
+            return ResponseData.getErrorResponse("任务不存在，修改失败");
+        }
+    }
+
+    @Override
+    public CallTask findById(Long id) {
+        return callTaskRepository.findOne(id);
+       // return callTaskRepository.findById(id);
+    }
+
+    @Override
+    public ResponseData modifyPlan(CallTask callTask, Integer planType, String executeBeginDate, String executeEndDate, String executeTime) throws ParseException {
+        if(callTask!=null){
+            callTask.setPlanType(planType);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
+            if(planType == 0){//一次性
+                callTask.setExecuteBeginDate(df.parse(executeBeginDate));//执行开始日期
+                callTask.setExecuteEndDate(df.parse(executeBeginDate));//执行开始结束
+                callTask.setExecuteTime(tf.parse(executeTime));//执行时间
+            }else if(planType == 1){//周期性
+                callTask.setExecuteBeginDate(df.parse(executeBeginDate));//执行开始日期
+                callTask.setExecuteEndDate(df.parse(executeEndDate));//执行结束日期
+                callTask.setExecuteTime(tf.parse(executeTime));//执行时间
+            }
+            callTaskRepository.saveAndFlush(callTask);
+            return ResponseData.getSuccessResponse("操作成功");
+        }else{
+            return ResponseData.getErrorResponse("任务不存在，操作失败");
+        }
+    }
+
+    @Override
+    public ResponseData chooseCallFollow(CallTask callTask, Long callFollowId) {
+        if(callTask!=null){
+            CallFlow callFlow = callFlowRepository.findById(callFollowId);
+            if(callFlow!=null){
+                callTask.setCallFlowId(callFollowId);
+                callTask.setCallFlowName(callFlow.getName());
+                callTaskRepository.saveAndFlush(callTask);
+                return ResponseData.getSuccessResponse("操作成功");
+            }else{
+                return ResponseData.getErrorResponse("流程不存在，操作失败");
+            }
+
+        }else{
+            return ResponseData.getErrorResponse("任务不存在，操作失败");
+        }
+    }
+
+    @Override
+    public ResponseData modifyType(List<CallTask> callTaskList, Integer type) {
+        if(callTaskList!=null && callTaskList.size()>0){
+            for (CallTask callTask : callTaskList) {
+                callTask.setType(type);
+                callTaskRepository.saveAndFlush(callTask);
+            }
+            return ResponseData.getSuccessResponse("操作成功");
+        }else{
+            return ResponseData.getErrorResponse("任务不存在，操作失败");
+        }
+    }
+
+    @Override
+    public ResponseData delete(List<CallTask> callTask) {
+        if(callTask!=null){
+            for (CallTask ct:callTask) {
+                CallRecord callRecord = callRecordRepository.findByCallTaskid(ct.getId());
+                if(callRecord!=null){
+                    callRecordRepository.delete(callRecord);
+                }
+            }
+            callTaskRepository.delete(callTask);
+            return ResponseData.getSuccessResponse("操作成功");
+        }else{
+            return ResponseData.getErrorResponse("任务不存在，操作失败");
+        }
+    }
+
+    @Override
+    public void findAll(final Map<String, Object> searchParams, PaginationMapLayui pagination) {
+        Pageable pageable = new PageRequest(pagination.getStart(), pagination.getLength(), new Sort(Sort.Direction.DESC, "createDate"));//根据时间倒叙
+        Page<CallTask> page = callTaskRepository.findAll(new Specification<CallTask>() {
+            @Override
+            public Predicate toPredicate(Root<CallTask> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<Predicate>();
+                if(searchParams.containsKey("name")){//名称
+                    Predicate p1 = criteriaBuilder.like(root.<String>get("name"),"%"+searchParams.get("name").toString()+"%");
+                    predicateList.add(p1);
+                }
+                if(searchParams.containsKey("planType")){//计划类型
+                    Predicate p2 = criteriaBuilder.equal(root.<Integer>get("planType"),Integer.parseInt(searchParams.get("planType").toString()));
+                    predicateList.add(p2);
+                }
+                //执行时间
+                if(searchParams.containsKey("executeDate")){
+                    String dateStr = searchParams.get("executeDate").toString();
+                    String executeBeginDate = dateStr.substring(0,dateStr.length()/2).trim();
+                    String executeEndDate = dateStr.substring((dateStr.length()/2)+1,dateStr.length()).trim();
+//                    String[] dateStrAry = dateStr.split("-");
+                    //时间区间 开始
+                    Predicate p2 = criteriaBuilder.greaterThanOrEqualTo(root.<Date>get("executeBeginDate"),new Timestamp(DateSearchUtils.getDate(executeBeginDate+" 00:00:00", 0).getTime()));
+                    //时间区间 截止
+                    Predicate p3 = criteriaBuilder.lessThanOrEqualTo(root.<Date>get("executeEndDate"),new Timestamp(DateSearchUtils.getDate(executeEndDate+" 23:59:59", 1).getTime()));
+                    predicateList.add(p2);
+                    predicateList.add(p3);
+                }
+                if(searchParams.containsKey("callContentSubject")){//主题
+                    Predicate p4 = criteriaBuilder.like(root.<String>get("callContentSubjectName"),"%"+searchParams.get("callContentSubject").toString()+"%");
+                    predicateList.add(p4);
+                }
+
+                if(searchParams.containsKey("parentId")){//任务分类
+                    if(Long.valueOf(searchParams.get("parentId").toString())!=1){
+                        Predicate p4 = criteriaBuilder.equal(root.<Long>get("callCategoryId"),Long.valueOf(searchParams.get("parentId").toString()));
+                        predicateList.add(p4);
+                    }
+                }
+
+                if(searchParams.containsKey("status")){//执行状态
+                    Predicate p5 = null;
+                    if(Integer.parseInt(searchParams.get("status").toString()) == -1){//已废弃
+                        p5 = criteriaBuilder.equal(root.<Integer>get("type"),1);
+                    }else{
+                        p5 = criteriaBuilder.equal(root.<Integer>get("status"),Integer.parseInt(searchParams.get("status").toString()));
+                        p5 = criteriaBuilder.and(p5,criteriaBuilder.notEqual(root.<Integer>get("type"),1));
+                    }
+                    predicateList.add(p5);
+                }
+                Predicate[] p = new Predicate[predicateList.size()];
+                return criteriaBuilder.and(predicateList.toArray(p));
+            }
+        },pageable);
+        List<CallTask> list = page.getContent();
+        List<Map> resuList = new ArrayList<Map>();
+        for (CallTask callTask : list) {
+            Map map = ToClass.beanToMap(callTask);
+            resuList.add(map);
+        }
+        pagination.setData(resuList);
+        pagination.setRecordsTotal(page.getTotalElements());
+    }
+    /**
+     * @Author: ly
+     * @Date: 2018/7/13
+     * @Description:
+     */
+    @Override
+    public ResponseData getCallTaskInfo(CallTask callTask) {
+        JSONObject jsonObject=new JSONObject();
+        Date ExecuteTime = callTask.getExecuteTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        jsonObject.put("taskId",callTask.getId());
+        jsonObject.put("callFlowId",callTask.getCallFlowId());
+        jsonObject.put("executeTime", formatter.format(ExecuteTime));//执行时间
+        String id=String.valueOf(callTask.getCustomerGroupId());
+        List<Customer> customerList=new ArrayList<Customer>();
+       // List<Customer> customerList=customerRepository.findByCustomerGroupId(id);
+        List<CustomerBetweenGroup>  customerBetweenGroupList=customerBetweenGroupService.findByCustomerGroupId(callTask.getCustomerGroupId());
+        for(CustomerBetweenGroup customerBetweenGroup:customerBetweenGroupList){
+            long cid=customerBetweenGroup.getCustomerId();//客户组-客户表中会不会存在只有组没有客户的情况
+            Customer c=customerRepository.findById(cid);
+            customerList.add(c);
+        }
+        String phone="";
+        for(Customer c:customerList){
+            phone+=c.getTelephone()+",";
+        }
+        if(phone!=""){
+            phone=phone.substring(0,phone.length()-1);
+        }
+        jsonObject.put("phones",phone);
+        return ResponseData.getSuccessResponse(jsonObject);
+    }
+
+    @Override
+    public void merge(CallTask callTask) {
+        callTaskRepository.save(callTask);
+    }
+
+
+    @Override
+    public List<CallTask> findByCallCategoryId(Long callcCategoryId) {
+        return callTaskRepository.findByCallCategoryId(callcCategoryId);
+    }
+
+    @Override
+    public List<CallTask> findByCallContentSubjectId(Long callContentSubjectId) {
+        return callTaskRepository.findByCallContentSubjectId(callContentSubjectId);
+    }
+
+    @Override
+    public List<CallTask> saveMore(List<CallTask> callTaskList) {
+        return callTaskRepository.save(callTaskList);
+    }
+}

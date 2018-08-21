@@ -1,0 +1,12 @@
+package com.quickdone.znwh.dao;
+
+
+import com.quickdone.znwh.entity.CustomerBetweenGroup;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/11
+ * @Description:
+ */
+public interface CustomerBetweenGroupRepository extends BaseRepository<CustomerBetweenGroup,Long>{
+}

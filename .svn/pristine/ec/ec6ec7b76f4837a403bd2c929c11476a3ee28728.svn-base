@@ -1,0 +1,19 @@
+package com.quickdone.znwh.entity;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/9 20:10
+ * @Description:
+ */
+@Entity
+@Table(name = "t_area")
+public class Area implements Serializable {
+    private static final long serialVersionUID = 5262336439153737653L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false,columnDefinition="bigint(20) COMMENT '主键'")
+    private Long id;//主键
+}

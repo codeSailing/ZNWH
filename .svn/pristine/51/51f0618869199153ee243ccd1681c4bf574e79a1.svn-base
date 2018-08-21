@@ -1,0 +1,68 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.controller.vo.CallTaskVo;
+import com.quickdone.znwh.dao.*;
+import com.quickdone.znwh.entity.*;
+import com.quickdone.znwh.service.CallTaskService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.Date;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/10 14:43
+ * @Description:任务管理service实现
+ */
+@Service
+@Transactional
+public class CallTaskServiceImpl implements CallTaskService<CallTask,Long> {
+
+    @Resource
+    private CallTaskRepository callTaskRepository;
+
+    @Resource
+    private CallContentSubjectRepository callContentSubjectRepository;
+
+    @Resource
+    private CustomerGroupRepository customerGroupRepository;
+
+    @Resource
+    private CallCategoryRepository callCategoryRepository;
+
+    @Resource
+    private CallFlowRepository callFlowRepository;
+
+    @Override
+    public void save(CallTaskVo callTaskVo) {
+        Date date = new Date();
+        CallTask callTask = new CallTask();
+        callTask.setName(callTaskVo.getName());//名称
+        callTask.setType(callTaskVo.getType());//启用、禁用
+        //获取任务分类
+        CallCategory callCategory = callCategoryRepository.findById(callTaskVo.getCallCategoryId());
+        callTask.setCallCategory(callCategory);
+        //获取主题信息
+        CallContentSubject callContentSubject = callContentSubjectRepository.findById(callTaskVo.getCallContentSubjectId());
+        callTask.setCallContentSubject(callContentSubject);
+        //获取客户分组
+        CustomerGroup customerGroup = customerGroupRepository.findById(callTaskVo.getCustomerGroupId());
+        callTask.setCustomerGroup(customerGroup);
+        //获取流程配置信息
+        CallFlow callFlow = callFlowRepository.findById(callTaskVo.getCallFlowId());
+        callTask.setCallFlow(callFlow);
+        callTask.setCallcjNumber(callTaskVo.getCallcjNumber());//出局码
+        callTask.setCallNumShow(callTaskVo.getCallNumShow());//显示号码
+        callTask.setCallNumShowType(callTaskVo.getCallNumShowType());//号码显示： 随机/统一
+        callTask.setCreateDate(date);//创建日期
+        callTask.setDescri(callTaskVo.getDescri());//描述
+        callTask.setPlanType(callTaskVo.getPlanType());//计划类型
+        callTask.setTryCount(callTaskVo.getTryCount());//尝试次数
+        callTask.setStatus(0);//执行状态
+        callTask.setIsDelete(0);//删除状态
+        callTask.setExecuteDate(callTaskVo.getExecuteDate());//执行日期
+        callTask.setExecuteTime(callTaskVo.getExecuteTime());//执行时间
+        callTaskRepository.save(callTask);
+    }
+}

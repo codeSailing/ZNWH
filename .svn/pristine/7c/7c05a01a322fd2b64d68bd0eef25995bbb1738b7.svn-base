@@ -1,0 +1,275 @@
+package com.quickdone.znwh.controller.api;
+
+import com.quickdone.znwh.common.Constants;
+import com.quickdone.znwh.controller.LoginController;
+import com.quickdone.znwh.entity.*;
+import com.quickdone.znwh.enums.IvrEnum;
+import com.quickdone.znwh.pojo.ProcessNode;
+import com.quickdone.znwh.service.CallFlowNodeService;
+import com.quickdone.znwh.service.CallRecordService;
+import com.quickdone.znwh.service.CallTaskService;
+import com.quickdone.znwh.service.CustomerCallFlowService;
+import com.quickdone.znwh.taskhandle.QuartzManager;
+import com.quickdone.znwh.taskhandle.TaskSchedule;
+import com.quickdone.znwh.utils.StringUtils;
+import com.quickdone.znwh.webService.GetWebserviceInfo;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
+import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.*;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/10 10:41
+ * @Description: 用于和IVR系统交互的接口
+ */
+
+@Controller
+@RequestMapping(value = "/ivr")
+public class IVRController {
+    private static Logger logger = LoggerFactory.getLogger(LoginController.class);
+    @Resource
+    private TaskSchedule taskSchedule;
+
+    @Resource
+    private CallRecordService callRecordService;
+
+    @Resource
+    private CustomerCallFlowService customerCallFlowService;
+    @Resource
+    private CallFlowNodeService callFlowService;
+
+    @Resource
+    private CallTaskService callTaskService;
+
+    /**
+     * *  外呼系统接收到到IVR电话接通的请求
+     *
+     * @param
+     * @param status ivr传递的状态  0 正常   3 挂断
+     */
+    @RequestMapping(value = "/receive.do", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> reciveIvrMessage(String telephone, String currentNode, String answer, int status, int taskid, String parentNodeContent) {
+        logger.info("reciveIvrMessage接口开始调用....answer:" + answer + "   telephone:   " + telephone + "  status:" + status + " currentNode:" + currentNode + " taskid:" + taskid);
+        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        //TODO 如果是用户接通后直接挂断  本次客户任务的状态为挂断  页面提示请选择下一组号码呼叫
+        String currentNodeID = "";
+
+        if (IvrEnum.HANGUP.getValue().equals(String.valueOf(status))) {
+            //模拟用户挂断
+
+        } else {
+            //拿到IVR结果，开始解析语义  输入参数 answer 输出参数 map
+            String webServiceResult = "";
+
+            if (!"开始测试".equals(answer)) {
+                webServiceResult = GetWebserviceInfo.getIntelligentCall(answer, 1L);//TODO iss_uid 参数无意义，暂时写死
+                resultMap = getSemanticResults(webServiceResult);
+            } else {
+                resultMap.put("type", Constants.IntelligentCallStatus.NORMAL);
+            }
+            logger.info("result_answer:" + resultMap);
+            //解析流程配置文件
+            try {
+                resultMap = taskSchedule.executeTask(currentNode, resultMap, taskid);
+                int nodesize = (Integer) resultMap.get("nodesize");
+
+                if (Integer.parseInt(currentNode) < nodesize) {//TODO 要计算流程几点数 流程走到最后则不再递增
+                    if (resultMap.get("currentnode") != null) {//有个别环节的node是需要重复上个节点的，不需要走下个节点
+                        currentNodeID = String.valueOf(Integer.valueOf((String) resultMap.get("currentnode")) + 1);
+                        //currentNodeID=String.valueOf((int)resultMap.get("currentnode")+1);
+                    } else {
+                        //currentNodeID = String.valueOf(Integer.parseInt(currentNode) + 1);
+                        currentNodeID = (String) resultMap.get("currentNode");
+                        ;
+                    }
+                } else {
+                    currentNodeID = String.valueOf(nodesize);
+                }
+                //将本次结果推送给IVR
+                data.put("userPhone", telephone);
+                data.put("currentNode", currentNodeID);
+                data.put("callContent", (String) resultMap.get("content"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //每走一个节点  对节点信息进行保存
+        if (IvrEnum.HANGUP.getValue().equals(String.valueOf(status)) && "0".equals(currentNode)) {
+            logger.info("客户直接挂断了");
+            //如果是用户直接挂断  则无需保存
+        } else {
+            CallFlowNode callFlowNode = new CallFlowNode();
+            callFlowNode.setAnswer(answer);
+            callFlowNode.setContent(parentNodeContent);
+            callFlowNode.setTaskid(taskid);
+            callFlowNode.setTelephone(telephone);
+            callFlowNode.setStatus(status);
+            callFlowNode.setCurrentNodeid(currentNodeID);
+            callFlowService.add(callFlowNode);
+        }
+
+
+        //根据电话号码查询customerCallFlow  没查到则根据taskid查询，查到后将telephone更新上去
+        List<CustomerCallFlow> list = customerCallFlowService.findBytelephone(telephone);
+        if (list.isEmpty()) {
+            List<CustomerCallFlow> customerCallFlows = customerCallFlowService.findByTaskid(String.valueOf(taskid));
+
+            if (!customerCallFlows.isEmpty()) {
+                CustomerCallFlow customerCallFlow = customerCallFlows.get(0);
+                customerCallFlow.setTelephone(telephone);
+                if (IvrEnum.HANGUP.getValue().equals(String.valueOf(status))) {
+                    data.put("status", "3");
+                    customerCallFlow.setStatus(3);
+                } else if (IvrEnum.DISCINNECT.getValue().equals(String.valueOf(status))) {//拨号失败
+                    customerCallFlow.setStatus(2);
+                } else {
+                    customerCallFlow.setStatus(1);
+                }
+                customerCallFlowService.addCustomerCallFlow(customerCallFlow);
+            }
+        }
+
+        return data;
+
+    }
+
+
+    /**
+     * @return
+     * @Author: ly
+     * @Date: 2018/7/10
+     * @Description: 模拟IVR通话页面
+     */
+    @RequestMapping(value = "/test.do", method = RequestMethod.GET)
+    public ModelAndView ivrTestJsp(String taskid, String currentNode, String userPhone, String callContent, String callFlowId) {
+        //TODO 根据任务id 获取该任务下所有的客户号码，将号码放入一个队列中，每次取一个进行外呼，知道队列中的号码全部取出来，本次任务结束
+        String[] telephones = userPhone.split(",");
+        List<String> phones = new ArrayList<String>();
+        if (telephones.length > 0) {
+            for (String te : telephones) {
+                phones.add(te);
+            }
+        }
+
+        if (StringUtils.isNullOrEmpry(taskid)) {
+            taskid = "1";//测试的时候写死
+        }
+        CustomerCallFlow customerCallFlow = new CustomerCallFlow();
+        customerCallFlow.setFlowid(callFlowId);
+        customerCallFlow.setTaskid(String.valueOf(taskid));
+        customerCallFlow.setStatus(1);
+        customerCallFlowService.addCustomerCallFlow(customerCallFlow);
+
+        //任务状态变成执行中
+        CallTask callTask = (CallTask) callTaskService.findById(Long.valueOf(taskid));
+        callTask.setStatus(1);
+        callTaskService.merge(callTask);
+        //TODO 同一批号码全部外呼完成，外呼记录表更新
+        logger.info("进入测试页面==== test.do,  params: currentNode=" + currentNode + ", userPhone:" + userPhone);
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("simulate");
+        if (StringUtils.isNullOrEmpry(currentNode)) {
+            currentNode = "0";
+        }
+        mv.addObject("taskid", taskid);
+        mv.addObject("currentNode", currentNode);
+        mv.addObject("phones", phones);
+        mv.addObject("callContent", callContent);
+        return mv;
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/12 10:33
+     * @Description: 处理语义返回结果
+     */
+    private Map<String, Object> getSemanticResults(String webServiceResult) {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        logger.debug("webServiceResult:" + webServiceResult.trim());
+        //处理结果
+        String[] resultAry = webServiceResult.replaceAll(" ", "").split("\\|");
+        if (resultAry.length > 0) {//处理结果有内容 1、正常通话 2、闲聊 3、没听清 4、用户忙
+            String type = resultAry[0];
+            switch (type) {
+                case Constants.IntelligentCallStatus.CHAT:
+                    resultMap.put("type", type);//类型
+                    resultMap.put("content", resultAry[1]);
+                    break;
+                case Constants.IntelligentCallStatus.NORMAL:
+                    resultMap.put("type", type);//类型
+                    resultMap.put("content", resultAry[1]);
+                    break;
+                case Constants.IntelligentCallStatus.NOTHEARING:
+                    resultMap.put("type", type);//类型
+                    resultMap.put("content", "");
+                    break;
+                case Constants.IntelligentCallStatus.NORESULT:
+                    resultMap.put("type", type);//类型
+                    resultMap.put("content", "");
+                    break;
+                case Constants.IntelligentCallStatus.USERBUSY:
+                    resultMap.put("type", type);//类型
+                    resultMap.put("content", "");
+                    break;
+                case Constants.IntelligentCallStatus.ERRORRESULT:
+                    resultMap.put("type", type);//类型
+                    resultMap.put("content", "");
+                    break;
+
+                default:
+                    resultMap.put("type", Constants.IntelligentCallStatus.CHAT);//类型
+                    resultMap.put("content", resultAry[0]);
+                    break;
+
+            }
+        }
+        return resultMap;
+    }
+
+    /**
+     * @return
+     * @Author: ly
+     * @Date: 2018/7/14
+     * @Description: 模拟定时页面
+     */
+    @RequestMapping(value = "/testTime.do", method = RequestMethod.GET)
+    public ModelAndView testTime(String taskId) {
+        logger.info("进入测试页面==== testTime.do");
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("simulate2");
+        mv.addObject("taskId", taskId);
+        return mv;
+    }
+
+//    @RequestMapping(value = "/testQuartz.do")
+//    public void testQuartz(HttpServletResponse response) {
+//        QuartzManager quartzManager = new QuartzManager();
+//        SchedulerFactory gSchedulerFactory = new StdSchedulerFactory();
+//        Scheduler sche;
+//        try {
+//            sche = gSchedulerFactory.getScheduler();
+//            String cron = "0/10 * * * * ?";  //使用Class.forName动态的创建
+//            String currentnode = "2";
+//            String phones = "1888888,188880000,1873223233";
+//            quartzManager.generateScheduleTask1(response, sche, "测试的定时任务", cron, currentnode, "1", "1", phones);
+//
+//        } catch (SchedulerException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+}

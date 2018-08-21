@@ -1,0 +1,18 @@
+package com.quickdone.znwh.service;
+
+import com.quickdone.znwh.entity.CustomerGroup;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+public interface CustomerGroupService<CustomerGroup,Long> {
+
+    /**
+     * 根据用户组id查询
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    public CustomerGroup findById(Long id);
+}

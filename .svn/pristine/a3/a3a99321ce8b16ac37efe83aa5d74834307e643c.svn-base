@@ -1,0 +1,479 @@
+package com.quickdone.znwh.service.impl;
+
+import com.iflytek.mt_scylla.mt_scylla;
+import com.quickdone.znwh.pojo.AnalSemResult;
+import com.quickdone.znwh.pojo.WaveHeader;
+import com.quickdone.znwh.utils.HttpClient4Util;
+import com.quickdone.znwh.utils.StringUtils;
+import org.activiti.engine.impl.util.json.JSONArray;
+import org.activiti.engine.impl.util.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.*;
+
+/**
+ * Created by dell on 2018/5/14.
+ */
+@Component
+public class OutcrySemanticservice {
+    private static final Logger logger = LoggerFactory
+        .getLogger(OutcrySemanticservice.class);
+
+    @Value("${out.appid}")
+    private String appid;
+    @Value("${out.orgCode}")
+    private String orgCode;
+    @Value("${wav.path}")
+    private String wavPath;
+    @Value("${pcm.path}")
+    private String pcmPath;
+
+
+
+    /**
+     * 第一次调后台语义的时候，就是用新的uuid去查
+     *
+     * @param newuid
+     * @param voiceResult
+     * @param nlpAddress
+     * @param scoreThreshold
+     * @param ismwebaipAddress
+     * @return
+     * @throws Exception
+     */
+    public String firstAndNewIdToquery(String voiceResult, String newuid,String nlpAddress, String scoreThreshold, String ismwebaipAddress, mt_scylla miat) throws Exception {
+        //调用讯飞引擎
+        logger.info("第一次调用语义开始");
+        //注意区分第一次
+        int merroyNlpCout = 0;
+        String resu = nlpNew(voiceResult, newuid, nlpAddress, merroyNlpCout,miat);
+        if (resu != null) {
+            JSONObject result = new JSONObject(resu)
+                    .getJSONObject("result");
+            //标准问id，存在讯飞的TB_ISM_KONWLEDGE_POINT
+            String resuId = result.getJSONObject("matchInfo")
+                    .getString("id");
+            String rc = result.getString("rc");
+            double score = result.getJSONObject("matchInfo").getDouble(
+                    "score");
+            double scoreThresholdDouble = Double
+                    .valueOf(scoreThreshold);
+            if ("0".equals(rc)) {
+                //解析语义查询的结果
+                List<AnalSemResult> analSemResultBeanList = analSemResult(resu);
+                if (analSemResultBeanList != null && analSemResultBeanList.size() > 0) {
+                        //暂时未判断多个答案还是单个zhon
+                        if (score >= scoreThresholdDouble) {
+                            //调用讯飞接口获得问答答案的id
+                            String ismResult = getAnswer(resuId, ismwebaipAddress);
+                            //先要验证这个知识条目分类是否存在
+                            String meassge = valiteItemExtior(ismResult);
+                            return meassge;
+                        } else {
+                            logger.error("得分过低："+score);
+                            return null;
+                            /*return "得分过低："+score;*/
+                        }
+                } else {
+                    logger.error("解析语义查询的结果没有得到数据");
+                    /*return "解析语义查询的结果没有得到数据";*/
+                    return null;
+                }
+            } else {
+                logger.error("rc是-1,判断为闲话，当前得分为："+score);
+                /*return "rc是-1,判断为闲话，当前得分为：" + score;*/
+                return null;
+            }
+        } else {
+            //调用热词查询结果
+            logger.error("闲话");
+            /*return "闲话";*/
+            return "error";
+        }
+    }
+
+    public String nlpNew(String voiceResult, String iss_uid, String nlpAddress, int merroyNlpCout, mt_scylla miat) throws Exception {
+        String resu=null;
+        try {
+            //初始化语义引
+            resu = nlpNewTest(voiceResult, iss_uid, nlpAddress, miat);
+            if(resu==null){
+                resu = nlpNewTest(voiceResult, iss_uid, nlpAddress, miat);
+                if(resu==null){
+                    resu = nlpNewTest(voiceResult, iss_uid, nlpAddress, miat);
+                    logger.info("第三次，输出结果是："+resu);
+                    return resu;
+                }else{
+                    logger.info("第二次，输出结果是："+resu);
+                    return resu;
+                }
+            }else{
+                logger.info("第一次，输出结果是："+resu);
+                return resu;
+            }
+
+        }catch (Exception  e){
+            throw e;
+        }finally {
+            // closeSemanticEngine(miat);
+            logger.info("调用语义插件结束");
+        }
+
+    }
+
+    /**
+     * 调语义得到结果
+     * @param voiceResult
+     * @param iss_uid
+     * @param nlpAddress
+     * @param miat
+     * @return
+     * @throws Exception
+     */
+    public String nlpNewTest(String voiceResult, String iss_uid, String nlpAddress,mt_scylla miat) throws Exception {
+        int textlen = voiceResult.getBytes("UTF-8").length;
+        String param = "svc=nlp,newsess=0,nbest=10,username=unicom,org="+orgCode+",iss_uid=" + iss_uid + ","
+                + "url=" + nlpAddress + ",appid=" + appid;
+        int[] errCode = new int[1];
+        String resu = miat.SCYMTNLPEx(param, voiceResult, textlen, errCode,
+                null);
+        /*miat.SCYMTSessionBeginEx(resu,)*/
+        if (errCode[0] == 0) {
+            logger.info("讯飞引擎语义结果为：" + resu);
+
+        } else {
+            logger.error("哎呀，出错了，错误码：" + errCode[0] + ".");
+            resu=null;
+        }
+        return resu;
+    }
+
+    /**
+     * 解析语义查询得到的结果
+     *
+     * @return
+     * @throws Exception
+     */
+    public List<AnalSemResult> analSemResult(String resu) throws Exception {
+        JSONObject result = new JSONObject(resu)
+                .getJSONObject("result");
+        //标准问id，存在讯飞的TB_ISM_KONWLEDGE_POINT
+        String resuId = result.getJSONObject("matchInfo")
+                .getString("id");
+        String rc = result.getString("rc");
+        double score = result.getJSONObject("matchInfo").getDouble(
+                "score");
+        String questionStd = result.getJSONObject("matchInfo").getString("questionStd");
+        List<AnalSemResult> analSemResultBeanList = new ArrayList<>();
+        Map<Double, Double> map = new TreeMap<Double, Double>(
+                new Comparator<Double>() {
+                    public int compare(Double obj1, Double obj2) {
+                        // 降序排序
+                        return obj2.compareTo(obj1);
+                    }
+                });
+        AnalSemResult analSemResultBean = new AnalSemResult();
+        analSemResultBean.setId(resuId);
+        analSemResultBean.setRc(rc);
+        analSemResultBean.setScore(score);
+        analSemResultBean.setQuestionName(questionStd);
+        map.put(score, score);
+        analSemResultBeanList.add(analSemResultBean);
+        //这个就是有更多答标准问时候
+        if (result.has("moreResult")) {
+            //获得更多答案
+            JSONArray moreResult = result.getJSONArray("moreResult");
+            for (int i = 0; i < moreResult.length(); i++) {
+                JSONObject matchInfo = moreResult.getJSONObject(i).getJSONObject("matchInfo");
+                String questionStdOne = matchInfo.getString("questionStd");
+                String standardIdMoreOne = matchInfo.getString("id");
+                double scoreOne = matchInfo.getDouble("score");
+                map.put(scoreOne, scoreOne);
+                AnalSemResult analSemResultBeanOne = new AnalSemResult();
+                analSemResultBeanOne.setId(standardIdMoreOne);
+                analSemResultBeanOne.setQuestionName(questionStdOne);
+                analSemResultBeanOne.setScore(scoreOne);
+                analSemResultBeanList.add(analSemResultBeanOne);
+            }
+            Set<Double> keySet = map.keySet();
+            Iterator<Double> iter = keySet.iterator();
+            List<AnalSemResult> listOne = new ArrayList<>();
+            while (iter.hasNext()) {
+                Double key = iter.next();
+                Double scoreTwo = map.get(key);
+                for (int t = 0; t < analSemResultBeanList.size(); t++) {
+                    if (scoreTwo == analSemResultBeanList.get(t).getScore()) {
+                        listOne.add(analSemResultBeanList.get(t));
+                    }
+                }
+            }
+            return listOne;
+        }
+        return analSemResultBeanList;
+    }
+
+
+    /**
+     * 获取知识库接口答案
+     *
+     * @param id
+     * @return
+     */
+    public String getAnswer(String id, String ismwebaipAddress) {
+        return HttpClient4Util.doGet(ismwebaipAddress + id, "UTF-8");
+    }
+
+    /**
+     *
+     *
+     * @return
+     */
+    private String valiteItemExtior(String ismResult) throws Exception {
+        String message = "false" + "@" + "1";
+        if (StringUtils.isNullOrEmpry(ismResult)) {
+            //知识库没有答案
+            return message;
+        } else {
+            if (StringUtils.isNullOrEmpry(new JSONObject(ismResult).getString("content"))) {
+                //知识库没有答案
+                return message;
+            }
+        }
+        String ismContent = new JSONObject(ismResult).getString("content");
+        message = ismContent;
+        return message;
+    }
+
+    //语音合成
+    public String synthesis(String content,String url,mt_scylla miat){
+        int[] errCode = new int[1];
+        String param = "vid=60020,auf=4,svc=tts,type=1,uid=660Y5r,aue=raw," + ",url="+ url + ",appid=" + appid;;
+        String sid = miat.SCYMTSessionBeginEx(param, errCode,null);
+        if (errCode[0] != 0) {
+            String error = "请检查IP地址是否正确、网络是否正常开启、appid是否正确,错误码是" + errCode[0];                  //获取sid失败
+            logger.error(error);
+            return "NULL";
+        }else {
+            logger.info("获取sid成功 sid:"+sid);
+            //发送文本数据返回合成状态
+            if ("".equals(content))
+            {
+               logger.error("文本为空！");
+                return "NULL";
+            }
+            int textlen = content.length()*4;
+
+            int ret = miat.SCYMTTextPutEx(sid,content, textlen,null);                                       //调取合成状态失败
+            if (ret != 0)
+            {
+                logger.error("scylla_svc::SCYMTTextPut, ret is " + ret+"  状态合成失败");
+                return "NULL";
+            }
+
+            //获取合成结果
+            byte[] getaudioBuff = new byte[1024*1024];
+            int[] errorCode = new int[1];
+            int[] recStatus = new int[1];
+            int[] len = new int[1];
+            recStatus[0] = 1;
+            int audiolen = 0;
+            byte[] audioBuffGet = new byte[1024*1024];
+            while (recStatus[0] != 0 && errorCode[0] == 0)
+            {
+                len[0] = 0;
+                miat.SCYMTAudioGetEx(sid,audioBuffGet,len, recStatus, errorCode,null);
+                if (len[0] != 0)
+                {
+                    System.arraycopy(audioBuffGet,0,getaudioBuff,audiolen,len[0]);
+                    audiolen += len[0];
+                }
+            }
+
+            // 准备文件.txt其中的内容是空的
+            File f1 = new File(pcmPath);
+            if (f1.exists()==false){
+                f1.getParentFile().mkdirs();
+            }
+            FileOutputStream  fos=null;
+            // 创建基于文件的输出流
+            try{
+                 fos = new FileOutputStream(f1);
+                // 把数据写入到输出流
+                fos.write(getaudioBuff);
+                 wavPath=pcmTowav(pcmPath);
+            }catch (Exception e){
+                e.getMessage();
+            }finally {
+                // 关闭输出流
+                try {
+                    if(null != fos){
+                        fos.close();
+                    }
+                }catch (Exception e){
+                    e.getMessage();
+                }
+            }
+            return wavPath;
+        }
+    }
+    //pcm文件转换wav文件
+    private String pcmTowav(String path){
+        FileInputStream fis=null;
+        FileOutputStream fos=null;
+        try {
+             fis = new FileInputStream(path);
+             fos = new FileOutputStream(wavPath);
+            //计算长度
+            int PCMSize = 0;
+            byte[] buf = new byte[1024 * 4];
+            int size = fis.read(buf);
+
+            while (size != -1) {
+                PCMSize += size;
+                size = fis.read(buf);
+            }
+            fis.close();
+
+            //填入参数，比特率等等。这里用的是16位单声道 8000 hz
+            WaveHeader header = new WaveHeader();
+            //长度字段 = 内容的大小（PCMSize) + 头部字段的大小(不包括前面4字节的标识符RIFF以及fileLength本身的4字节)
+            header.fileLength = PCMSize + (44 - 8);
+            header.FmtHdrLeth = 16;
+            header.BitsPerSample = 16;
+            header.Channels = 1;
+            header.FormatTag = 0x0001;
+            header.SamplesPerSec = 16000;
+            header.BlockAlign = (short)(header.Channels * header.BitsPerSample / 8);
+            header.AvgBytesPerSec = header.BlockAlign * header.SamplesPerSec;
+            header.DataHdrLeth = PCMSize;
+
+            byte[] h = header.getHeader();
+
+            assert h.length == 44; //WAV标准，头部应该是44字节
+            //write header
+            fos.write(h, 0, h.length);
+            //write data stream
+            fis = new FileInputStream(path);
+            size = fis.read(buf);
+            while (size != -1) {
+                fos.write(buf, 0, size);
+                size = fis.read(buf);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                if(null != fis){
+                    fis.close();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            try {
+                if(null != fos){
+                    fos.close();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        logger.info("Convert OK!");
+        return wavPath;
+    }
+
+    //语音识别
+    public String distinguish(mt_scylla miat){
+        String allResult = "";
+        String result = "";
+        // 启动一路识别
+        int[] errorCode = new int[1];
+        String param = "svc=iat,auf=audio/L16;rate=16000,aue=raw,type=1,uid=660Y5r,appid=pc20onli,url=192.168.1.199:1028";
+        String session_id = miat.SCYMTSessionBeginEx(param, errorCode, null);
+        logger.info("开启会话session_id=====================" + session_id);
+        if (errorCode[0] != 0) {
+            String error = "请检查IP地址是否正确、网络是否正常开启,错误码是" + errorCode[0];
+            logger.error(error);
+        }
+
+        try {
+            AudioFormat audioFormat = null;
+            audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 16000F, 16, 1, 2,
+                    16000F, false);
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
+            TargetDataLine targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
+            targetDataLine.open(audioFormat);
+            final SourceDataLine sourceDataLine;
+            info = new DataLine.Info(SourceDataLine.class, audioFormat);
+            sourceDataLine = (SourceDataLine) AudioSystem.getLine(info);
+            sourceDataLine.open(audioFormat);
+            targetDataLine.start();   //麦克风启动
+            sourceDataLine.start();   //扬声器启动
+
+            int nByte = 0;
+            final int bufSize = 1600;
+            byte[] buffer = new byte[bufSize];
+            int[] epStatus = new int[1];
+            int[] recogStatus = new int[1];
+            int[] ret = new int[1];
+            int audioStatus = 1;
+
+            while (nByte != -1) {
+                nByte = targetDataLine.read(buffer, 0, bufSize);   //获取麦克风音频
+                sourceDataLine.write(buffer, 0, nByte);    //添加到扬声器播放
+
+                //写入音频
+                String cur_res = miat.SCYMTAudioWriteEx(session_id, buffer, buffer.length, audioStatus, epStatus, recogStatus, ret, null);
+                if (ret[0] != 0) {
+                    String err = "上传音频出错，错误码为：" + ret[0];
+                    logger.error(err);
+                }
+                audioStatus = 2;
+
+                // 判断引擎返回pgs是否为1，为1表示有识别结果可获取
+                if (ret[0] == 0 && cur_res.length() != 0) {
+                    //解析json
+                    net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(cur_res);
+                    //输出
+                    if (jsonObject.getInt("pgs") == 1) {
+                        result = jsonObject.getString("result");
+                        logger.info(result);
+                        if(result.contains("停止")){
+                            break;
+                        }
+                        allResult += result + " ";
+                    }
+                    //break;      //是否连续识别
+                }
+            }
+
+            targetDataLine.close();
+            targetDataLine.stop();  //麦克风关闭
+            sourceDataLine.close();
+            sourceDataLine.stop();  //扬声器关闭
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            // 结束一路会话
+            int endret = miat.SCYMTSessionEndEx(session_id);
+            if (endret != 0) {
+                String error = "会话关闭失败,错误码是" + endret;
+                logger.error(error);
+            }
+
+            // 逆初始化
+            int uniret = miat.SCYMTUninitializeEx(null);
+            if(uniret != 0){
+                String error = "逆初始化失败,错误码是" + uniret;
+                logger.error(error);
+            }
+        }
+        return allResult;
+    }
+}

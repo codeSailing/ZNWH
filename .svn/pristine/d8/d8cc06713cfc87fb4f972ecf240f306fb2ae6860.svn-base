@@ -1,0 +1,62 @@
+package com.quickdone.znwh.entity;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/11
+ * @Description: 客户表与客户组表进行间接关联
+ */
+@Entity
+@Table(name = "t_customerBetweenGroup")
+public class CustomerBetweenGroup implements Serializable {
+
+    private static final long serialVersionUID = 2325913244576166625L;
+    /**
+     * 主键
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false, columnDefinition = "bigint(20) COMMENT '主键'")
+    private Long id;
+
+    /**
+     * 外键关联 客户组表主键
+     */
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "CUSTOMERGROUP_ID", columnDefinition = "bigint(20) COMMENT '外键关联  客户组表主键'")
+    private CustomerGroup customerGroup;
+
+    /**
+     * 外键关联 客户表主键
+     */
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "CUSTOMER_ID", columnDefinition = "bigint(20) COMMENT '外键关联  客户组主键'")
+    private Customer customer;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public CustomerGroup getCustomerGroup() {
+        return customerGroup;
+    }
+
+    public void setCustomerGroup(CustomerGroup customerGroup) {
+        this.customerGroup = customerGroup;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+}

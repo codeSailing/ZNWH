@@ -1,0 +1,133 @@
+package com.quickdone.znwh.taskhandle;
+
+import com.quickdone.znwh.controller.LoginController;
+import com.quickdone.znwh.controller.api.IVRController;
+import com.quickdone.znwh.pojo.ProcessNode;
+import com.quickdone.znwh.utils.StringUtils;
+import com.quickdone.znwh.utils.Xml2JsonUtil;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/10 15:03
+ * @Description:
+ */
+
+@Component
+public class TaskSchedule {
+    private static Logger logger = LoggerFactory.getLogger(TaskSchedule.class);
+
+    @Resource
+    private IVRController ivr;
+
+    private static List<ProcessNode> nodeList = new ArrayList<ProcessNode>();//流程节点
+
+
+    /**
+     * 任务执行通用类
+     * 执行步骤：
+     * 1、触发外呼任务
+     * 2、调用IVR接口，将一个或多个客户信息（电话号码）提交给IVR（开发阶段跳转到一个测试页面）
+     * 3、IVR拨通电话后回调外呼系统（第一次拨通电话的回调需要带一个标识参数）
+     * 4、外呼系统接收到请求后开始解析本次任务的流程配置文件，将第一个节点的内容发送给IVR
+     * 5、IVR系统将客户的应答状况反馈给外呼系统（测试页面）
+     * 6、外呼系统调用语义模块，得到标准答案，外呼系统根据标准答案决定下一步的流程
+     */
+    public String executeTask(String currentNode,String answer,int taskid) throws IOException {
+
+        //时间到了  开始推送号码和用户信息到IVR http调用IVR一个接口 ivrDial接口
+          //httpClient.post(url,telephone)
+
+
+
+        //IVR 接收到外呼信息，开始拨号，拨通后回调外呼系统 reciveIvrMessage接口
+
+
+        //外呼系统接收到信号后将第一个节点的欢迎语发送给IVR（或者就是第一个问题）
+
+
+        //跳转到测试页面，模拟IVR流程（/ivr/test.do）
+
+        //外呼系统接收IVR反馈，调用语义模块，获得语义返回的语义文本
+
+             //外呼系统读取流程配置文件，按照语义结果匹配下一节点，并将节点内容发送给IVR系统
+        String processPath = "D:\\精神病病人回访流程配置.xml";
+        nodeList = new ArrayList<ProcessNode>();
+        loadNodeList(processPath);
+        ProcessNode node = getNodeById(currentNode);
+        String startSpeak = node.getContent();
+        logger.info("startSpeak:======================="+startSpeak);
+        return startSpeak;
+        //循环到下一个流程
+
+    }
+
+
+    private static void loadNodeList(String processPath) throws IOException {
+        String json = Xml2JsonUtil.xml2json(processPath);
+        JSONArray myJsonArray = JSONArray.fromObject(json);
+        JSONObject obj = (JSONObject) myJsonArray.get(0);
+        System.out.println("外呼流程----本次流程的主题是:" + obj.get("@name"));
+        JSONArray nodeArray = JSONArray.fromObject(obj.get("node"));
+        int size = nodeArray.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                JSONObject job = nodeArray.getJSONObject(i);
+                // System.out.println("id为:" + job.get("@id") + "的节点内容是："
+                // + job.get("content"));
+                ProcessNode node = configNode(job);
+                nodeList.add(node);
+            }
+        }
+    }
+
+    private static ProcessNode configNode(JSONObject job) {
+        ProcessNode node = new ProcessNode();
+        node.setId(job.getString("@id"));
+        node.setSourceRef(job.getString("@sourceRef"));
+        node.setAnswer(job.getString("@answer"));
+        node.setTargetRef(job.getString("@targetRef"));
+        node.setDefaultRef(job.getString("@defaultRef"));
+        node.setExceptionRef(job.getString("@exceptionRef"));
+        node.setContent(job.getString("content"));
+
+        return node;
+    }
+
+    private static ProcessNode getNodeById(String id) {
+        if (StringUtils.isNullOrEmpry(id)) {
+            return null;
+        }
+
+        if (nodeList == null || nodeList.isEmpty()) {
+            return null;
+        }
+
+        for (ProcessNode processNode : nodeList) {
+
+            //应该根据 answer  id  targetRef  defaultRef等条件获取下一个节点
+
+            if (id.equals(processNode.getId())) {
+                 String targets=processNode.getTargetRef();
+                 if(!StringUtils.isNullOrEmpry(targets)){
+                    String target[] =targets.split(",");
+
+                    if(target.length>0){
+                        //需要遍历各个节点  且找到各个节点的answer  知到和传入的answer匹配为止
+                    }
+                 }
+            }
+        }
+
+        return null;
+    }
+}

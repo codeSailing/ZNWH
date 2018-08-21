@@ -1,0 +1,155 @@
+package com.quickdone.znwh.controller;
+
+import com.quickdone.znwh.controller.vo.CallTaskVo;
+import com.quickdone.znwh.entity.CallTask;
+import com.quickdone.znwh.pojo.LayuiRequest;
+import com.quickdone.znwh.pojo.LayuiResponseMap;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallTaskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.util.Map;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/10 14:39
+ * @Description:任务管理
+ */
+@Controller
+@RequestMapping(value = "/callTask")
+public class CallTaskController {
+    private static Logger logger = LoggerFactory.getLogger(CallTaskController.class);
+
+    @Resource
+    private CallTaskService callTaskService;
+
+    //展示建店设计师任务页面--layui
+    @RequestMapping(value = "/list.do", method = RequestMethod.GET)
+    public ModelAndView DesignerShowJsp() {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("");
+        return mv;
+    }
+
+    /**
+     * 查询设计师任务列表
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/data.do", method = RequestMethod.GET)
+    @ResponseBody
+    public LayuiResponseMap DesignerShowInformation(HttpServletRequest request) {
+        LayuiRequest layuiRequest = LayuiRequest.fromHttpRequest(request);
+        Map<String, Object> searchParams = layuiRequest.getSearchParams();
+        PaginationMapLayui pagination = PaginationMapLayui.formJQueryLayuiTableRequest(layuiRequest);
+        callTaskService.findAll(searchParams,pagination);
+        LayuiResponseMap dtResp = LayuiResponseMap.fromPagination(pagination);
+        return dtResp;
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 15:48
+     * @Description: 新建任务
+     */
+    @RequestMapping(value = "/add.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData add(HttpServletRequest request, CallTaskVo callTaskVo) throws ParseException {
+        logger.info("调用CallTaskController==== add.do,  params:" + callTaskVo.toString());
+        if (callTaskVo != null) {
+            // 1、 新建任务
+            callTaskService.save(callTaskVo);
+            // TODO 2、创建定时任务
+            return ResponseData.getSuccessResponse("操作成功");
+        } else {
+            return ResponseData.getErrorResponse("操作失败");
+        }
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 16:10
+     * @Description: 修改任务
+     */
+    @RequestMapping(value = "/update.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData update(HttpServletRequest request, Long id, CallTaskVo callTaskVo) {
+        logger.info("调用CallTaskController==== update.do,  params: id=" + "id,updateParms:" + callTaskVo.toString());
+        if (callTaskVo != null) {
+            // 1、 修改任务
+            return callTaskService.update(id, callTaskVo);
+        } else {
+            return ResponseData.getErrorResponse("操作失败");
+        }
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 16:22
+     * @Description: 变计划  注：如果 为一次性 则开始时间和结束时间保持一致
+     */
+    @RequestMapping(value = "/modifyPlan.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData modifyPlan(Long id, Integer planType, String executeBeginDate, String executeEndDate, String executeTime) throws ParseException {
+        logger.info("调用CallTaskController==== modifyPlan.do,  params: id=" + id);
+        CallTask callTask = (CallTask) callTaskService.findById(id);
+        if (callTask != null) {
+            return callTaskService.modifyPlan(callTask, planType, executeBeginDate, executeEndDate, executeTime);
+        } else {
+            return ResponseData.getErrorResponse("任务不存在，操作失败");
+        }
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 17:00
+     * @Description: 选流程
+     */
+    @RequestMapping(value = "/chooseCallFollow.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData chooseCallFollow(Long id, Long callFollowId) {
+        logger.info("调用CallTaskController==== chooseCallFollow.do,  params: id=" + id + ", callFollowId:" + callFollowId);
+        CallTask callTask = (CallTask) callTaskService.findById(id);
+        if (callTask != null) {
+            return callTaskService.chooseCallFollow(callTask, callFollowId);
+        } else {
+            return ResponseData.getErrorResponse("任务不存在，操作失败");
+        }
+    }
+
+    @RequestMapping(value = "/modifyType.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData modifyType(Long id, Integer type) {
+        logger.info("调用CallTaskController==== modifyType.do,  params: id=" + id + ", type:" + type);
+        CallTask callTask = (CallTask) callTaskService.findById(id);
+        if (callTask != null) {
+            return callTaskService.modifyType(callTask, type);
+        } else {
+            return ResponseData.getErrorResponse("任务不存在，操作失败");
+        }
+    }
+
+    @RequestMapping(value = "/delete.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData delete(Long id, Integer isDelete) {
+        logger.info("调用CallTaskController==== delete.do,  params: id=" + id + ", isDelete:" + isDelete);
+        CallTask callTask = (CallTask) callTaskService.findById(id);
+        if (callTask != null) {
+            return callTaskService.delete(callTask, isDelete);
+        } else {
+            return ResponseData.getErrorResponse("任务不存在，操作失败");
+        }
+    }
+
+}

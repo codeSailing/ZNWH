@@ -1,0 +1,96 @@
+package com.quickdone.znwh.controller;
+
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.utils.MD5Util;
+import com.quickdone.znwh.vo.UserVo;
+import com.quickdone.znwh.webService.GetWebserviceInfo;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+public class LoginController {
+    private static Logger logger = LoggerFactory.getLogger(LoginController.class);
+    @RequestMapping(value = "/login.do",method =  RequestMethod.GET)
+    public String login(){
+      logger.info("LoginController----"+"/login.do");
+        return "login1";
+    }
+
+    /**
+     * 登录
+     * @param accountName
+     * @param password
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/realLogin.do")
+    @ResponseBody
+    public ResponseData realLogin(String accountName,String password,HttpServletRequest request)throws Exception{
+        HttpSession httpSession = request.getSession();
+        String pwd= MD5Util.md5(password);
+        JSONObject jsonObject= GetWebserviceInfo.getUserRoleInfo(accountName, pwd);
+        if(jsonObject.get("status").toString().equals("true")){
+            JSONObject jsonObject1=jsonObject.getJSONObject("data");
+            UserVo userVo=(UserVo)JSONObject.toBean(jsonObject1,UserVo.class);
+            httpSession.setAttribute("userVo",userVo);
+            return ResponseData.getSuccessResponse("登录成功");
+        }else{
+            return ResponseData.getErrorResponse("登录失败");
+        }
+
+    }
+
+    /**
+     * 获取用户的菜单权限
+     * @param accountName
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/loginSuccess.do")
+    public ModelAndView loginSuccess(String accountName)throws Exception{
+        ModelAndView mv =new ModelAndView("index");
+        List<Map<String,String>> list=new ArrayList<Map<String,String>>();
+        //StringBuilder stringBuilder=new StringBuilder();
+        String contextPath="/znwh";
+        JSONArray jsonArray=GetWebserviceInfo.getAllResources(accountName,contextPath);
+        if(jsonArray.size()>0){
+            for(int i=0;i<jsonArray.size();i++){
+                Map<String,String> map=new HashMap<String,String>();
+                JSONObject jsonObject=jsonArray.getJSONObject(i);
+                map.put(jsonObject.get("resourceName").toString(),jsonObject.get("link").toString());
+                JSONArray jsonArray1=GetWebserviceInfo.getResources(accountName,contextPath,jsonObject.get("resourceId").toString());
+                if(jsonArray1!=null){
+                   for(int j=0;j<jsonArray1.size();j++){
+                       Map<String,String> map1=new HashMap<String,String>();
+                       JSONObject jsonObject1=jsonArray1.getJSONObject(j);
+                       map1.put(jsonObject1.get("resourceName").toString(),jsonObject1.get("link").toString());
+                       list.add(map1);
+                   }
+                }
+                //list.add(jsonObject.get("resourceName").toString());
+               // stringBuilder.append(jsonObject.get("resourceName").toString()+",");
+                list.add(map);
+            }
+        }
+        //String jsonList=JSONArray.fromObject(list).toString();
+        //String str=stringBuilder.toString();
+        mv.addObject("list",list);
+        //mv.addObject("str",str.substring(0,str.length()-1));
+        return mv;
+    }
+}

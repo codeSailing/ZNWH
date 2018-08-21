@@ -1,0 +1,101 @@
+package com.quickdone.znwh.controller;
+
+import com.mysql.jdbc.StringUtils;
+import com.quickdone.znwh.common.Constants;
+import com.quickdone.znwh.entity.Customer;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CustomerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Controller
+@RequestMapping(value = "/customer")
+public class CustomerController {
+    private static Logger logger = LoggerFactory.getLogger(CustomerController.class);
+
+    @Resource
+    private CustomerService customerService;
+
+    /**
+     * 添加客户
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/addCustomer.do", method = RequestMethod.GET)
+    public ResponseData addCustomer(Customer customer) {
+        Customer customerValue = customerService.findByTelephoneAndIsDelete(customer.getTelephone(), Constants.isDelete.NOT);
+        //代表查询出现重复的用户
+        if (customerValue != null) {
+            return ResponseData.getErrorResponse("此用户已存在");
+        } else {
+            Customer customerSuccess = customerService.addCustomer(customer);
+            //添加成功后会返回该对象
+            if (customerSuccess != null) {
+                return ResponseData.getSuccessResponse(customerSuccess);
+            } else {//未返回代表添加失败
+                return ResponseData.getErrorResponse("添加失败");
+            }
+        }
+    }
+
+    /**
+     * 客户详细信息
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/detailedCustomer.do", method = RequestMethod.GET)
+    public ResponseData detailedCustomer(Long id) {
+        Customer customer = customerService.findByIdAndIsDelete(id, Constants.isDelete.NOT);
+        return ResponseData.getSuccessResponse(customer);
+    }
+
+    /**
+     * 修改客户
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/updateCustomer.do", method = RequestMethod.GET)
+    public ResponseData updateCustomer(Customer customer) {
+        return customerService.updateCustomer(customer);
+    }
+
+    /**
+     * 删除客户
+     *
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    @ResponseBody
+    @RequestMapping(value = "/delCustomer.do", method = RequestMethod.GET)
+    public ResponseData delCustomer(String customerId) {
+        ResponseData responseData = null;
+        if (!StringUtils.isNullOrEmpty(customerId)) {
+            String[] ids = customerId.split(",");
+            for (String contentSubjectId : ids) {
+                Customer customer = customerService.findByIdAndIsDelete(Long.valueOf(contentSubjectId), Constants.isDelete.NOT);
+                customerService.delCustomer(customer);
+            }
+            return ResponseData.getSuccessResponse("删除成功");
+        } else {
+            responseData = ResponseData.getErrorResponse("请选择需要删除客户");
+        }
+        return responseData;
+    }
+
+}

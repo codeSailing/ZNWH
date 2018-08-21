@@ -1,0 +1,118 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.dao.CallFlowRepository;
+import com.quickdone.znwh.entity.CallFlow;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallFlowService;
+import com.quickdone.znwh.utils.DateSearchUtils;
+import com.quickdone.znwh.utils.ToClass;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/11 10:16
+ * @Description:
+ */
+@Service
+@Transactional
+public class CallFlowServiceImpl implements CallFlowService<CallFlow,Long> {
+    @Resource
+    private CallFlowRepository callFlowRepository;
+
+    @Override
+    public void findAll(final Map<String, Object> searchParams, PaginationMapLayui pagination) {
+        Pageable pageable = new PageRequest(pagination.getStart(), pagination.getLength(), new Sort(Sort.Direction.DESC, "createDate"));//根据时间倒叙
+        Page<CallFlow> page = callFlowRepository.findAll(new Specification<CallFlow>() {
+            @Override
+            public Predicate toPredicate(Root<CallFlow> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<Predicate>();
+                if(searchParams.containsKey("searchParam")){//名称/描述
+                    Predicate p1 = criteriaBuilder.like(root.<String>get("name"),"%"+searchParams.get("searchParam").toString()+"%");
+                    Predicate p2 = criteriaBuilder.like(root.<String>get("descri"),"%"+searchParams.get("searchParam").toString()+"%");
+                    Predicate p = criteriaBuilder.or(p1,p2);
+                    predicateList.add(p);
+                }
+
+                Predicate[] p = new Predicate[predicateList.size()];
+                return criteriaBuilder.and(predicateList.toArray(p));
+            }
+        },pageable);
+        List<CallFlow> list = page.getContent();
+        List<Map> resuList = new ArrayList<Map>();
+        for (CallFlow callFlow : list) {
+            Map map = ToClass.beanToMap(callFlow);
+            resuList.add(map);
+        }
+        pagination.setData(resuList);
+        pagination.setRecordsTotal(page.getTotalElements());
+    }
+
+    @Override
+    public CallFlow findById(Long id) {
+        CallFlow callFlow = callFlowRepository.findById(id);
+        if(callFlow != null){
+            return callFlow;
+        }
+        return null;
+    }
+
+    @Override
+    public ResponseData delete(CallFlow callFlow) {
+//        callFlow.setIsDelete(1);//删除
+        callFlowRepository.delete(callFlow);
+        return ResponseData.getSuccessResponse("操作成功！");
+    }
+
+    @Override
+    public ResponseData update(Long id, Map<String, Object> params) {
+        CallFlow callFlow = callFlowRepository.findById(id);
+        if(callFlow!=null){
+            callFlow.setName(params.get("name").toString());
+            callFlow.setDescri(params.get("descri").toString());
+            callFlow.setUpdateUser(Long.valueOf(params.get("updateUser").toString()));
+            callFlowRepository.saveAndFlush(callFlow);
+            return ResponseData.getSuccessResponse("操作成功");
+        }else {
+            return ResponseData.getErrorResponse("流程不存在，操作失败");
+        }
+
+    }
+
+    @Override
+    public ResponseData copy(Long id) {
+        return null;
+    }
+
+    @Override
+    public ResponseData add(Map<String, Object> params) {
+        Date date = new Date();
+        CallFlow callFlow = new CallFlow();
+        callFlow.setName(params.get("name").toString());
+        callFlow.setDescri(params.get("descri").toString());
+        callFlow.setIsDelete(0);
+        callFlow.setCreateDate(date);
+        callFlow.setResourcePath(params.get("resourcePath").toString());
+        callFlow.setUpdateTime(date);
+        callFlow.setUpdateUser(Long.valueOf(params.get("updateUser").toString()));
+        callFlowRepository.save(callFlow);
+        return ResponseData.getSuccessResponse("操作成功!");
+    }
+}

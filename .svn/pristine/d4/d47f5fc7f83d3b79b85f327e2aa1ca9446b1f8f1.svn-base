@@ -1,0 +1,75 @@
+a,a:hover {
+    text-decoration: none!important;
+}
+.btm-bdr{
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+}
+.red {
+    color: red;
+}
+.wd100 {
+    width: 100px!important;
+}
+.wd120 {
+    width: 120px!important;
+}
+.wd140 {
+    width: 140px!important;
+}
+.wd240 {
+    width: 240px!important;
+}
+.btn3{
+    position: absolute;
+    top:0;
+    right:0;
+    border-radius: 0!important;
+}
+.btn-bg1 {
+    background-color: rgb(51,204,153) !important;
+}
+.bg1 {
+    background-color: rgb(51,204,153) !important;
+}
+.col1 {
+    color: #fff;
+}
+.fl {
+    float: left;
+}
+.bdr-rad0 {
+    border-radius: 0px!important;
+}
+.search-btn {
+    position: absolute;
+    top: 0;
+    right:-100px;
+}
+.bdr-right0{
+    border-right: 0px!important;
+}
+.mar-left120 {
+    margin-left: 120px;
+}
+.mar-right20 {
+    margin-right: 20px;
+}
+.mar-top15 {
+    margin-top: 15px;
+}
+
+.more {
+    float: left;
+    display: block;
+    padding: 9px 15px;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: left;
+}
+.more-btn {
+    padding-right: 15px;
+    background: url("../../images/u407.png") no-repeat right center;
+}
+.more-btn.down {
+    background: url("../../images/u412.png") no-repeat right center;
+}

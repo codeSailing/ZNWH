@@ -1,0 +1,267 @@
+/*$(function () {
+    change();
+    change5();
+})*/
+var flag = true;
+var ctx = $('#ctx').val();
+var times = null;
+var timer = null;
+
+function change() {
+    var userPhone = $('#userPhone').val();
+    if (userPhone == "请选择") {
+        return;
+    }
+    $("#phones").attr("disabled", "disabled");
+    times = 60;
+    // 计时开始
+    timer = setInterval(function () {
+        $('#voice').val("尊敬的" + "（" + userPhone + "）用户，正在与您通话中 " + $("#callContent").val() + "   " + times);
+        times--;
+        if (times < 0) {
+            $('#voice').val("与" + "（" + userPhone + "）用户的通话结束！");
+            $("#phones").removeAttr("disabled");
+            times = 60;
+            clearInterval(timer);
+        }
+    }, 1000);
+}
+
+/*发送*/
+function submitForm() {
+    var userPhone = $("#phones").val();
+    if (userPhone == "请选择") {
+        alert("请选择电话号码！");
+        return;
+    }
+    var desc = $("#desc").val();
+    desc = desc.replace(/\s+/g, "");//去除所有的空格
+    if (desc == "") {
+        alert("通话内容不能为空！");
+        return;
+    }
+    var tmp = document.createElement('p');
+    tmp.innerHTML = "客户：" + desc;
+    document.getElementById('flowContent').appendChild(tmp);
+    $.ajax({
+        type: "post",
+        url: ctx + "/ivr/receive.do",
+        data: {
+            "currentNode": $("#currentNode").val(),
+            "telephone": userPhone,
+            "answer": desc,
+            "status": 1,
+            "taskid": $('#taskid').val(),
+            "parentNodeContent": $("#callContent").val()
+        },
+        success: function (data) {
+            var sta = data.status;
+            console.log(data)
+            var callContent = data.callContent;
+            if (sta != undefined && sta == 3) {
+                function callback(){
+                    alert("当前通话已结束，请选择另一组号码")
+                    $.ajax({
+                        type: "post",
+                        url: ctx + "/ivr/receive.do",
+                        data: {
+                            "currentNode": "0",
+                            "telephone": userPhone,
+                            "answer": "",
+                            "taskid": $('#taskid').val(),
+                            "status": sta
+                        },
+                        success: function (suc) {
+                            window.location.href = ctx + "/ivr/test.do?taskid=" + $('#taskid').val() + "&&currentNode=&&userPhone=" + $('#phoneStr').val() + "&&callContent=&&callFlowId=" + $('#callFlowId').val();
+                        }
+                    });
+                }
+                startPlay(1, callContent,callback);
+
+
+
+            } else {
+                clearInterval(timer);
+                var userPhone = data.userPhone
+                var currentNode = data.currentNode;
+                // var callContent = data.callContent;
+                if (callContent == null || callContent == "" || callContent == "[]") {
+                    return;
+                }
+                $('#currentNode').val(currentNode);
+                $('#callContent').val(callContent)
+                var timess = 60;
+                // 计时开始
+                timer = setInterval(function () {
+                    $('#voice').val("尊敬的" + "（" + userPhone + "）用户，正在与您通话:   " + callContent + "   " + times);
+                    timess--;
+                    if (timess <= 0) {
+                        $('#voice').val("与" + "（" + userPhone + "）用户的通话结束！");
+                        timess = 60;
+                        clearInterval(timer);
+                    }
+
+                }, 500);
+                var tmpP = document.createElement('p');
+                tmpP.innerHTML = "坐席：" + callContent;
+                document.getElementById('flowContent').appendChild(tmpP);
+                startPlay(1, callContent);
+            }
+
+            /* getVoice(callContent);*/
+        }
+    });
+}
+
+/*挂断*/
+function interrupt() {
+    var userPhone = $("#phones").val();
+    if (userPhone == "请选择") {
+        alert("请选择电话号码！");
+        return;
+    }
+    $.ajax({
+        type: "post",
+        url: ctx + "/ivr/receive.do",
+        data: {
+            "currentNode": "0",
+            "telephone": userPhone,
+            "answer": "",
+            "taskid": $('#taskid').val(),
+            "status": 3
+        },
+        success: function (suc) {
+            window.location.href = ctx + "/ivr/test.do?taskid=" + $('#taskid').val() + "&&currentNode=&&userPhone=" + $('#phoneStr').val() + "&&callContent=&&callFlowId=" + $('#callFlowId').val();
+        }
+    });
+}
+
+/*5秒倒计时*/
+function change5() {
+    var times = 5;
+    // 计时开始
+    timer = setInterval(function () {
+        $('#time').val("定时任务秒倒计时：" + times);
+        times--;
+        if (times <= 0) {
+            clearInterval(timer);
+            $('#time').val("任务执行！");
+            var taskId = $('#taskId').val();
+            times = 5;
+            $.ajax({
+                type: "GET",
+                url: ctx + "/callTask/test.do",
+                data: {
+                    "callTaskId": taskId
+                },
+                success: function (suc) {
+                    if (suc.status == 0) {
+                        var task = suc.data;
+                        console.log(task);
+                        window.location.href = context + "/ivr/test.do?taskid=" + task.taskId + "&&currentNode=&&userPhone=" + task.phones + "&&callContent=&&callFlowId=" + task.callFlowId;
+                    }
+                }
+            });
+        }
+    }, 1000);
+}
+
+/*选择电话号码*/
+function show_sub(ff) {
+    $('#userPhone').val(ff);
+    change();
+}
+
+/*播放音频*/
+/*function getVoice(callContent){
+    $.ajax({
+        type: "get",
+        url: ctx+"/outBound/synthesis.do?time="+new Date().getTime(),
+        data: {
+            "content":callContent
+        },
+        dataType:"text",
+        success: function (suc) {
+            if(suc!="NULL"&&suc!=""){
+                var doc=document.getElementById("audioVoice");
+                doc.innerHTML = "";
+                console.log(suc);
+                var embed=document.createElement("embed");
+                embed.src="/file-vedio/"+suc;//路径
+                embed.width="0";
+                embed.height="0";
+                doc.appendChild(embed);
+            }
+        }
+    });
+}*/
+/*录音*/
+/*function fun(){
+    if(flag){
+        $("#vocie").html("录音中");
+        $("#vocie").css('color','#ab1229');
+        flag=false;
+        $.ajax({
+            type: "get",
+            url: ctx+"/outBound/startDistinguish.do?time="+new Date().getTime(),
+            dataType:"text",
+            success: function (suc) {
+                if(suc!=""){
+                    $("#desc").val(suc);
+                    $("#vocie").html("开启录音");
+                    $("#vocie").css('color','#f0fdf0');
+                    flag=true;
+                }
+            }
+        });
+    }
+}*/
+
+//语音助手
+function StartASRQuestionsThr() {
+    if (flag) {
+        $("#vocie").html("录音中");
+        $("#vocie").css('color', '#ab1229');
+        flag = false;
+        document.getElementById('desc').value = "";
+        startAsr(5, 3);
+        flag = true;
+    } else {
+        stopAsr();
+    }
+
+    /*if($('.search-box-questions i.tape ').hasClass('active')){
+        $('.search-box-questions i.tape ').removeClass('active');
+        stopAsr();
+    }else{
+        document.getElementById('desc').value="";
+        $('.search-box-questions i.tape ').addClass('active');
+        startAsr(5,2);
+    }*/
+}
+
+// 开启语音监听
+function startAsr(id, flag) {
+    return XFAsr.TDStartASR(id, flag);
+}
+
+// 强制关闭语音监听
+function stopAsr() {
+    return XFAsr.TDStopASR(1);
+}
+
+// 开始语音播报
+function startPlay(speakId, text,callback) {
+
+    text = text.replace(/<br >/g, "");
+    XFAsr.TDStartTTS(speakId, text);
+    if(callback!=null){
+        setTimeout(callback(),1000)
+        //callback();
+    }
+}
+
+// 停止语音播报
+function stopPlay() {
+    return XFAsr.TDStopTTS();
+}

@@ -1,0 +1,18 @@
+package com.quickdone.znwh.service;
+
+import com.quickdone.znwh.entity.CallFlowNode;
+import com.quickdone.znwh.pojo.ResponseData;
+
+import java.util.Map;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/14 10:51
+ * @Description:
+ */
+public interface CallFlowNodeService<CallFlowNode,Long> {
+
+    //添加流程节点
+    CallFlowNode add( CallFlowNode callFlowNode);
+
+}

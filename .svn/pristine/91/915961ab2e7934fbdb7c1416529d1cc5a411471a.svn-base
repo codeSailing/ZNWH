@@ -1,0 +1,64 @@
+package com.quickdone.znwh.service;
+
+import com.quickdone.znwh.controller.vo.CallTaskVo;
+import com.quickdone.znwh.entity.CallTask;
+import com.quickdone.znwh.pojo.ResponseData;
+
+import java.text.ParseException;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/10 14:42
+ * @Description:
+ */
+public interface CallTaskService<CallTask,Long> {
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 15:48
+     * @Description: 保存
+     */
+    void save(CallTaskVo callTaskVo) throws ParseException;
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 16:13
+     * @Description: 修改任务
+     */
+    ResponseData update(Long id, CallTaskVo callTaskVo);
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 17:04
+     * @Description: 根据id查询
+     */
+    CallTask findById(Long id);
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 17:04
+     * @Description: 变计划
+     */
+    ResponseData modifyPlan(CallTask callTask, Integer planType, String executeBeginDate, String executeEndDate, String executeTime) throws ParseException;
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 17:05
+     * @Description: 选流程
+     */
+    ResponseData chooseCallFollow(CallTask callTask, Long callFollowId);
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 17:05
+     * @Description: 启用/禁用
+     */
+    ResponseData modifyType(CallTask callTask, Integer type);
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 17:05
+     * @Description: 删除
+     */
+    ResponseData delete(CallTask callTask, Integer isDelete);
+}

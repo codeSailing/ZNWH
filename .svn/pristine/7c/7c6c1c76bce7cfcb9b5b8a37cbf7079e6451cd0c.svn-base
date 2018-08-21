@@ -1,0 +1,20 @@
+package com.quickdone.znwh.entity;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/9 16:11
+ * @Description:
+ */
+
+@Entity
+@Table(name = "t_callcontentsubject")
+public class CallContentSubject implements Serializable {
+    private static final long serialVersionUID = -4672425262351057074L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false,columnDefinition="bigint(20) COMMENT '主键'")
+    private Long id;//主键
+}

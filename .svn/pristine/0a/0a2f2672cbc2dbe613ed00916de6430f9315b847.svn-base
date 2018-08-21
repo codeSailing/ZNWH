@@ -1,0 +1,48 @@
+
+$(function () {
+    change();
+})
+var ctx=$('#ctx').val();
+var times = null;var timer = null;
+function change() {
+    var userName=$('#userName').val();
+    var userPhone=$('#userPhone').val();
+    times = 60;
+    // 计时开始
+    timer = setInterval(function(){
+        $('#voice').val("尊敬的"+userName+"（"+userPhone+"）用户，正在与您通话中 "+times );
+        times--;
+        if (times < 0) {
+            $('#voice').val("与"+userName+"（"+userPhone+"）用户的通话结束！");
+            times = 60;
+            clearInterval(timer);
+        }
+    }, 1000);
+}
+function submitForm(){
+    var desc = $("#desc").val();
+    console.log(desc);
+    $.ajax({
+        type: "post",
+        url: ctx+"/ivr/receive.do",
+        data: {
+            "message":desc,
+            "status":0
+        },
+        success: function (suc) {
+            console.log("已发送！");
+        }
+    });
+}
+function interrupt(){
+    $.ajax({
+        type: "post",
+        url: ctx+"/ivr/receive.do",
+        data: {
+            "status":3
+        },
+        success: function (suc) {
+            console.log("已挂断！");
+        }
+    });
+}

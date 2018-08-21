@@ -1,0 +1,9 @@
+package com.quickdone.znwh.service;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/11
+ * @Description:
+ */
+public interface CustomerBetweenGroupService<CustomerBetweenGroup,Long> {
+}

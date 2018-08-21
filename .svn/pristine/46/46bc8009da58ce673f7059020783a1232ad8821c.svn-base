@@ -1,0 +1,2 @@
+#调用语义接口
+GET_INTELLIGENTCALL=http://192.168.1.198:8089/intelligentCall/outBound/outBound.do

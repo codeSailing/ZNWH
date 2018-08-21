@@ -1,0 +1,53 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.common.Constants;
+import com.quickdone.znwh.dao.CustomerRepository;
+import com.quickdone.znwh.entity.Customer;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CustomerService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.Map;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/10
+ * @Description:
+ */
+@Service
+@Transactional
+public class CustomerServiceImpl implements CustomerService {
+
+    @Resource
+    private CustomerRepository customerRepository;
+
+    @Override
+    public Customer addCustomer(Customer customer){
+        return customerRepository.save(customer);
+    }
+
+    @Override
+    public Customer findByTelephoneAndIsDelete(String telephone,int isDelete){
+        return customerRepository.findByTelephoneAndIsDelete(telephone,isDelete);
+    }
+
+    @Override
+    public Customer findByIdAndIsDelete(Long id, int isDelete){
+        return customerRepository.findByIdAndIsDelete(id,isDelete);
+    }
+
+    @Override
+    public ResponseData updateCustomer(Customer customer){
+        customerRepository.save(customer);
+        return ResponseData.getSuccessResponse("修改成功");
+    }
+
+    @Override
+    public ResponseData delCustomer(Customer customer){
+        customer.setIsDelete(Constants.isDelete.YES);
+        customerRepository.save(customer);
+        return ResponseData.getSuccessResponse("删除成功!");
+    }
+}

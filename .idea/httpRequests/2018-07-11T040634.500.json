@@ -1,0 +1,8 @@
+{
+  "timestamp": 1531296394424,
+  "status": 500,
+  "error": "Internal Server Error",
+  "exception": "org.springframework.orm.jpa.JpaSystemException",
+  "message": "could not execute statement; nested exception is org.hibernate.exception.GenericJDBCException: could not execute statement",
+  "path": "/callFlow/add.do"
+}

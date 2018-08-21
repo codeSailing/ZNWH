@@ -1,0 +1,49 @@
+package com.quickdone.znwh.service;
+
+import com.quickdone.znwh.entity.Customer;
+import com.quickdone.znwh.pojo.ResponseData;
+
+import java.util.Map;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/9 21:42
+ * @Description:
+ */
+public interface CustomerService {
+
+    /**
+     * 添加客户
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    public Customer addCustomer(Customer customer);
+
+    /**
+     * 根据手机号查询
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    public Customer findByTelephoneAndIsDelete(String telephone, int isDelete);
+
+    /**
+     * 根据客户id查询
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    public Customer findByIdAndIsDelete(Long id, int isDelete);
+
+    /**
+     * 修改客户信息
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    public ResponseData updateCustomer(Customer customer);
+
+    /**
+     * 删除客户
+     * @auther: Hou-jun
+     * @date: 2018/7/10
+     */
+    public ResponseData delCustomer(Customer customer);
+}

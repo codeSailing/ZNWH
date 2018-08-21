@@ -1,0 +1,13 @@
+package com.quickdone.znwh.dao;
+
+import com.quickdone.znwh.entity.CallTask;
+import org.springframework.stereotype.Repository;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/10 14:44
+ * @Description:
+ */
+@Repository
+public interface CallTaskRepository extends BaseRepository<CallTask,Long> {
+}

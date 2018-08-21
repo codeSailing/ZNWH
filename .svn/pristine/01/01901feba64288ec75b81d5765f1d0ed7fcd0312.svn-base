@@ -1,0 +1,84 @@
+var customer = function ($,layui) {
+    function init() {
+        //更多筛选条件
+        $('.more-btn').click(function () {
+            if($('.more-condition').css('display')=="none"){
+                $(this).addClass('down');
+                $('.more-condition').addClass('show');
+            }else if($('.more-condition').hasClass('show')){
+                $(this).removeClass('down');
+                $('.more-condition').removeClass('show');
+            }
+        });
+        // 新增确认
+        //layui调用模块
+        layui.use(['table','form','element','laydate'], function(){
+            var table = layui.table;
+            var laydate = layui.laydate;
+            var element = layui.element;
+            laydate.render({
+                elem: '#date'
+            });
+            //展示已知数据
+            table.render({
+                elem: '#demo'
+                , url: context + "/customer/pageCustomer.do" //数据接口
+                , page: true //是否显示分页
+                , skin: 'row'//表格风格
+                , even: true //开启隔行背景
+                , id: 'customer' //初始化标识id
+                ,cols: [[ //标题栏
+                    // {type:'checkbox'}
+                    {checkbox: true, field: 'id', title: '全选'}
+                    ,{field: 'id', title: 'ID', width: 80}
+                    ,{field: 'name', title: '姓名', width: 120}
+                    ,{field: 'telephone', title: '手机号', minWidth: 120}
+                    ,{field: 'groupName', title: '分组', minWidth: 160}
+                    ,{field: 'sex', title: '性别', width: 80}
+                    ,{field: 'age', title: '年龄', width: 80}
+                    ,{field: 'areaName', title: '地区', width: 80,}
+                    ,{field: 'descri', title: '描述', width: 100},
+                    {field: 'addTime', title: '添加时间', width: 120}
+                    ,{ width:178, align:'center', toolbar: '#barDemo'}
+                ]]
+                //,skin: 'line' //表格风格
+//            ,even: true
+//            ,page: true //是否显示分页
+//            ,limits: [5, 7, 10]
+//            ,limit: 5 //每页默认显示的数量
+            });
+        });
+        /************************刷新table****************************/
+        var reloadTable = function () {
+            table.reload("customer", { //此处是上文提到的 初始化标识id
+            });
+        };
+        // 树
+        var zTreeObj;
+        // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+        var setting = {
+            view: {
+                showLine: true,
+                showIcon: false,
+                selectedMulti: false,
+                dblClickExpand: false,
+                // addDiyDom: addDiyDom
+            }
+        };
+        // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+        var zNodes = [
+            {name:"test1", open:true, children:[
+                {name:"test1_1"}, {name:"test1_2"}]},
+            {name:"test2", open:true, children:[
+                {name:"test2_1"}, {name:"test2_2"}]}
+        ];
+        $(document).ready(function(){
+            zTreeObj = $.fn.zTree.init($("#allTree"), setting, zNodes);
+        });
+    };
+    return {
+        init: function () {
+            init();
+        }
+    }
+}(jQuery, layui, document)

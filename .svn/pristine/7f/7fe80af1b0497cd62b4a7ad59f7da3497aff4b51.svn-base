@@ -1,0 +1,18 @@
+package com.quickdone.znwh.controller;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 内容管理相关接口
+ *
+ * @Author: zhuLong
+ * @Date: 2018/7/10 14:54
+ */
+@Controller
+@RequestMapping(value = "/callContent")
+public class CallContentController {
+    private Logger logger = LoggerFactory.getLogger(CallContentController.class);
+}

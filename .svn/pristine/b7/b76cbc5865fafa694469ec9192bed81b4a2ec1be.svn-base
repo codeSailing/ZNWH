@@ -1,0 +1,106 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: Administrator
+  Date: 2018/7/11
+  Time: 21:16
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+
+<%@include file="../common/taglibs.jsp" %>
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>流程配置</title>
+</head>
+<body>
+<div style="padding: 15px;">
+    <div class="layui-row layui-col-space10">
+        <div class="flow-wrap layui-col-md12">
+            <div class="layui-form-item">
+                <div class="flow-head">
+                    <h3>流程创建</h3>
+                    <button type="button" class="layui-btn fr btn-bg1" style="padding-top: 6px;" onclick="test()">保存</button>
+                    <button type="button" class="layui-btn fr btn-bg1" style="padding-top: 6px;" onclick="closeFlow()">关闭</button>
+                </div>
+                <div class="flow-title layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label wd120">
+                            <span style="color: red">*</span>
+                            流程名称
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text"id="flowName" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label wd120">
+                            流程描述
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text"id="flowContent" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sample" style="position: relative;">
+                <div style="width: 100%; display: flex; justify-content: center">
+                    <div id="myPaletteDiv"
+                         style="width: 105px; margin-right: 2px; background-color: #F0FAF5; border: solid 1px black"></div>
+                    <div id="myDiagramDiv" style="flex-grow: 1; height: 620px; border: solid 1px black"></div>
+                </div>
+                <input id="mySavedModel" type="hidden">
+                <form id="test1" style="position: absolute;top: 20px;right: 20px;background-color: #fff;z-index: 111111;width: 330px;">
+                    <div class="layui-form-item">
+                        <%--<div class="layui-inline">--%>
+                            <%--<label class="layui-form-label wd120">--%>
+                                <%--defaultRef--%>
+                            <%--</label>--%>
+                            <%--<div class="layui-input-inline">--%>
+                                <%--<input type="text"id="defaultRef" class="layui-input">--%>
+                            <%--</div>--%>
+                        <%--</div>--%>
+                        <%--<div class="layui-inline">--%>
+                            <%--<label class="layui-form-label wd120">--%>
+                                <%--exceptionRef--%>
+                            <%--</label>--%>
+                            <%--<div class="layui-input-inline">--%>
+                                <%--<input type="text"id="exceptionRef" class="layui-input">--%>
+                            <%--</div>--%>
+                        <%--</div>--%>
+                        <div class="layui-inline">
+                            <label class="layui-form-label wd120">
+                                content
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="text"id="content" class="layui-input">
+                            </div>
+                        </div>
+                        <%--<div class="layui-inline">--%>
+                            <%--<label class="layui-form-label wd120">--%>
+                                <%--当前节点key--%>
+                            <%--</label>--%>
+                            <%--<div class="layui-input-inline">--%>
+                               <%--<span id="res" style="height: 38px;line-height: 38px;"></span>--%>
+                            <%--</div>--%>
+                        <%--</div>--%>
+                        <div class="layui-block">
+                            <button type="button" class="layui-btn fr btn-bg1" id="submitPart">确认</button>
+                        </div>
+                    </div>
+                </form>
+        </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../../../resources/js/src/callFlow/add.js"></script>
+<script>
+    addFlow.init();
+</script>
+</body>
+</html>

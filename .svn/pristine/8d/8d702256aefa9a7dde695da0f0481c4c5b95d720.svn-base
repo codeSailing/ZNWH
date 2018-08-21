@@ -1,0 +1,219 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.dao.CallFlowRepository;
+import com.quickdone.znwh.entity.CallFlow;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallFlowService;
+import com.quickdone.znwh.utils.DateSearchUtils;
+import com.quickdone.znwh.utils.ExcelToXMLUtil;
+import com.quickdone.znwh.utils.ToClass;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.jdom.Comment;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/11 10:16
+ * @Description:
+ */
+@Service
+@Transactional
+public class CallFlowServiceImpl implements CallFlowService<CallFlow,Long> {
+    @Resource
+    private CallFlowRepository callFlowRepository;
+    @Value("${XML_PATH}")
+    private String XMLPATH;
+
+    @Override
+    public void findAll(final Map<String, Object> searchParams, PaginationMapLayui pagination) {
+        Pageable pageable = new PageRequest(pagination.getStart(), pagination.getLength(), new Sort(Sort.Direction.DESC, "createDate"));//根据时间倒叙
+        Page<CallFlow> page = callFlowRepository.findAll(new Specification<CallFlow>() {
+            @Override
+            public Predicate toPredicate(Root<CallFlow> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<Predicate>();
+                if(searchParams.containsKey("searchParams")){//名称/描述
+                    Predicate p1 = criteriaBuilder.like(root.<String>get("name"),"%"+searchParams.get("searchParams").toString()+"%");
+                    Predicate p2 = criteriaBuilder.like(root.<String>get("descri"),"%"+searchParams.get("searchParams").toString()+"%");
+                    Predicate p = criteriaBuilder.or(p1,p2);
+                    predicateList.add(p);
+                }
+
+                Predicate[] p = new Predicate[predicateList.size()];
+                return criteriaBuilder.and(predicateList.toArray(p));
+            }
+        },pageable);
+        List<CallFlow> list = page.getContent();
+        List<Map> resuList = new ArrayList<Map>();
+        for (CallFlow callFlow : list) {
+            Map map = ToClass.beanToMap(callFlow);
+            resuList.add(map);
+        }
+        pagination.setData(resuList);
+        pagination.setRecordsTotal(page.getTotalElements());
+    }
+
+    @Override
+    public CallFlow findById(Long id) {
+        CallFlow callFlow = callFlowRepository.findById(id);
+        if(callFlow != null){
+            return callFlow;
+        }
+        return null;
+    }
+
+    @Override
+    public ResponseData delete(List<CallFlow> callFlow) {
+//        callFlow.setIsDelete(1);//删除
+        callFlowRepository.delete(callFlow);
+        return ResponseData.getSuccessResponse("操作成功！");
+    }
+
+    @Override
+    public ResponseData update(Map<String, Object> params) {
+        CallFlow callFlow = callFlowRepository.findById(Long.valueOf(params.get("id").toString()));
+        if(callFlow!=null){
+            callFlow.setName(params.get("name").toString());
+            callFlow.setDescri(params.get("descri").toString());
+            callFlow.setUpdateUser(1L);//TODO 暂时写死 以后从权限系统获取
+            callFlow.setUpdateTime(new Date());
+            callFlowRepository.saveAndFlush(callFlow);
+            return ResponseData.getSuccessResponse("操作成功");
+        }else {
+            return ResponseData.getErrorResponse("流程不存在，操作失败");
+        }
+
+    }
+
+    @Override
+    public ResponseData copy(Long id) {
+        return null;
+    }
+
+    @Override
+    public ResponseData add(HttpServletRequest request, String callFlowInfo, String title, String descri) throws IOException {
+        Date date = new Date();
+//        title = new String(title.getBytes("ISO8859-1"), "utf-8");
+//        descri = new String(descri.getBytes("ISO8859-1"), "utf-8");
+        CallFlow callFlow = new CallFlow();
+        callFlow.setName(title);
+        callFlow.setDescri(descri);
+        callFlow.setIsDelete(0);
+        callFlow.setCreateDate(date);
+
+//        String filePath = createXml(title,callFlowInfo);
+        //生成xml
+        String filePath = ExcelToXMLUtil.execute(request);
+        callFlow.setResourcePath(filePath);
+        callFlow.setUpdateTime(date);
+        callFlow.setUpdateUser(1L);//TODO 暂时写死 以后从权限系统获取
+        callFlowRepository.save(callFlow);
+        return ResponseData.getSuccessResponse("操作成功!");
+    }
+
+    @Override
+    public List<CallFlow> findAll() {
+        return callFlowRepository.findAll();
+    }
+
+    //创建xml文件
+    private String createXml(String title,String callFlowInfo) throws IOException {
+        //构建文件路径
+        String filePath = "";
+        //格式化数据
+        JSONArray jsonArray = JSONArray.fromObject(callFlowInfo);
+        String processId = "";
+        for(int i=0;i<jsonArray.size();i++){
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            processId = jsonObject.getString("@id");
+//            title = jsonObject.getString("@name");
+            //创建文档
+            Document document = new Document();
+            //创建根元素
+            Element root = new Element("definitions");
+            //把根元素加入到document中
+            document.addContent(root);
+            //创建注释
+            Comment rootComment = new Comment("将数据从程序输出到XML中！");
+            root.addContent(rootComment);
+            //父元素proccess
+            Element proccess =  new Element("proccess");
+            //获取id
+            proccess.setAttribute("id",processId);
+            //获取title
+            proccess.setAttribute("name",title);
+            //把父元素加到根元素中
+            root.addContent(proccess);
+            JSONArray nodeAry = jsonObject.getJSONArray("node");
+            for (int j=0;j<nodeAry.size();j++){
+                JSONObject nodeObject = nodeAry.getJSONObject(j);
+                //遍历获取所有node 创建节点
+                Element node = new Element("node");
+                //获取当前节点id
+                node.setAttribute("id",nodeObject.getString("@id"));
+                //获取当前节点sourceRef
+                node.setAttribute("sourceRef",nodeObject.getString("@sourceRef"));
+                //获取当前节点targetRef
+                node.setAttribute("targetRef",nodeObject.getString("@targetRef"));
+                //获取当前节点defaultRef
+                node.setAttribute("defaultRef",nodeObject.getString("@defaultRef"));
+                //获取当前节点exceptionRef
+                node.setAttribute("exceptionRef",nodeObject.getString("@exceptionRef"));
+//                if(nodeObject.getString("@answer")!=null && !"".equals(nodeObject.getString("@answer"))){
+                //获取当前节点answer
+                node.setAttribute("answer",nodeObject.getString("@answer"));
+//                }
+//                Attribute nodeAttribute = new Attribute("name","vale");
+                //把当前节点添加到父节点中
+                proccess.addContent(node);
+                Element node_context = new Element("content");
+                //获取当前节点context内容并添加到子节点中
+                node_context.setText(nodeObject.getString("content"));
+                node_context.setAttribute("type","text");
+                node.addContent(node_context);
+            }
+            //设置xml输出格式
+            Format format = Format.getPrettyFormat();
+            format.setEncoding("utf-8");//设置编码
+            format.setIndent("    ");//设置缩进
+            //得到xml输出流
+            XMLOutputter out = new XMLOutputter(format);
+            //如果文件目录不存在，则创建
+            File descriptionPath = new File(XMLPATH);
+            if (!descriptionPath.exists() && !descriptionPath.isDirectory()) {
+                descriptionPath.mkdir();
+            }
+            //把数据输出到xml中
+            filePath = XMLPATH+title+".xml";
+            out.output(document, new FileOutputStream(filePath));//或者FileWriter
+        }
+        return filePath;
+    }
+}

@@ -1,0 +1,51 @@
+package com.quickdone.znwh.service;
+
+import com.quickdone.znwh.entity.Customer;
+import com.quickdone.znwh.entity.CustomerBetweenGroup;
+import com.quickdone.znwh.entity.CustomerGroup;
+import com.quickdone.znwh.pojo.ResponseData;
+
+import java.util.List;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/11
+ * @Description:
+ */
+public interface CustomerBetweenGroupService<CustomerBetweenGroup,Long> {
+
+    /**
+     * 添加客户与客户组的关联
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    public CustomerBetweenGroup addCustomerGroup(Long customerId, Long customerGroupId);
+
+    /**
+     * 根据客户查询多个客户组
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    public List<CustomerBetweenGroup> findByCustomerId(Long customerId);
+
+    /**
+     * 根据客户组查询多个客户
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    public List<CustomerBetweenGroup> findByCustomerGroupId(Long customerGroupId);
+
+    /**
+     * 根据客户id删除
+     * @auther: Hou-jun
+     * @date: 2018/7/12
+     */
+    void deleteByCustomerId(Long customerId);
+
+    /**
+     * 单独给用户进行分组
+     * @auther: Hou-jun
+     * @date: 2018/7/14
+     */
+    ResponseData dataGrouping(String customerId, String cusGroupId);
+}

@@ -1,0 +1,46 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.controller.vo.CallTaskVo;
+import com.quickdone.znwh.dao.CallContentSubjectRepository;
+import com.quickdone.znwh.dao.CallTaskRepository;
+import com.quickdone.znwh.dao.CustomerGroupRepository;
+import com.quickdone.znwh.entity.CallContentSubject;
+import com.quickdone.znwh.entity.CallTask;
+import com.quickdone.znwh.entity.CustomerGroup;
+import com.quickdone.znwh.service.CallTaskService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/10 14:43
+ * @Description:任务管理service实现
+ */
+@Service
+@Transactional
+public class CallTaskServiceImpl implements CallTaskService<CallTask,Long> {
+
+    @Resource
+    private CallTaskRepository callTaskRepository;
+
+    @Resource
+    private CallContentSubjectRepository callContentSubjectRepository;
+
+    @Resource
+    private CustomerGroupRepository customerGroupRepository;
+
+    @Override
+    public void save(CallTaskVo callTaskVo) {
+        CallTask callTask = new CallTask();
+        callTask.setName(callTaskVo.getName());
+        callTask.setType(callTaskVo.getType());
+        //获取主题信息
+        CallContentSubject callContentSubject = callContentSubjectRepository.findById(callTaskVo.getCallContentSubjectId());
+        callTask.setCallContentSubject(callContentSubject);
+        //获取客户分组
+        CustomerGroup customerGroup = customerGroupRepository.findById(callTaskVo.getCustomerGroupId());
+        //获取流程配置信息
+    }
+}

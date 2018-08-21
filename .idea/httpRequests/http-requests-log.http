@@ -1,0 +1,404 @@
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T041421.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T041332.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T041150.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T041059.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T041047.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T041030.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml/&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T041013.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml/&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040943.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040856.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040803.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040734.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E:\\waihu\docs\精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040634.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E:\\waihu\docs\精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040615.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E:\\waihu\\docs\\精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040548.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040437.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040408.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040347.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040127-3.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040127-2.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040127-1.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040127.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T040013.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descir=流程2&resourcePath=E:\\waihu\\docs\\精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T035803.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descir=流程2&resourcePath=E:\\waihu\\docs\\精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T035727.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descir=流程2&resourcePath=E:\\waihu\\docs\\精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T035621.500.json
+
+###
+
+POST http://localhost:8081/callFlow/add.do?name=流程2&descir=流程2&resourcePath=E:\\waihu\\docs\\精神病病人回访流程配置.xml&updateUser=1
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T035611.500.json
+
+###
+
+GET http://localhost:8081/callFlow/data.do?page=1&limit=10
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T035247.200.json
+
+###
+
+GET http://localhost:8081/callTask/data.do?page=1&limit=10
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T021439.200.json
+
+###
+
+GET http://localhost:8081/callTask/list.do?page=1&limit=10
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+###
+
+GET http://localhost:8081/callTask/list.do?page=1&limit=10
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+###
+
+POST http://localhost:8081/callTask/add.do?name=任务2&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试2&createDate=2018-07-11 14:06&status=0
+Accept: application/json, text/javascript, */*; q=0.01
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-07-11T021319.200.json
+
+###
+
+POST http://localhost:8081/callTask/add.do?name=任务1&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试&createDate=2018-07-11 14:06&status=0
+Accept: */*
+Cache-Control: no-cache
+
+<> 2018-07-11T021034.200.json
+
+###
+
+POST http://localhost:8081/callTask/add.do?name=任务1&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试&createDate=2018-07-11 14:06&status=0
+Accept: */*
+Cache-Control: no-cache
+
+<> 2018-07-11T020852.500.json
+
+###
+
+POST http://localhost:8081/callTask/add.do?name=任务1&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试&createDate=2018-07-11 14:06&status=0
+Accept: */*
+Cache-Control: no-cache
+
+<> 2018-07-11T020828.500.json
+
+###
+
+POST http://localhost:8081/callTask/add.do?name=任务1&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试&createDate=2018-07-11 14:06&status=0
+Accept: */*
+Cache-Control: no-cache
+
+<> 2018-07-11T020719.500.json
+
+###
+
+POST http://localhost:8081/callTask/add.do?name=任务1&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试&createDate=2018-07-11 14:06&status=0
+Accept: */*
+Cache-Control: no-cache
+
+<> 2018-07-11T020602.500.json
+
+###
+
+GET http://localhost:8081/callTask/data.do?page=1&limit=10
+Accept: */*
+Cache-Control: no-cache
+
+<> 2018-07-11T020023.200.json
+
+###
+
+GET http://localhost:8081/callTask/data.do?page=1&limit=10
+Accept: */*
+Cache-Control: no-cache
+
+<> 2018-07-11T015942.200.json
+
+###
+
+GET http://localhost:8081/callTask/data.do?page=1&limit=10
+Accept: */*
+Cache-Control: no-cache
+
+<> 2018-07-11T015730.200.json
+
+###
+
+GET http://localhost:8081/callTask/data.do?page=1&limit=10
+Accept: */*
+Cache-Control: no-cache
+
+<> 2018-07-11T015705.200.json
+
+###
+
+GET http://localhost:8081/callTask/data.do
+Accept: */*
+Cache-Control: no-cache
+
+<> 2018-07-11T015128.500.json
+
+###
+
+GET http://localhost:8081/callTask/list.do
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:8081/callTask/list.do
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:8080/resources
+Accept: */*
+Cache-Control: no-cache
+
+###
+

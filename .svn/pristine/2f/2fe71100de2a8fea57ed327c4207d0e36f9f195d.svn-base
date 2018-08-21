@@ -1,0 +1,43 @@
+package com.quickdone.znwh.service;
+
+import com.quickdone.znwh.entity.Customer;
+import com.quickdone.znwh.entity.CustomerBetweenGroup;
+import com.quickdone.znwh.entity.CustomerGroup;
+
+import java.util.List;
+
+/**
+ * @Auther: Hot-jun
+ * @Date: 2018/7/11
+ * @Description:
+ */
+public interface CustomerBetweenGroupService<CustomerBetweenGroup,Long> {
+
+    /**
+     * 添加客户与客户组的关联
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    public CustomerBetweenGroup addCustomerGroup(Customer customer, CustomerGroup customerGroup);
+
+    /**
+     * 根据客户查询多个客户组
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    public List<CustomerBetweenGroup> findByCustomer(Customer customer);
+
+    /**
+     * 根据客户组查询多个客户
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    public List<CustomerBetweenGroup> findByCustomerGroup(CustomerGroup customerGroup);
+
+    /**
+     * 根据用户删除用户和用户组的关联
+     * @auther: Hou-jun
+     * @date: 2018/7/11
+     */
+    public int deleteByCustomer(Customer customer);
+}

@@ -1,0 +1,516 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: Administrator
+  Date: 2018/7/11
+  Time: 15:39
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+
+<%@include file="../common/taglibs.jsp" %>
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>任务配置</title>
+    </head>
+    <body>
+        <%--任务配置页面--%>
+        <div style="padding: 15px;">
+        <div class="layui-row layui-col-space10">
+            <div class="left-content layui-col-md3">
+                <div class="panel">
+                    <div class="panel-heading">
+                        等接口开发树状图
+                    </div>
+                    <div class="panel-body">
+                        <ul id="treeDemo" class="ztree"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="right-content layui-col-md9" id="right-content" style="display: block;">
+                <form class="contform layui-form btm-bdr">
+                    <div class="contform-heading layui-form-item">
+                        <div class="layui-input-inline">
+                            <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder=" 输入任务名称查询" class="layui-input">
+                        </div>
+                        <button class="btn btn-primary fl btn2">任务查询</button>
+                        <span>更多筛选条件</span>
+                        <a href="">占位符</a>
+                        <button class="btn-add btn btn-primary fl btn2">新建</button>
+                        <button class="btn btn-primary fl btn2" data-method="offset" data-type="t" id="plan">变计划</button>
+                        <button class="btn btn-primary fl btn2" data-method="offset" data-type="t" id="flow">选流程</button>
+                        <button class="btn btn-primary fl btn2">启用</button>
+                        <button class="btn btn-primary fl btn2">废弃</button>
+                        <button class="btn btn-primary fl btn2">删除</button>
+                    </div>
+                </form>
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">任务类型</label>
+                            <div class="layui-input-inline">
+                                <input type="radio" name="tasktype" value="一次性" title="一次性" checked="" class="layui-input-inline">
+                                <input type="radio" name="tasktype" value="周期性" title="周期性" class="layui-input-inline">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">执行日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="time-horizon" placeholder=" - ">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">外呼主题</label>
+                            <div class="layui-input-inline">
+                                <select name="quiz1">
+                                    <option value="">--请选择--</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="quiz2">
+                                    <option value="">--请选择--</option>
+                                    <option value="11">11</option>
+                                    <option value="22">22</option>
+                                    <option value="33">33</option>
+                                    <option value="44">44</option>
+                                    <option value="55">55</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="Status" value="待执行" title="待执行" checked="">
+                                <input type="radio" name="Status" value="执行中" title="执行中">
+                                <input type="radio" name="Status" value="执行完毕" title="执行完毕">
+                                <input type="radio" name="Status" value="已废弃" title="已废弃">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <table class="layui-hide" id="content-configuration"></table>
+                <div id="page-configuration"></div>
+            </div>
+
+            <%--新建任务页面--%>
+            <div class="add-task layui-col-md9" id="add-task" style="display: none;">
+                <div class="add-header">
+                    <i></i>
+                    <h3>新建任务</h3>
+                    <span>*标注内容必填</span>
+                </div>
+                <div class="add-content">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">
+                                    <span>*</span>
+                                    任务名称：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">
+                                    <span>*</span>
+                                    是否启用：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <input type="radio" name="tasktype" value="启用" title="启用" checked="" class="layui-input-inline">
+                                    <input type="radio" name="tasktype" value="暂不启用" title="暂不启用" class="layui-input-inline">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">营销主题：</label>
+                                <div class="layui-input-inline">
+                                    <select name="quiz1">
+                                        <option value="">--请选择--</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline">
+                                    <select name="quiz2">
+                                        <option value="">--请选择--</option>
+                                        <option value="11">11</option>
+                                        <option value="22">22</option>
+                                        <option value="33">33</option>
+                                        <option value="44">44</option>
+                                        <option value="55">55</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">
+                                    <span>*</span>
+                                    客户：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input">
+                                </div>
+                                <button class="btn btn-primary fl btn2">选择</button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">
+                                    <span>*</span>
+                                    计划类型：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <input type="radio" name="tasktype" value="一次性" title="一次性" checked="" class="layui-input-inline">
+                                    <input type="radio" name="tasktype" value="周期性" title="周期性" class="layui-input-inline">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">执行日期：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="ExecDate" placeholder="">
+                                </div>
+                                <i class="layui-icon">&#xe637;</i>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">执行时间：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="Exectime" placeholder="">
+                                </div>
+                                <i class="layui-icon">&#xe637;</i>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">有效日期：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="validity" placeholder=" 开始时间-结束时间 ">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">
+                                    <span>*</span>
+                                    执行时间：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input">
+                                </div>
+                                <button class="btn btn-primary fl btn2"></button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">
+                                    <span>*</span>
+                                    外呼流程：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <select name="">
+                                        <option value="">--请选择--</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">
+                                    <span>*</span>
+                                    拨号出局玛：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">
+                                    <span>*</span>
+                                    失败尝试次数：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">
+                                    <span>*</span>
+                                    外呼基数：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-block">
+                                <label class="layui-form-label">
+                                    <span>*</span>
+                                    外呼显示号码：
+                                </label>
+                                <div class="layui-input-inline">
+                                    <input type="radio" name="phonenum" value="随机" title="随机" checked="" class="layui-input-inline">
+                                    <input type="radio" name="phonenum" value="统一号码" title="统一号码" class="layui-input-inline">
+                                    <input type="text" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">任务描述：</label>
+                            <div class="layui-input-block">
+                                <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="btn btn-primary fl btn2">提交</button>
+                                <button type="reset" class="btn btn-primary fl btn2">重置</button>
+                                <button type="" class="btn btn-primary fl btn2">返回</button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">执行时间：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" placeholder="">
+                                </div>
+                                <i class="layui-icon">&#xe637;</i>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%--变计划弹窗--%>
+    <div class="" id="planchange" style="display: none">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <span>*</span>
+                        计划类型：
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="tasktype" value="一次性" title="一次性" checked="" class="layui-input-inline">
+                        <input type="radio" name="tasktype" value="周期性" title="周期性" class="layui-input-inline">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">有效日期：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" placeholder=" 开始时间-结束时间 ">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <span>*</span>
+                        执行时间：
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input">
+                    </div>
+                    <button class="btn btn-primary fl btn2"></button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="btn btn-primary fl btn2">提交</button>
+                    <button type="" class="btn btn-primary fl btn2">取消</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+        <%--变计划弹窗--%>
+    <div id="fiowoption" style="display: none">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <span>*</span>
+                        外呼流程：
+                    </label>
+                    <div class="layui-input-inline">
+                        <select name="">
+                            <option value="">--请选择--</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="btn btn-primary fl btn2">提交</button>
+                    <button type="" class="btn btn-primary fl btn2">取消</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+        <script>
+            layui.use(['table','form','element','laypage','laydate','layer'], function(){
+                var table = layui.table
+                    ,form = layui.form
+                    ,element = layui.element
+                    ,laypage = layui.laypage
+                    ,laydate = layui.laydate
+                    ,layer = layui.layer;
+
+                //展示已知数据
+                table.render({
+                    elem: '#content-configuration'
+                    , cols: [[ //标题栏
+                        {type: 'checkbox'}
+                        , {field: 'taskcategory', title: '任务分类', width: 100,}
+                        , {field: 'taskname', title: '任务名称', width: 140,}
+                        , {field: 'tasktype', title: '任务类型', width: 140,}
+                        , {field: 'executiontime', title: '执行时间', width: 300,}
+                        , {field: 'tasktheme', title: '外呼主题', width: 140,}
+                        , {field: 'flowpath', title: '外呼会话流程', width: 140,}
+                        , {field: 'Status', title: '状态', width: 100,}
+                        , {field: 'right', title: '操作', width: 220, align: 'center', toolbar: '#bar-configuration'}
+                    ]]
+                    , data: [{
+                        "taskcategory": "2018年618"
+                        , "taskname": "VIP客户营销"
+                        , "tasktype": "周期性"
+                        , "executiontime": "(2018-06-16至2018-06-17)   0 9 * 6  *"
+                        , "tasktheme": "618年中大促"
+                        , "flowpath": "产品营销流程"
+                        , "Status": "待执行"
+                    },{
+                        "taskcategory": "产品使用回访"
+                        , "taskname": "VIP客户回访"
+                        , "tasktype": "一次性"
+                        , "executiontime": "2018-06-15 10:00"
+                        , "tasktheme": "VIP回访"
+                        , "flowpath": "VIP回访流程"
+                        , "Status": "执行中"
+                    },{
+                        "taskcategory": "改进建议调查"
+                        , "taskname": "VIP客户调查"
+                        , "tasktype": "一次性"
+                        , "executiontime": "2018-06-14 10:00"
+                        , "tasktheme": "问卷调查"
+                        , "flowpath": " 问卷流程"
+                        , "Status": "执行完毕"
+                    },{
+                        "taskcategory": ""
+                        , "taskname": ""
+                        , "tasktype": ""
+                        , "executiontime": ""
+                        , "tasktheme": ""
+                        , "flowpath": ""
+                        , "Status": "已废弃"
+                    }]
+                    // ,skin: 'row' //表格风格
+                    // // ,even: true
+                    // ,page: true //是否显示分页
+                    // // ,limits: [5, 7, 10]
+                    // // ,limit: 5 //每页默认显示的数量
+                    // ,jump: function(obj) {
+                    //     console.log(obj)
+                    // }
+                });
+                laypage.render({
+                    elem: 'page-configuration' //注意，这里的 test1 是 ID，不用加 # 号
+                    ,count: 15 //数据总数，从服务端得到
+                    ,layout: ['count', 'prev', 'page', 'next', 'refresh', 'skip']
+                    ,jump: function(obj){
+                        console.log(obj)
+                    }
+                });
+                laydate.render({
+                    elem: '#time-horizon'
+                    ,range: true
+                });
+
+                // 新建任务
+                laydate.render({
+                    elem: '#Exectime'
+                    ,type: 'time'
+                    ,format: 'H点m分'
+                });
+                laydate.render({
+                    elem: '#Execdate'
+                    ,format: 'yyyy年MM月dd日'
+                });
+                laydate.render({
+                    elem: '#validity'
+                    ,range: true
+                });
+                //弹出变计划
+                $('#plan').on('click', function(){
+                    layer.open({
+                        type: 1,
+                        area: ['600px', '360px'],
+                        shadeClose: true, //点击遮罩关闭
+                        content: $("#planchange")
+                    });
+                });
+
+                //弹出选流程
+                $('#flow').on('click', function(){
+                    layer.open({
+                        type: 1,
+                        area: ['600px', '360px'],
+                        shadeClose: true, //点击遮罩关闭
+                        content: $("#fiowoption")
+                    });
+                });
+            });
+
+        </script>
+        <script type="text/html" id="bar-configuration">
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="detail">删除</a>
+            <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+            <a class="layui-btn layui-btn-xs" lay-event="edit">详情</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="edit">废弃</a>
+        </script>
+        <script>
+            // $(document).ready(function() {
+                $('.btn-add').click(function () {
+                    alert(111);
+                    // document.getElementById("#right-content").style.display="none";
+                    $('#right-content').css("display", "none");
+                    alert(222);
+                    // document.getElementById("#add-task").style.display="block";
+                    $('#add-task').css("display", "block");
+                    alert(333);
+                });
+            // });
+        </script>
+        <script>
+            // layer.open({
+            //     type: 1,
+            //     content: $('#planchange') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+            // });
+
+        </script>
+    </body>
+</html>
+

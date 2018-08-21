@@ -1,0 +1,265 @@
+package com.quickdone.znwh.controller;
+
+import com.quickdone.znwh.entity.CallContentSubject;
+import com.quickdone.znwh.entity.CallFlow;
+import com.quickdone.znwh.entity.CustomerGroup;
+import com.quickdone.znwh.service.CallContentSubjectService;
+import com.quickdone.znwh.service.CallFlowService;
+import com.quickdone.znwh.service.CustomerGroupService;
+import com.quickdone.znwh.taskhandle.QuartzManager;
+import com.quickdone.znwh.utils.CronUtil;
+import com.quickdone.znwh.utils.StringUtils;
+import com.quickdone.znwh.vo.CallTaskVo;
+import com.quickdone.znwh.entity.CallTask;
+import com.quickdone.znwh.pojo.LayuiRequest;
+import com.quickdone.znwh.pojo.LayuiResponseMap;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallTaskService;
+import net.sf.json.JSONObject;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
+import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/10 14:39
+ * @Description:任务管理
+ */
+@Controller
+@RequestMapping(value = "/callTask")
+public class CallTaskController {
+    private static Logger logger = LoggerFactory.getLogger(CallTaskController.class);
+
+    @Resource
+    private CallTaskService callTaskService;
+
+    @Resource
+    private CallContentSubjectService callContentSubjectService;
+
+    @Resource
+    private CallFlowService callFlowService;
+
+    @Resource
+    private CustomerGroupService customerGroupService;
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/11 9:39
+     * @Description: 任务列表页面
+     */
+    @RequestMapping(value = "/list.do", method = RequestMethod.GET)
+    public ModelAndView list() {
+        logger.info("调用CallTaskController==== list.do");
+        ModelAndView mv = new ModelAndView();
+        List<CallContentSubject> subjectslist = callContentSubjectService.findAll();
+        List<CallFlow> callFlowlist = callFlowService.findAll();
+        List<CustomerGroup> customerGroupList = customerGroupService.findAll();
+        mv.addObject("subjectslist",subjectslist);
+        mv.addObject("callFlowlist",callFlowlist);
+        mv.addObject("customerGroupList",customerGroupList);
+        mv.setViewName("calltask/calltaskConfiguration");
+        return mv;
+    }
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/11 9:39
+     * @Description: 查询任务列表
+     */
+    @RequestMapping(value = "/data.do", method = RequestMethod.GET)
+    @ResponseBody
+    public LayuiResponseMap data(HttpServletRequest request) {
+        logger.info("调用CallTaskController==== data.do");
+        LayuiRequest layuiRequest = LayuiRequest.fromHttpRequest(request);
+        Map<String, Object> searchParams = layuiRequest.getSearchParams();
+        logger.info("searchParams:"+searchParams);
+        PaginationMapLayui pagination = PaginationMapLayui.formJQueryLayuiTableRequest(layuiRequest);
+        callTaskService.findAll(searchParams,pagination);
+        LayuiResponseMap dtResp = LayuiResponseMap.fromPagination(pagination);
+        return dtResp;
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 15:48
+     * @Description: 新建任务
+     */
+    @RequestMapping(value = "/add.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData add(HttpServletRequest request, CallTaskVo callTaskVo) throws ParseException {
+        logger.info("调用CallTaskController==== add.do,  params:" + callTaskVo.toString());
+        if (callTaskVo != null) {
+            // 1、 新建任务
+            ResponseData responseData = callTaskService.save(callTaskVo);
+            CallTask callTask = (CallTask) responseData.getData();
+            // TODO 2、创建定时任务
+//            //生成定时任务
+//            String crondate = callTaskVo.getExecuteBeginDate()+" "+callTaskVo.getExecuteTime();
+//            QuartzManager quartzManager=new QuartzManager();
+//            SchedulerFactory gSchedulerFactory = new StdSchedulerFactory();
+//            Scheduler sche;
+//            try {
+//                Map<String,Object> params = new HashMap<String,Object>();
+//                sche = gSchedulerFactory.getScheduler();
+//                String cron = CronUtil.getCron(crondate);
+//                quartzManager.generateScheduleTask(sche,callTaskVo.getName(),cron,"1",callTask.getId().toString(),"",params);
+//            } catch (SchedulerException e) {
+//                logger.debug("创建定时任务失败");
+//            }
+            return responseData;
+        } else {
+            return ResponseData.getErrorResponse("操作失败");
+        }
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 16:10
+     * @Description: 修改任务
+     */
+    @RequestMapping(value = "/update.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData update(HttpServletRequest request,CallTaskVo callTaskVo) throws ParseException {
+        logger.info("调用CallTaskController==== update.do,  params: id=" + "id,updateParms:" + callTaskVo.toString());
+        if (callTaskVo != null) {
+            //TODO 修改
+            return callTaskService.update(callTaskVo);
+        } else {
+            return ResponseData.getErrorResponse("操作失败");
+        }
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 16:22
+     * @Description: 变计划  注：如果 为一次性 则开始时间和结束时间保持一致
+     */
+    @RequestMapping(value = "/modifyPlan.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData modifyPlan(String ids,Integer planType, String executeBeginDate, String executeEndDate, String executeTime) throws ParseException {
+        logger.info("调用CallTaskController==== modifyPlan.do,  params: id=" + ids);
+        String[] taskIds = ids.split(",");
+        List<CallTask> callTasktList = new ArrayList<CallTask>();
+        for (String id : taskIds) {
+            CallTask callTask = (CallTask) callTaskService.findById(Long.valueOf(id));
+            callTask.setPlanType(planType);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
+            callTask.setExecuteBeginDate(df.parse(executeBeginDate));//执行开始日期
+            callTask.setExecuteEndDate(df.parse(executeEndDate));//执行结束日期
+            callTask.setExecuteTime(tf.parse(executeTime));//执行时间
+            if (callTask != null) {
+                callTasktList.add(callTask);
+            }
+        }
+        callTaskService.saveMore(callTasktList);
+
+        return ResponseData.getSuccessResponse("变计划成功!");
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 17:00
+     * @Description: 选流程
+     */
+    @RequestMapping(value = "/chooseCallFollow.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData chooseCallFollow(String ids, Long callFlowId,String callFlowName) throws UnsupportedEncodingException {
+        logger.info("调用CallTaskController==== chooseCallFollow.do,  params: id=" + ids + ", callFlowId:" + callFlowId);
+        String[] taskIds = ids.split(",");
+        String callFlowNameNow = new String(callFlowName.getBytes("ISO8859-1"), "utf-8");
+        List<CallTask> callTasktList = new ArrayList<CallTask>();
+        for (String id : taskIds) {
+            CallTask callTask = (CallTask) callTaskService.findById(Long.valueOf(id));
+            callTask.setCallFlowId(callFlowId);
+            callTask.setCallFlowName(callFlowNameNow);
+            if (callTask != null) {
+                callTasktList.add(callTask);
+            }
+        }
+        callTaskService.saveMore(callTasktList);
+        return ResponseData.getSuccessResponse("选流程成功!");
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 18:06
+     * @Description: 启用/禁用
+     */
+    @RequestMapping(value = "/modifyType.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData modifyType(String ids, Integer type) {
+        logger.info("调用CallTaskController==== modifyType.do,  params: id=" + ids + ", type:" + type);
+        ResponseData responseData;
+        if (!StringUtils.isNullOrEmpry(ids)) {
+            String[] taskIds = ids.split(",");
+            List<CallTask> callTasktList = new ArrayList<CallTask>();
+            for (String id : taskIds) {
+                CallTask callTask = (CallTask) callTaskService.findById(Long.valueOf(id));
+                if (callTask != null) {
+                    callTasktList.add(callTask);
+                }
+            }
+            responseData = callTaskService.modifyType(callTasktList,type);
+        } else {
+            responseData = ResponseData.getErrorResponse("请选择需要删除的内容");
+        }
+        return responseData;
+    }
+
+    /**
+     * @Author: zhum
+     * @Date: 2018/7/10 18:07
+     * @Description: 删除
+     */
+    @RequestMapping(value = "/delete.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData delete(String ids) {
+        logger.info("调用CallTaskController==== delete.do,  params: ids=" + ids);
+        ResponseData responseData;
+        if (!StringUtils.isNullOrEmpry(ids)) {
+            String[] taskIds = ids.split(",");
+            List<CallTask> callTasktList = new ArrayList<CallTask>();
+            for (String id : taskIds) {
+                CallTask callTask = (CallTask) callTaskService.findById(Long.valueOf(id));
+                if (callTask != null) {
+                    callTasktList.add(callTask);
+                }
+            }
+            responseData = callTaskService.delete(callTasktList);
+        } else {
+            responseData = ResponseData.getErrorResponse("请选择需要删除的内容");
+        }
+        return responseData;
+    }
+    /**
+     * @Author: ly
+     * @Date: 2018/7/13
+     * @Description: test
+     */
+    @RequestMapping(value = "/test.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData test(Long callTaskId){
+        ResponseData responseData=null;
+        logger.info("调用CallTaskController==== test.do,  params:");
+        CallTask callTask=(CallTask)callTaskService.findById(callTaskId);
+        responseData=callTaskService.getCallTaskInfo(callTask);
+        return responseData;
+    }
+
+}

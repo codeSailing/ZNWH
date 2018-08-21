@@ -1,0 +1,57 @@
+package com.quickdone.znwh.taskhandle;
+
+import com.quickdone.znwh.controller.LoginController;
+import com.quickdone.znwh.controller.api.IVRController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+/**
+ * @Auther: psf
+ * @Date: 2018/7/10 15:03
+ * @Description:
+ */
+
+@Component
+public class TaskSchedule {
+    private static Logger logger = LoggerFactory.getLogger(TaskSchedule.class);
+
+    @Resource
+    private IVRController ivr;
+
+
+    /**
+     * 任务执行通用类
+     * 执行步骤：
+     * 1、触发外呼任务
+     * 2、调用IVR接口，将一个或多个客户信息（电话号码）提交给IVR（开发阶段跳转到一个测试页面）
+     * 3、IVR拨通电话后回调外呼系统（第一次拨通电话的回调需要带一个标识参数）
+     * 4、外呼系统接收到请求后开始解析本次任务的流程配置文件，将第一个节点的内容发送给IVR
+     * 5、IVR系统将客户的应答状况反馈给外呼系统（测试页面）
+     * 6、外呼系统调用语义模块，得到标准答案，外呼系统根据标准答案决定下一步的流程
+     */
+    public void executeTask(){
+
+        //时间到了  开始推送号码和用户信息到IVR http调用IVR一个接口 ivrDial接口
+          //httpClient.post(url,telephone)
+
+
+
+        //IVR 接收到外呼信息，开始拨号，拨通后回调外呼系统 reciveIvrMessage接口
+
+
+        //外呼系统接收到信号后将第一个节点的欢迎语发送给IVR（或者就是第一个问题）
+
+
+        //跳转到测试页面，模拟IVR流程（/ivr/test.do）
+
+        //外呼系统接收IVR反馈，调用语义模块，获得语义返回的语义文本
+
+             //外呼系统读取流程配置文件，按照语义结果匹配下一节点，并将节点内容发送给IVR系统
+
+        //循环到下一个流程
+
+    }
+}

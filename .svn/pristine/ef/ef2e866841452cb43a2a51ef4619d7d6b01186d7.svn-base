@@ -1,0 +1,119 @@
+package com.quickdone.znwh.service.impl;
+
+import com.quickdone.znwh.common.Constants;
+import com.quickdone.znwh.dao.CallCategoryRepository;
+import com.quickdone.znwh.entity.CallCategory;
+import com.quickdone.znwh.pojo.PaginationMapLayui;
+import com.quickdone.znwh.pojo.ResponseData;
+import com.quickdone.znwh.service.CallCategoryService;
+import com.quickdone.znwh.utils.ToClass;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @Auther: ly
+ * @Date: 2018/7/11
+ * @Description:
+ */
+@Service
+@Transactional
+public class CallCategoryServiceImpl implements CallCategoryService {
+
+    @Resource
+    private CallCategoryRepository callCategoryRepository;
+
+    @Override
+    public CallCategory addCallCategory(CallCategory callCategory) {
+        callCategory.setCreateDate(new Date());
+        return callCategoryRepository.save(callCategory);
+    }
+
+    @Override
+    public CallCategory findById(Long id) {
+        return callCategoryRepository.findById(id);
+    }
+
+    @Override
+    public ResponseData updateCallCategory(CallCategory callCategory) {
+        CallCategory addCallCategory = callCategoryRepository.findById(callCategory.getId());
+        addCallCategory.setName(callCategory.getName());
+        addCallCategory.setDescri(callCategory.getDescri());
+        callCategoryRepository.save(addCallCategory);
+        return ResponseData.getSuccessResponse("修改成功！");
+    }
+
+    @Override
+    public ResponseData delCallCategory(String callCategoryIds) {
+        ResponseData responseData;
+        boolean flag = true;
+        String notBeDelete = "";
+        String[] ids = callCategoryIds.split(",");
+        for (String callCategoryId : ids) {
+            CallCategory callCategory = callCategoryRepository.findById(Long.valueOf(callCategoryId));
+            //删除任务分类的时候，需注意，若该任务分类包含子分类则不给删除，并给出提示（先删除子分类，才可删除该任务分类）
+            List<CallCategory> callCategorys = callCategoryRepository.findByParentId(Long.valueOf(callCategoryId));
+            if (callCategorys.isEmpty()) { //可删除
+                callCategoryRepository.delete(Long.valueOf(callCategoryId));
+            } else { //该任务分类包含子分类，不可删除
+                flag = false;
+                notBeDelete += callCategory.getName() + ",";
+            }
+        }
+        if (flag) {
+            responseData = ResponseData.getSuccessResponse("删除成功！");
+        } else {
+            String returnMsg = "名称为 " + notBeDelete.substring(0, notBeDelete.length() - 1) + " 的任务分类不可删除，因为以上任务分类包含子任务分类，请先删除子任务分类";
+            responseData = ResponseData.getErrorResponse(returnMsg);
+        }
+        return responseData;
+    }
+
+    @Override
+    public CallCategory findByName(String name) {
+        return callCategoryRepository.findByName(name);
+    }
+
+    @Override
+    public void findAll(final Map<String, Object> searchParams,PaginationMapLayui pagination) {
+        Pageable pageable = new PageRequest(pagination.getStart(), pagination.getLength(), new Sort(Sort.Direction.DESC, "createDate"));//根据时间倒叙
+        Page<CallCategory> page = callCategoryRepository.findAll(new Specification<CallCategory>() {
+            @Override
+            public Predicate toPredicate(Root<CallCategory> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<Predicate>();
+                if(searchParams.containsKey("name")){//名称
+                    Predicate p1 = criteriaBuilder.like(root.<String>get("name"),"%"+searchParams.get("name").toString()+"%");
+                    predicateList.add(p1);
+                }
+                if(searchParams.containsKey("parentid")){//父类id
+                    Predicate p2 = criteriaBuilder.equal(root.<Integer>get("parentid"),Integer.parseInt(searchParams.get("parentid").toString()));
+                    predicateList.add(p2);
+                }
+                Predicate[] p = new Predicate[predicateList.size()];
+                return criteriaBuilder.and(predicateList.toArray(p));
+            }
+        },pageable);
+        List<CallCategory> list = page.getContent();
+        List<Map> resuList = new ArrayList<Map>();
+        for (CallCategory CallCategory : list) {
+            Map map = ToClass.beanToMap(CallCategory);
+            resuList.add(map);
+        }
+        pagination.setData(resuList);
+        pagination.setRecordsTotal(page.getTotalElements());
+    }
+}

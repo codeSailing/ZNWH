@@ -1,0 +1,10 @@
+package com.quickdone.znwh.service;
+
+/**
+ * @Author: zhum
+ * @Date: 2018/7/10 14:42
+ * @Description:
+ */
+public interface CallTaskService<CallTask,Long> {
+
+}

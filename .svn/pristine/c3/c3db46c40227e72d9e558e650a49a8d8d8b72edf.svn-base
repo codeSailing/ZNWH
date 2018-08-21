@@ -1,0 +1,23 @@
+package com.quickdone.znwh.dao;
+
+import com.quickdone.znwh.entity.CallContent;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+/**
+ * 内容管理
+ * @Author: zhuLong
+ * @Date: 2018/7/10 16:07
+ */
+@Repository
+public interface CallContentRepository extends BaseRepository<CallContent, Long>{
+    /**
+     * @Description: 根据主题id查询
+     * @Auther: zhuLong
+     * @Date: 2018/7/10 16:17
+     * @Param: [contentSubjectId]
+     * @return: java.util.List<com.quickdone.znwh.entity.CallContent>
+     */
+    List<CallContent> findByContentSubjectId(Long contentSubjectId);
+}
