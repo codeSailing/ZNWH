@@ -16,11 +16,11 @@
     <div class="layui-row layui-col-space10">
         <div class="layui-col-md2">
             <div class="panel bdr">
-                <%--<div>
-                    <a href="/callContentSubject/page.do" class="red">管理主题</a>
-                </div>--%>
+                <div class="panel-heading">
+                    <%--<a href="${ctx}/callContentSubject/page.do" class="layui-btn btn-bg1">管理主题</a>--%>
+                </div>
                 <div class="panel-body">
-                    <ul id="treeDemo" class="ztree hgh482"></ul>
+                    <ul id="treeDemo" class="ztree hgh472"></ul>
                 </div>
             </div>
         </div>

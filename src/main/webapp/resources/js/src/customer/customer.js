@@ -394,7 +394,7 @@ var customer = function ($, layui) {
             });
             /********************下载模板************************/
             $("#downloadTemplate").on("click", function () {
-                window.location.href = '/customer/exportExcel.do';
+                window.location.href = context + '/customer/exportExcel.do';
                 $("#importCustomerModle").modal("hide");
             });
             /*************************确认导入*********************/
@@ -950,7 +950,7 @@ var customer = function ($, layui) {
         function getArea(areaCode) {
             $.ajax({
                 type: "GET",
-                url: "/area/findAreaInfo.do",
+                url: context+"/area/findAreaInfo.do",
                 async: false,
                 data: {"areaCode": areaCode},
                 success: function (data) {
@@ -1021,7 +1021,7 @@ var customer = function ($, layui) {
         var longerhtml = [];
         $.ajax({
             type: "GET",
-            url: "/area/findAreaInfo.do",
+            url:context + "/area/findAreaInfo.do",
             async: false,
             data: {"areaCode": result},
             success: function (data) {
@@ -1370,7 +1370,7 @@ var customer = function ($, layui) {
         function getAreas(areaCode) {
             $.ajax({
                 type: "GET",
-                url: "/area/findAreaInfo.do",
+                url:context + "/area/findAreaInfo.do",
                 async: false,
                 data: {"areaCode": areaCode},
                 success: function (data) {
@@ -1441,7 +1441,7 @@ var customer = function ($, layui) {
         var longerhtml = [];
         $.ajax({
             type: "GET",
-            url: "/area/findAreaInfo.do",
+            url: context + "/area/findAreaInfo.do",
             async: false,
             data: {"areaCode": result},
             success: function (data) {
@@ -1792,7 +1792,7 @@ var customer = function ($, layui) {
         function getAreas(areaCode) {
             $.ajax({
                 type: "GET",
-                url: "/area/findAreaInfo.do",
+                url:context+ "/area/findAreaInfo.do",
                 async: false,
                 data: {"areaCode": areaCode},
                 success: function (data) {
@@ -1862,7 +1862,7 @@ var customer = function ($, layui) {
         var longerhtml = [];
         $.ajax({
             type: "GET",
-            url: "/area/findAreaInfo.do",
+            url:context+ "/area/findAreaInfo.do",
             async: false,
             data: {"areaCode": result},
             success: function (data) {

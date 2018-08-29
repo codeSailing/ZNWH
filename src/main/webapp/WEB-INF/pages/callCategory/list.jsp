@@ -15,7 +15,7 @@
                 <div class="panel-heading">
                 </div>
                 <div class="panel-body">
-                    <ul id="treeDemo" class="ztree hgh482"></ul>
+                    <ul id="treeDemo" class="ztree hgh472"></ul>
 
                 </div>
             </div>
@@ -161,7 +161,7 @@
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="del">删除</a>
     <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
 </script>
-<script type="text/javascript" src="../../resources/js/src/category/category.js"></script>
+<script type="text/javascript" src="${ctx}/resources/js/src/category/category.js"></script>
 <script>
     category.init();
 </script>

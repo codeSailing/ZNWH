@@ -1,8 +1,0 @@
-{
-  "timestamp": 1531295771074,
-  "status": 500,
-  "error": "Internal Server Error",
-  "exception": "org.springframework.transaction.CannotCreateTransactionException",
-  "message": "Could not open JPA EntityManager for transaction; nested exception is javax.persistence.PersistenceException: org.hibernate.exception.JDBCConnectionException: Unable to acquire JDBC Connection",
-  "path": "/callFlow/add.do"
-}

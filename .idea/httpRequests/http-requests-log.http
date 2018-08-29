@@ -1,404 +1,484 @@
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T041421.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T041332.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T041150.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T041059.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T041047.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T041030.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml/&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T041013.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml/&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040943.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040856.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040803.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E://waihu/docs/精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040734.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E:\\waihu\docs\精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040634.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E:\\waihu\docs\精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040615.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descri=流程2&resourcePath=E:\\waihu\\docs\\精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040548.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040437.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040408.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040347.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040127-3.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040127-2.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040127-1.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040127.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?params={name:"流程2",descri:"流程2",resourcePath:"E:\\waihu\\docs\\精神病病人回访流程配置.xml",updateUser:1}
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T040013.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descir=流程2&resourcePath=E:\\waihu\\docs\\精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T035803.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descir=流程2&resourcePath=E:\\waihu\\docs\\精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T035727.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descir=流程2&resourcePath=E:\\waihu\\docs\\精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T035621.500.json
-
-###
-
-POST http://localhost:8081/callFlow/add.do?name=流程2&descir=流程2&resourcePath=E:\\waihu\\docs\\精神病病人回访流程配置.xml&updateUser=1
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T035611.500.json
-
-###
-
-GET http://localhost:8081/callFlow/data.do?page=1&limit=10
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T035247.200.json
-
-###
-
-GET http://localhost:8081/callTask/data.do?page=1&limit=10
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T021439.200.json
-
-###
-
-GET http://localhost:8081/callTask/list.do?page=1&limit=10
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-###
-
-GET http://localhost:8081/callTask/list.do?page=1&limit=10
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-###
-
-POST http://localhost:8081/callTask/add.do?name=任务2&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试2&createDate=2018-07-11 14:06&status=0
-Accept: application/json, text/javascript, */*; q=0.01
-Cache-Control: no-cache
-Accept-Language: zh-CN,zh;q=0.9
-Accept-Encoding: gzip, deflate
-
-<> 2018-07-11T021319.200.json
-
-###
-
-POST http://localhost:8081/callTask/add.do?name=任务1&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试&createDate=2018-07-11 14:06&status=0
+POST http://192.168.1.199:8082/znwh/ivr/getCallContent?content=你好&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
-
-<> 2018-07-11T021034.200.json
-
-###
-
-POST http://localhost:8081/callTask/add.do?name=任务1&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试&createDate=2018-07-11 14:06&status=0
-Accept: */*
-Cache-Control: no-cache
-
-<> 2018-07-11T020852.500.json
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
 
 ###
 
-POST http://localhost:8081/callTask/add.do?name=任务1&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试&createDate=2018-07-11 14:06&status=0
+POST http://192.168.1.199:8082/znwh/ivr/getCallContent?content=你好&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
-
-<> 2018-07-11T020828.500.json
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
 
 ###
 
-POST http://localhost:8081/callTask/add.do?name=任务1&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试&createDate=2018-07-11 14:06&status=0
+POST http://192.168.1.199:8082/znwh/ivr/getCallContent?content=你好&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
-
-<> 2018-07-11T020719.500.json
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
 
 ###
 
-POST http://localhost:8081/callTask/add.do?name=任务1&type=0&isDelete=0&callCategoryId=1&callContentSubjectId=1&customerGroupId=1&planType=1&executeBeginDate=2018-07-11&executeEndDate=2018-07-12&executeTime=15:00&callFlowId=1&callcjNumber=17700001111&tryCount=3&callNumShow=17700001111&callNumShowType=1&descri=接口调试&createDate=2018-07-11 14:06&status=0
+POST http://localhost:8081/znwh/ivr/getCallContent?content=你好&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
 
-<> 2018-07-11T020602.500.json
+<> 2018-08-24T112858.200.json
 
 ###
 
-GET http://localhost:8081/callTask/data.do?page=1&limit=10
+POST http://localhost:8081/znwh/ivr/getCalltent?content=你好&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
-
-<> 2018-07-11T020023.200.json
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
 
 ###
 
-GET http://localhost:8081/callTask/data.do?page=1&limit=10
+POST http://localhost:8081/znwh/ivr/getCallContent?content=你好&uid=2&sessionId=1222&currentNode=0&callFlowId=2992&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
 
-<> 2018-07-11T015942.200.json
+<> 2018-08-24T085445.200.json
 
 ###
 
-GET http://localhost:8081/callTask/data.do?page=1&limit=10
+POST http://localhost:8081/znwh/ivr/getCallContent?content=没听清&uid=2&sessionId=1222&currentNode=0&callFlowId=2992&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
 
-<> 2018-07-11T015730.200.json
+<> 2018-08-24T085425.200.json
 
 ###
 
-GET http://localhost:8081/callTask/data.do?page=1&limit=10
+POST http://localhost:8081/znwh/ivr/getCallContent?content=没听清&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
 
-<> 2018-07-11T015705.200.json
+<> 2018-08-24T085132.200.json
 
 ###
 
-GET http://localhost:8081/callTask/data.do
+POST http://localhost:8081/znwh/ivr/getCallContent?content=没听清&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
 
-<> 2018-07-11T015128.500.json
+<> 2018-08-24T084704.200.json
 
 ###
 
-GET http://localhost:8081/callTask/list.do
+POST http://localhost:8081/znwh/ivr/getCallContent?content=没听清&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-24T084643.200.json
 
 ###
 
-GET http://localhost:8081/callTask/list.do
+POST http://localhost:8081/znwh/ivr/getCallContent?content=没听清&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-24T084615.200.json
 
 ###
 
-GET http://localhost:8080/resources
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
 Accept: */*
 Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-24T084552.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=nihao&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-24T084535.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=nihao&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=nihao&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T053336.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=nihao&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T053327.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=nihao&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T053302.500.html
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=nihao&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T053136.500.html
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=nihao&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T053057.500.html
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=不方便&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T053039.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=不方便&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T053015.500.html
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=不方便&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T052954.500.html
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=不方便&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T052854.500.html
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=不方便&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T052816.500.html
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=不方便&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T052744.500.html
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=不方便&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T045532.500.html
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=nihao&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T045240.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=nihao&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T045223.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=不方便&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T042901.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=方便&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T042733.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=方便&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T042721.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=-1&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T042645.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=-1&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T042609.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=你好&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T042545.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T042452.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T042356.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T042255.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T042204.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T034449.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T034433.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T034401.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T033645.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T033626.200.json
+
+###
+
+POST http://192.168.1.199:8082/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+###
+
+POST http://192.168.1.199:8082/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+###
+
+POST http://192.168.1.199:8082/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T032330-1.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T032330.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=0&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T032328.200.json
+
+###
+
+POST http://localhost:8081/znwh/ivr/getCallContent?content=忙&uid=2&sessionId=1222&currentNode=-12&callFlowId=299&taskName=jj&phone=100000000
+Accept: */*
+Cache-Control: no-cache
+Accept-Language: zh-CN,zh;q=0.9
+Accept-Encoding: gzip, deflate
+
+<> 2018-08-23T032310.200.json
 
 ###
 

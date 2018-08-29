@@ -456,7 +456,7 @@ var editFlow = function ($) {
                 });
             };
             closeFlow = function () {
-                window.location.href = "/callFlow/list.do";
+                window.location.href = context + "/callFlow/list.do";
             }
             save = function () {
                 saveDiagramProperties();  // 在写入JSON之前先执行此操作

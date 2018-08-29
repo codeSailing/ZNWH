@@ -1,8 +1,0 @@
-{
-  "timestamp": 1531288288485,
-  "status": 500,
-  "error": "Internal Server Error",
-  "exception": "java.lang.IllegalArgumentException",
-  "message": "Page size must not be less than one!",
-  "path": "/callTask/data.do"
-}

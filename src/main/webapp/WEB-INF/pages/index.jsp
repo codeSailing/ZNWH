@@ -39,7 +39,7 @@
                 <c:forEach items="${list}" var="li">
                     <c:if test="${li.status ==0}">
                         <li class="layui-nav-item">
-                            <a data-url="${li.url}">${li.resourceName}</a>
+                            <a data-url="${ctx}/${li.url}">${li.resourceName}</a>
                         </li>
                     </c:if>
                     <c:if test="${li.status ==1}">
@@ -47,7 +47,7 @@
                             <a data-url="${li.url}">${li.resourceName}</a>
                             <dl class="layui-nav-child">
                                 <c:forEach items="${childList}" var="childLi">
-                                    <dd><a data-url="${childLi.url}">${childLi.resourceName}</a></dd>
+                                    <dd><a data-url="${ctx}/${childLi.url}">${childLi.resourceName}</a></dd>
                                 </c:forEach>
                             </dl>
                         </li>
@@ -87,7 +87,7 @@
         2018 © 善达信息版权所有 v1.0
     </div>
 </div>
-<script src="../resources/js/plugin/layui/layui.js"></script>
+<script src="${ctx}/resources/js/plugin/layui/layui.js"></script>
 <script>
     //JavaScript代码区域
     layui.use('element', function(){

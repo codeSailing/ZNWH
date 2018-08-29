@@ -23,8 +23,9 @@
     <div class="leftcontent layui-row layui-col-space10">
         <div class="layui-col-md2">
             <div class="panel bdr">
+                <div class="panel-heading"></div>
                 <div class="panel-body">
-                    <ul id="treeDemo" class="ztree hgh482"></ul>
+                    <ul id="treeDemo" class="ztree hgh472"></ul>
                 </div>
             </div>
         </div>

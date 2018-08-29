@@ -5,12 +5,11 @@ import com.quickdone.znwh.controller.LoginController;
 import com.quickdone.znwh.entity.*;
 import com.quickdone.znwh.enums.CustomerTaskStatus;
 import com.quickdone.znwh.enums.IvrEnum;
+import com.quickdone.znwh.pojo.IvrRequest;
+import com.quickdone.znwh.pojo.IvrResponseData;
 import com.quickdone.znwh.pojo.ProcessNode;
 import com.quickdone.znwh.pojo.ResponseData;
-import com.quickdone.znwh.service.CallFlowNodeService;
-import com.quickdone.znwh.service.CallRecordService;
-import com.quickdone.znwh.service.CallTaskService;
-import com.quickdone.znwh.service.CustomerCallFlowService;
+import com.quickdone.znwh.service.*;
 import com.quickdone.znwh.taskhandle.QuartzManager;
 import com.quickdone.znwh.taskhandle.TaskSchedule;
 import com.quickdone.znwh.utils.StringUtils;
@@ -22,10 +21,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
@@ -42,6 +38,7 @@ import java.util.*;
 @RequestMapping(value = "/ivr")
 public class IVRController {
     private static Logger logger = LoggerFactory.getLogger(LoginController.class);
+
     @Resource
     private TaskSchedule taskSchedule;
 
@@ -50,11 +47,23 @@ public class IVRController {
 
     @Resource
     private CustomerCallFlowService customerCallFlowService;
+
     @Resource
     private CallFlowNodeService callFlowService;
 
     @Resource
+    private CallFlowService cfService;
+
+    @Resource
     private CallTaskService callTaskService;
+
+    @Resource
+    private OutBoundTaskRecordService outBoundTaskRecordService;
+
+    @Resource
+    private OutBoundTaskInfoService outBoundTaskInfoService;
+
+    private static String uuid;
 
     /**
      * *  外呼系统接收到到IVR电话接通的请求
@@ -255,7 +264,6 @@ public class IVRController {
                     resultMap.put("type", type);//类型
                     resultMap.put("content", "");
                     break;
-
                 default:
                     resultMap.put("type", Constants.IntelligentCallStatus.CHAT);//类型
                     resultMap.put("content", resultAry[0]);
@@ -304,40 +312,82 @@ public class IVRController {
      */
     @ResponseBody
     @RequestMapping(value = "/getCallContent", method = RequestMethod.POST)
-    public ResponseData getCallContent(@RequestParam(value = "content", required = true) String content, String uid, String sessionId, int status, String currentNode, int taskId) {
-        //TODO 設計一個公共的切面   打印接口的入参和出参
-
+    public IvrResponseData getCallContent(@RequestBody IvrRequest ivrRequest) {
+        logger.info("ivrRequest:" + ivrRequest);
+        String content = ivrRequest.getContent();//外呼内容
+        String uid = ivrRequest.getUid();//uid
+        String sessionId = ivrRequest.getSessionId();//会话唯一id
+        String currentNode = ivrRequest.getCurrentNode();//当前节点
+        String callFlowId = ivrRequest.getCallFlowId();//流程id
+        //任务名称
+        String taskName = ivrRequest.getTaskName();
+        //客户号码
+        String phone = ivrRequest.getPhone();
+        //添加外呼记录
+        OutBoundTaskRecord outBoundTaskRecord = (OutBoundTaskRecord) outBoundTaskRecordService.addOutBoundTaskRecord(sessionId, callFlowId, taskName, phone);
         Map<String, Object> data = new HashMap<String, Object>();
         Map<String, Object> resultMap = new HashMap<String, Object>();
         //参数校验
-        if (StringUtils.isNullOrEmpry(content) || StringUtils.isNullOrEmpry(sessionId) || StringUtils.isNullOrEmpry(uid) || taskId == 0) {
-            return ResponseData.getErrorResponse("參數不正塙");
+        if (StringUtils.isNullOrEmpry(content) || StringUtils.isNullOrEmpry(sessionId) || StringUtils.isNullOrEmpry(uid) || callFlowId == null) {
+            return IvrResponseData.getErrorResponse("参数错误！", "1001");//代码异常
         } else {
             //逻辑处理
-            if (status == 0) {
-                String webServiceResult = "";
-                webServiceResult = GetWebserviceInfo.getIntelligentCall(content, 1L);//TODO iss_uid 参数无意义，暂时写死
-                resultMap = getSemanticResults(webServiceResult);
-                logger.debug("result_answer:" + resultMap);
-                try {
-                    resultMap = taskSchedule.executeTask(currentNode, resultMap, taskId);
-                    data.put("currentNode",resultMap.get("currentnode"));
-                } catch (IOException e) {
-                    logger.error(e.getMessage());
-                    return ResponseData.getErrorResponse(e.getMessage());
+//                if (status == 0) {
+            String webServiceResult = "";
+            webServiceResult = GetWebserviceInfo.getIntelligentCall(content, 1L);//iss_uid 参数无意义，暂时写死
+            logger.info("callType:" + webServiceResult);
+            if ("error".equals(webServiceResult)) {//语义服务异常
+                return IvrResponseData.getErrorResponse("语义服务异常", "1003");//TODO 提示语
+            }
+            if (Constants.IntelligentCallStatus.USERBUSY.equals(webServiceResult)) {//语义服务异常
+                return IvrResponseData.getErrorResponse("不好意思打扰了，如有对您造成不便，敬请谅解，谢谢！", "1000");//TODO 用户忙
+            }
+            //TODO 有明确意向流程没结束时（打标签），能转人工就转人工，不能转给提示音，外呼流程直接结束
+            resultMap = getSemanticResults(webServiceResult);
+            logger.info("result_answer:" + resultMap);
+            try {
+                resultMap = taskSchedule.executeTaskCallFlow(currentNode, resultMap, callFlowId);
+                if (IvrEnum.HANGUP.getValue().equals(resultMap.get("status"))) {//挂断
+                    String info = "客户：" + content + "|坐席：" + resultMap.get("content").toString();
+                    if (outBoundTaskRecord != null) {
+                        outBoundTaskRecord.setStatus(Constants.RecordStatus.GUADUAN);
+                        outBoundTaskRecordService.updateOutBoundTaskRecord(outBoundTaskRecord);
+                        outBoundTaskInfoService.addOutBoundTaskInfo(outBoundTaskRecord, info);
+                    }
+                    return IvrResponseData.getErrorResponse(resultMap.get("content").toString(), "1000");//TODO 提示语
                 }
-
-            } else {
-                //处理异常场景
+                if (resultMap.get("content") != null) {
+                    data.put("content", resultMap.get("content"));
+                    data.put("currentNode", resultMap.get("currentnode"));
+                } else {
+                    return IvrResponseData.getErrorResponse("流程不存在！", "1002");
+                }
+//                        data.put("code","0000");//正常流程
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                return IvrResponseData.getErrorResponse("代码异常！", "1003");//代码异常
             }
 
+//                } else {
+//                    //TODO 处理异常场景
+//                    data.put("code","1");//异常流程
+//                }
+//                data.put("message","");
         }
-        data.put("uid",uid);
-        data.put("type",0);
-        data.put("taskId",taskId);
-        data.put("sessionId",sessionId);
-        return ResponseData.getSuccessResponse(data);
-    }
+        uuid = UUID.randomUUID().toString();
+        String uuidStr = uuid.replace("-", "");
+        data.put("uid", uuidStr);
+        data.put("type", "0");
+//            data.put("callFlowId",callFlowId);
+//            data.put("sessionId",sessionId);
+        String info = "客户：" + content + "|坐席：" + data.get("content");
+        if (outBoundTaskRecord != null) {
+            outBoundTaskInfoService.addOutBoundTaskInfo(outBoundTaskRecord, info);
+        }
 
+        logger.info("ivr交互接口返回参数data:" + data);
+        return IvrResponseData.getSuccessResponse(data);
+//        }
+    }
 
 }

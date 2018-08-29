@@ -398,15 +398,15 @@ var addFlow = function ($) {
                 var content = $('#flowContent').val();
                 var nodeObj = $('#mySavedModel').val();
                 var startNodeObj = (nodeObj.split('startFlow')).length-1;
-                var endtNodeObj = (nodeObj.split('endFlow')).length-1;
+                // var endtNodeObj = (nodeObj.split('endFlow')).length-1;
                 if (startNodeObj>1){
                     layer.msg('开始节点数量不能超过一个', {time: 2000, icon: 5});
                     return false;
                 };
-                if (endtNodeObj>1){
-                    layer.msg('结束节点数量不能超过一个', {time: 2000, icon: 5});
-                    return false;
-                }
+                // if (endtNodeObj>1){
+                //     layer.msg('结束节点数量不能超过一个', {time: 2000, icon: 5});
+                //     return false;
+                // }
                 if (nodeObj.indexOf("startFlow") == -1){
                     layer.msg('必须有开始节点', {time: 2000, icon: 5});
                     return false;
@@ -442,7 +442,7 @@ var addFlow = function ($) {
                         if(data.status == 0){
                             layer.msg(data.message, {time: 4000, icon: 1});
                             setTimeout(function () {
-                                window.location.href = "/callFlow/list.do"
+                                window.location.href = context + "/callFlow/list.do"
                             },3000)
                         }else{
                             return layer.msg(data.message, {time: 32000, icon: 5});
@@ -451,7 +451,7 @@ var addFlow = function ($) {
                 });
             };
             closeFlow = function () {
-                window.location.href = "/callFlow/list.do";
+                window.location.href = context + "/callFlow/list.do";
             }
             save = function () {
                 saveDiagramProperties();  // 在写入JSON之前先执行此操作

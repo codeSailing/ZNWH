@@ -18,6 +18,8 @@ public class ProcessNode implements Serializable {
 
 	private String start;//值为1   标识是第一个节点
 
+	private String label;//标签
+
 	public String getId() {
 		return id;
 	}
@@ -82,4 +84,11 @@ public class ProcessNode implements Serializable {
 		this.start = start;
 	}
 
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
 }

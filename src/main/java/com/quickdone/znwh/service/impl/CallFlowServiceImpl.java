@@ -1,6 +1,8 @@
 package com.quickdone.znwh.service.impl;
 
+import com.quickdone.znwh.dao.CallContentSubjectRepository;
 import com.quickdone.znwh.dao.CallFlowRepository;
+import com.quickdone.znwh.entity.CallContentSubject;
 import com.quickdone.znwh.entity.CallFlow;
 import com.quickdone.znwh.pojo.PaginationMapLayui;
 import com.quickdone.znwh.pojo.ResponseData;
@@ -51,6 +53,9 @@ public class CallFlowServiceImpl implements CallFlowService<CallFlow,Long> {
     private CallFlowRepository callFlowRepository;
     @Value("${XML_PATH}")
     private String XMLPATH;
+
+    @Resource
+    private CallContentSubjectRepository callContentSubjectRepository;
 
     @Override
     public void findAll(final Map<String, Object> searchParams, PaginationMapLayui pagination) {
@@ -110,6 +115,17 @@ public class CallFlowServiceImpl implements CallFlowService<CallFlow,Long> {
                 callFlow.setCallFlowInfo(params.get("callFlowInfo").toString());
                 String filePath = createXml(params.get("title").toString(),params.get("callFlowInfo").toString());
                 callFlow.setResourcePath(filePath);
+
+                Long subjectId = Long.valueOf(params.get("subjectId").toString());
+                if(subjectId != null){
+                    CallContentSubject callContentSubject = callContentSubjectRepository.findById(subjectId);
+                    if(callContentSubject!=null){
+                        callFlow.setContentSubjectId(subjectId);
+                        callFlow.setContentSubjectName(callContentSubject.getName());
+                    }
+                }else {
+                    return ResponseData.getSuccessResponse("主题ID参数错误!");
+                }
                 callFlowRepository.saveAndFlush(callFlow);
                 return ResponseData.getSuccessResponse("操作成功");
             }else{
@@ -121,6 +137,17 @@ public class CallFlowServiceImpl implements CallFlowService<CallFlow,Long> {
                     callFlow.setCallFlowInfo(params.get("callFlowInfo").toString());
                     String filePath = createXml(params.get("title").toString(),params.get("callFlowInfo").toString());
                     callFlow.setResourcePath(filePath);
+
+                    Long subjectId = Long.valueOf(params.get("subjectId").toString());
+                    if(subjectId != null){
+                        CallContentSubject callContentSubject = callContentSubjectRepository.findById(subjectId);
+                        if(callContentSubject!=null){
+                            callFlow.setContentSubjectId(subjectId);
+                            callFlow.setContentSubjectName(callContentSubject.getName());
+                        }
+                    }else {
+                        return ResponseData.getSuccessResponse("主题ID参数错误!");
+                    }
                     callFlowRepository.saveAndFlush(callFlow);
                     return ResponseData.getSuccessResponse("操作成功");
                 }else {
@@ -140,7 +167,7 @@ public class CallFlowServiceImpl implements CallFlowService<CallFlow,Long> {
     }
 
     @Override
-    public ResponseData add(HttpServletRequest request, String callFlowInfo, String title, String descri,String XMLPATH) throws IOException {
+    public ResponseData add(HttpServletRequest request, String callFlowInfo, String title, String descri,String XMLPATH,Long subjectId) throws IOException {
         Date date = new Date();
 //        title = new String(title.getBytes("ISO8859-1"), "utf-8");
 //        descri = new String(descri.getBytes("ISO8859-1"), "utf-8");
@@ -158,6 +185,15 @@ public class CallFlowServiceImpl implements CallFlowService<CallFlow,Long> {
             callFlow.setUpdateTime(date);
             callFlow.setUpdateUser(1L);//TODO 暂时写死 以后从权限系统获取
             callFlow.setCallFlowInfo(callFlowInfo);
+            if(subjectId != null){
+                CallContentSubject callContentSubject = callContentSubjectRepository.findById(subjectId);
+                if(callContentSubject!=null){
+                    callFlow.setContentSubjectId(subjectId);
+                    callFlow.setContentSubjectName(callContentSubject.getName());
+                }
+            }else {
+                return ResponseData.getSuccessResponse("主题ID参数错误!");
+            }
             callFlowRepository.save(callFlow);
             return ResponseData.getSuccessResponse("操作成功!");
         }else{
@@ -214,6 +250,13 @@ public class CallFlowServiceImpl implements CallFlowService<CallFlow,Long> {
             }else{
                 node.setAttribute("start","");
             }
+
+            if(nodeObject.containsKey("label") && nodeObject.getString("label")!=null && !"".equals(nodeObject.getString("label"))){
+                node.setAttribute("label",nodeObject.getString("label"));
+            }else{
+                node.setAttribute("label","");
+            }
+
             StringBuffer targetRef = new StringBuffer();
             //查询该节点的targetRef
             for(int j=0;j<jsonNodeLinkArray.size();j++){

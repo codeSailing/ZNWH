@@ -526,8 +526,8 @@ var callContent = function ($, layui) {
                 , url: context + '/callContent/saveAudio.do' //后台接收地址
                 , auto: false //不自动上传设置
                 , accept: 'audio' //允许上传的文件类型
-                // ,exts: 'mp3' //设置智能上传格式
-                , size: 5000 //最大允许上传的文件大小
+                ,exts: 'pcm|raw' //设置智能上传格式
+                // , size: 5000 //最大允许上传的文件大小
                 // , multiple: true //设置是否多个文件上传
                 , bindAction: '#commitAudio' //“上传”按钮的ID
                 , done: function (res) { //上传成功后执行的方法
@@ -551,8 +551,8 @@ var callContent = function ($, layui) {
                 , url: context + '/callContent/saveAudio.do' //后台接收地址
                 , auto: false //不自动上传设置
                 , accept: 'audio' //允许上传的文件类型
-                // ,exts: 'mp3' //设置智能上传格式
-                , size: 5000 //最大允许上传的文件大小
+                ,exts: 'pcm|raw' //设置智能上传格式
+                // , size: 5000 //最大允许上传的文件大小
                 // , multiple: true //设置是否多个文件上传
                 , bindAction: '#update_commitAudio' //“上传”按钮的ID
                 , done: function (res) { //上传成功后执行的方法
@@ -571,16 +571,15 @@ var callContent = function ($, layui) {
             });
 
             /************************播放音频文件****************************/
-            playAudio = function (url) {
-                var audio = document.createElement('audio');
-                var source = document.createElement('source');
-                // var type = url.substring(url.lastIndexOf(".") + 1);
-                // source.type = "audio/" + type;
-                source.src = context + "/callContent/showAudio.do?path=" + url;
-                source.autoplay = "autoplay";
-                source.controls = "controls";
-                audio.appendChild(source);
+            playAudio = function (id) {
+                var audio = document.getElementById(id);
                 audio.play();
+            }
+            
+            closeAudio = function (id) {
+                var audio = document.getElementById(id);
+                audio.pause();
+                audio.load();
             }
         });
     };

@@ -102,10 +102,10 @@ public class CallFlowController {
      */
     @RequestMapping(value = "/add.do", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseData add(HttpServletRequest request, String callFlowInfo,String title,String descri) throws IOException {
+    public ResponseData add(HttpServletRequest request, String callFlowInfo,String title,String descri,Long subjectId) throws IOException {
         logger.info("调用CallFlowController==== add.do,  callFlowInfo:=" + callFlowInfo);
 
-        return callFlowService.add(request,callFlowInfo,title,descri,XMLPATH);
+        return callFlowService.add(request,callFlowInfo,title,descri,XMLPATH,subjectId);
     }
 
     /**

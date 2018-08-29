@@ -21,12 +21,12 @@ public class CustomerCallFlow implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false, columnDefinition = "bigint(20) COMMENT '主键'")
     private Long id;
-    private  String  telephone;
-    private String   taskid;
-    private String   flowid;
-    private String   flowNodeid;
-    private String   nodeContent;
-    private String   nodeAnswer;
+    private String telephone;
+    private String taskid;
+    private String flowid;
+    private String flowNodeid;
+    private String nodeContent;
+    private String nodeAnswer;
     @Column(name="execute_time",columnDefinition="datetime COMMENT '执行时间'")
     private Date executetime;
 

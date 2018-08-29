@@ -42,11 +42,8 @@ a:focus {
 .wd535 {
     width: 535px!important;
 }
-.hgh433 {
-    height: 433px!important;
-}
-.hgh482 {
-    height: 492px!important;
+.hgh472 {
+    /*height: 472px!important;*/
 }
 .btn3{
     position: absolute;
@@ -129,10 +126,13 @@ a:focus {
     width: 240px;
 
 }
-/*.panel-heading a{*/
+.panel-heading a{
     /*color: rgb(18,157,207);*/
     /*text-align: right;*/
-/*}*/
+    /*position: absolute;*/
+    /*right: 25px;*/
+    /*float: right;*/
+}
 .bdr {
     border: 1px solid #f2f2f2!important;
     border-radius: 5px;
@@ -150,6 +150,9 @@ p.nav-title {
 }
 .ztree * {
     font-size: 14px!important;
+    /*overflow: auto;*/
+}
+.ztree {
     overflow: auto;
 }
 table.table-result tr th {
@@ -186,7 +189,8 @@ label {
 }
 .panel-body .ztree, .modal-body .ztree  {
     max-height: 482px;
-    overflow: auto;
+    /*overflow: auto;*/
+    /*clear: right;*/
 }
 /*#allTree, #treeDemo {*/
     /*height: 433px;*/
@@ -270,4 +274,7 @@ textarea:-ms-input-placeholder { /* Internet Explorer 10+ */
     top: 0px;
     opacity: 0.1;
     z-index: 999;
+}
+.layui-btn-container button {
+    margin-bottom: 0!important;
 }

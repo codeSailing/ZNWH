@@ -77,7 +77,7 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="../../../resources/js/src/callFlow/edit.js"></script>
+<script type="text/javascript" src="${ctx}/resources/js/src/callFlow/edit.js"></script>
 <script>
     editFlow.init();
 </script>

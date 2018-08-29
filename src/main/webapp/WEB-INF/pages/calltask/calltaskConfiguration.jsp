@@ -27,7 +27,7 @@
                     <div class="panel-heading">
                     </div>
                     <div class="panel-body">
-                        <ul id="treeDemo" class="ztree  hgh482"></ul>
+                        <ul id="treeDemo" class="ztree  hgh472"></ul>
                     </div>
                 </div>
             </div>
@@ -39,7 +39,7 @@
                             <button type="button" class="layui-btn fl wd100 bdr-rad0 search-btn btn-bg1 btn-search" lay-filter="search">任务查询</button>
                         </div>
                         <%--<span class="more-btn">更多筛选条件</span>--%>
-                        <label class="more mar-left120 mar-right20">
+                        <label class="more mar-left120 mar-right20"  style="margin-bottom: 0;">
                             <%--<span></span>--%>
                             <a href="javascript:void(0);" class="more-btn">
                                 更多筛选条件
@@ -1047,7 +1047,7 @@
                 </div>
             </div>
         </div>
-            <script type="text/javascript" src="../../resources/js/src/callTask/taskconfiguration.js"></script>
+            <script type="text/javascript" src="${ctx}/resources/js/src/callTask/taskconfiguration.js"></script>
         <script type="text/html" id="bar-configuration">
             {{# if(d.status == 1){ }}
             <a class="layui-btn layui-btn-xs" data-toggle="modal" data-target="" type="button" lay-event="detail" >详情</a>

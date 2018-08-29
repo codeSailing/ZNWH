@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * @Author: zhum
  * @Date: 2018/8/10 9:50
- * @Description:
+ * @Description: 切面控制日志统一输出
  */
 @Aspect
 @Configuration//定义一个切面

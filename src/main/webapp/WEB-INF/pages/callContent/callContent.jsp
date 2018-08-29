@@ -28,11 +28,11 @@
     <div class="layui-row layui-col-space10">
         <div class="layui-col-md2">
             <div class="panel bdr">
-                <div class="panel-heading">
-                    <a href="${ctx}/callContentSubject/page.do" class="layui-btn btn-bg1">管理主题</a>
+                <div class="panel-heading"  style="padding-bottom: 0;">
+                    <a href="${ctx}/callContentSubject/page.do" class="layui-btn layui-btn-sm btn-bg1">管理主题</a>
                 </div>
-                <div class="panel-body">
-                    <ul id="treeDemo" class="ztree hgh433"></ul>
+                <div class="panel-body"  style="padding-top: 0;">
+                    <ul id="treeDemo" class="ztree"></ul>
                 </div>
             </div>
         </div>
@@ -298,7 +298,9 @@
     {{# if (d.contentType == 0) { }}
     <div>{{d.detail}}</div>
     {{# }else{ }}
-    <button class="layui-btn layui-btn-primary layui-btn-xs" style="margin-top: 4px;" onclick="playAudio('{{d.detail}}')">播放音频</button>
+    <audio id="contentId_{{d.id}}" src="${ctx}/callContent/showAudio.do?path={{d.detail}}" controls="controls" hidden></audio>
+    <button class="layui-btn layui-btn-primary layui-btn-xs" style="margin-top: 4px;" onclick="playAudio('contentId_{{d.id}}')">播放音频</button>
+    <button class="layui-btn layui-btn-primary layui-btn-xs" style="margin-top: 4px;" onclick="closeAudio('contentId_{{d.id}}')">停止播放</button>
     {{#  } }}
 </script>
 <script type="text/javascript" src="${ctx}/resources/js/src/callContent/callContent.js"></script>

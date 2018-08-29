@@ -57,6 +57,15 @@
                         <div class="layui-inline">
                             <label class="layui-form-label wd120">
                                 <span class="red">*</span>
+                                流程ID：
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="id" required class="layui-input wd240">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label wd120">
+                                <span class="red">*</span>
                                 流程名称：
                             </label>
                             <div class="layui-input-inline">
@@ -197,7 +206,7 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="../../../resources/js/src/callFlow/callFlow.js"></script>
+<script type="text/javascript" src="${ctx}/resources/js/src/callFlow/callFlow.js"></script>
 <script>
     callFlow.init();
 </script>

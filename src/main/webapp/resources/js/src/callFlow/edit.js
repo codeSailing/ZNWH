@@ -399,15 +399,15 @@ var editFlow = function ($) {
                 var nodeObj = $('#mySavedModel').val();
                 var id = $('#flowId').val();
                 var startNodeObj = (nodeObj.split('startFlow')).length-1;
-                var endtNodeObj = (nodeObj.split('endFlow')).length-1;
+                // var endtNodeObj = (nodeObj.split('endFlow')).length-1;
                 if (startNodeObj>1){
                     layer.msg('开始节点数量不能超过一个', {time: 2000, icon: 5});
                     return false;
                 };
-                if (endtNodeObj>1){
-                    layer.msg('结束节点数量不能超过一个', {time: 2000, icon: 5});
-                    return false;
-                }
+                // if (endtNodeObj>1){
+                //     layer.msg('结束节点数量不能超过一个', {time: 2000, icon: 5});
+                //     return false;
+                // }
                 if (nodeObj.indexOf("startFlow") == -1){
                     layer.msg('必须有开始节点', {time: 2000, icon: 5});
                     return false;
@@ -452,7 +452,7 @@ var editFlow = function ($) {
                 });
             };
             closeFlow = function () {
-                window.location.href = "/callFlow/list.do";
+                window.location.href = context + "/callFlow/list.do";
             }
             save = function () {
                 saveDiagramProperties();  // 在写入JSON之前先执行此操作

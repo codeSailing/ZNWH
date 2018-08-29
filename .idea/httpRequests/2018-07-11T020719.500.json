@@ -1,8 +1,0 @@
-{
-  "timestamp": 1531289239905,
-  "status": 500,
-  "error": "Internal Server Error",
-  "exception": "java.text.ParseException",
-  "message": "Unparseable date: \"2018-07-11\"",
-  "path": "/callTask/add.do"
-}

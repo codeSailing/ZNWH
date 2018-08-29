@@ -1082,7 +1082,7 @@ var taskconfiguration = function ($, layui) {
             });
         }
 
-        //主题树(新增/修改)
+        //主题树
         function showSubjectTree() {
             $.ajax({
                 type: "GET",
@@ -1287,8 +1287,11 @@ var taskconfiguration = function ($, layui) {
             var modifyCallFlowFlag = $("#modify_callFlow").is(":hidden");
             //搜索主题
             var searchContentSubject = $("#search_contentSubject").is(":hidden");
-
             var parentId = treeNode.id;
+            //选择任务分类
+            if (event.target.id.indexOf('treeDemo') > -1) {
+                $("#callCategoryId").val(id);//任务类别id
+            }
             $("#addForm").find("#parentId").val(treeNode.id);
             var name = treeNode.name;
             // if (!addSubjectFlag) {//添加主题
@@ -1360,8 +1363,6 @@ var taskconfiguration = function ($, layui) {
                     $("body").unbind("mousedown", onBodyDown);
                 }
             } else {
-                // console.log(id,name);
-                $("#callCategoryId").val(id);//任务类别id
                 layui.use('table', function () {
                     var table = layui.table;
                     table.reload('callTask', {
@@ -1377,7 +1378,7 @@ var taskconfiguration = function ($, layui) {
 
         function addHref() {
             var taskId = $("#taskId").val();
-            var url = "/ivr/testTime.do?taskId=" + taskId;
+            var url = context + "/ivr/testTime.do?taskId=" + taskId;
             window.location.href = url;
         }
 

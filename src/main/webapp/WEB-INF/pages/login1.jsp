@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <title>登录</title>
-<link rel="stylesheet" href="../../../resources/css/css.css">
+<link rel="stylesheet" href="${ctx}/resources/css/css.css">
     <script type="text/javascript">
         if (top.location != location){
             top.location.href = location.href;
@@ -46,9 +46,9 @@
             </div>
             <%--<div class="copy">主办：上海市长宁区科委&nbsp;&nbsp;&nbsp;技术支持：科大讯飞股份有限公司</div>--%>
         </div>
-        <script src="../resources/js/plugin/layui/layui.js"></script>
+        <script src="${ctx}/resources/js/plugin/layui/layui.js"></script>
     </body>
-<script src="../resources/js/src/login.js"></script>
+<script src="${ctx}/resources/js/src/login.js"></script>
 </html>
 <script type="text/javascript">
 

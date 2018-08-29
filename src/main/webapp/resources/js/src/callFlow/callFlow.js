@@ -21,6 +21,7 @@ var callFlow = function ($,layui) {
                 , id: 'callFlow' //初始化标识id
                 , cols: [[ //标题栏
                     {checkbox: true}
+                    , {field: 'id', title: '流程ID', minwidth: 240}
                     , {field: 'name', title: '流程名称', minwidth: 240}
                     , {field: 'descri', title: '流程描述', minwidth: 350}
                     , {field: 'name', title: '更新人员', minwidth: 240}
@@ -205,7 +206,7 @@ var callFlow = function ($,layui) {
             //     });
             // });
             $('#addFlow').click(function () {
-                window.location.href="/callFlow/addFlow.do";
+                window.location.href=context + "/callFlow/addFlow.do";
             });
 
             //添加提交

@@ -1,0 +1,123 @@
+<html>
+<head><title>Apache Tomcat/7.0.47 - Error report</title>
+    <style><!--
+    H1 {
+        font-family: Tahoma, Arial, sans-serif;
+        color: white;
+        background-color: #525D76;
+        font-size: 22px;
+    }
+
+    H2 {
+        font-family: Tahoma, Arial, sans-serif;
+        color: white;
+        background-color: #525D76;
+        font-size: 16px;
+    }
+
+    H3 {
+        font-family: Tahoma, Arial, sans-serif;
+        color: white;
+        background-color: #525D76;
+        font-size: 14px;
+    }
+
+    BODY {
+        font-family: Tahoma, Arial, sans-serif;
+        color: black;
+        background-color: white;
+    }
+
+    B {
+        font-family: Tahoma, Arial, sans-serif;
+        color: white;
+        background-color: #525D76;
+    }
+
+    P {
+        font-family: Tahoma, Arial, sans-serif;
+        background: white;
+        color: black;
+        font-size: 12px;
+    }
+
+    A {
+        color: black;
+    }
+
+    A.name {
+        color: black;
+    }
+
+    HR {
+        color: #525D76;
+    }
+
+    --></style>
+</head>
+<body><h1>HTTP Status 500 - </h1>
+<HR size="1" noshade="noshade">
+<p><b>type</b> Exception report</p>
+<p><b>message</b> <u></u></p>
+<p><b>description</b> <u>The server encountered an internal error that prevented it from fulfilling this request.</u>
+</p>
+<p><b>exception</b>
+<pre>java.lang.NullPointerException
+	com.quickdone.znwh.taskhandle.TaskSchedule.getNodeByStart(TaskSchedule.java:306)
+	com.quickdone.znwh.taskhandle.TaskSchedule.executeTaskCallFlow(TaskSchedule.java:232)
+	com.quickdone.znwh.controller.api.IVRController.getCallContent(IVRController.java:361)
+	com.quickdone.znwh.controller.api.IVRController$$FastClassBySpringCGLIB$$a3f7e7b8.invoke(&lt;generated&gt;)
+	org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:204)
+	org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:721)
+	org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:157)
+	org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint.proceed(MethodInvocationProceedingJoinPoint.java:85)
+	com.quickdone.znwh.pojo.LogRecordAspect.doAround(LogRecordAspect.java:74)
+	sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	java.lang.reflect.Method.invoke(Method.java:601)
+	org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethodWithGivenArgs(AbstractAspectJAdvice.java:629)
+	org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethod(AbstractAspectJAdvice.java:618)
+	org.springframework.aop.aspectj.AspectJAroundAdvice.invoke(AspectJAroundAdvice.java:70)
+	org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:92)
+	org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:656)
+	com.quickdone.znwh.controller.api.IVRController$$EnhancerBySpringCGLIB$$a63ea8e4.getCallContent(&lt;generated&gt;)
+	sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	java.lang.reflect.Method.invoke(Method.java:601)
+	org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)
+	org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133)
+	org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:116)
+	org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827)
+	org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738)
+	org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85)
+	org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963)
+	org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:897)
+	org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970)
+	org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:872)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:647)
+	org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:846)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:728)
+	org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	com.quickdone.znwh.WebConfig$1.doFilter(WebConfig.java:70)
+	org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99)
+	org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:105)
+	org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81)
+	org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197)
+	org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	org.springframework.boot.web.support.ErrorPageFilter.doFilter(ErrorPageFilter.java:115)
+	org.springframework.boot.web.support.ErrorPageFilter.access$000(ErrorPageFilter.java:59)
+	org.springframework.boot.web.support.ErrorPageFilter$1.doFilterInternal(ErrorPageFilter.java:90)
+	org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	org.springframework.boot.web.support.ErrorPageFilter.doFilter(ErrorPageFilter.java:108)
+</pre>
+</p><p><b>note</b> <u>The full stack trace of the root cause is available in the Apache Tomcat/7.0.47 logs.</u></p>
+<HR size="1" noshade="noshade">
+<h3>Apache Tomcat/7.0.47</h3></body>
+</html>

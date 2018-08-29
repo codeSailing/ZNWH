@@ -135,7 +135,7 @@
             </div>
         </div>
 
-        <script type="text/javascript" src="../../resources/js/src/customerCallFlow/customerCallFlow.js"></script>
+        <script type="text/javascript" src="${ctx}/resources/js/src/customerCallFlow/customerCallFlow.js"></script>
         <script>
             taskconfiguration.init();
         </script>

@@ -75,7 +75,7 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="../../../resources/js/src/callFlow/add.js"></script>
+<script type="text/javascript" src="${ctx}/resources/js/src/callFlow/add.js"></script>
 <script>
     addFlow.init();
 </script>

@@ -56,7 +56,7 @@ public interface CallFlowService<CallFlow,Long> {
      * @Date: 2018/7/11 10:48
      * @Description: 新增
      */
-    ResponseData add(HttpServletRequest request, String callFlowInfo, String title, String descri,String XMLPATH) throws IOException;
+    ResponseData add(HttpServletRequest request, String callFlowInfo, String title, String descri,String XMLPATH,Long subjectId) throws IOException;
 
     /**
      * @Author: zhum

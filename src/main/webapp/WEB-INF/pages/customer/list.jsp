@@ -18,11 +18,11 @@
     <div class="layui-row layui-col-space10">
         <div class="layui-col-md2">
             <div class="panel bdr">
-                <div class="panel-heading">
-                    <a href="/customerGroup/showCustomerGroup.do" class="layui-btn btn-bg1">管理分组</a>
+                <div class="panel-heading" style="padding-bottom: 0;">
+                    <a href="/customerGroup/showCustomerGroup.do" class="layui-btn layui-btn-sm btn-bg1">管理分组</a>
                 </div>
-                <div class="panel-body">
-                    <ul id="allTree" class="ztree hgh433"></ul>
+                <div class="panel-body" style="padding-top: 0;">
+                    <ul id="allTree" class="ztree"></ul>
                 </div>
             </div>
         </div>
@@ -64,7 +64,7 @@
                                 <li id="summary-stock3" class="clearfix">
                                     <div class="dd">
                                         <div id="store-selector3">
-                                            <input class="form-control" name="area" id="areaName7" autocomplete="off" placeholder="--请选择--" style="overflow: hidden;white-space: normal;text-overflow: ellipsis;">
+                                            <input class="form-control" readonly name="area" id="areaName7" autocomplete="off" placeholder="--请选择--" style="background-color: #fff;overflow: hidden;white-space: normal;text-overflow: ellipsis;">
                                             <div class="text"></div>
                                         </div>
                                         <!--store-selector end-->
